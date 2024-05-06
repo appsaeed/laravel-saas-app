@@ -1,4 +1,4 @@
-/node_modules
+node_modules
 /storage/*.key
 /storage/*.index
 /storage/*.xlsx

@@ -293,8 +293,8 @@
                                         <div class="mb-1 col-md-4">
                                             <label class="form-label required" for="app_url">HTTPS Enable</label>
                                             <select name="https_enable" id="https_enable" class="form-select" required>
-                                                <option value="true" selected>Yes</option>
-                                                <option value="false">No</option>
+                                                <option value="true">Yes</option>
+                                                <option value="false" selected>No</option>
                                             </select>
                                         </div>
 
