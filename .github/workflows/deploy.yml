@@ -2,19 +2,19 @@ on:
   push:
     branches:
       - main
-name: 🚀 Deploy website on push (main)
+name: 🚀 Deploy website on push (Master)
 jobs:
   web-deploy:
     name: 🎉 Deploy
     runs-on: ubuntu-latest
     steps:
       - name: 🚚 Get latest code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v3
+        uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
+          php-version: 8.x
 
       - name: Cache Composer packages
         id: composer-cache
@@ -33,5 +33,5 @@ jobs:
         with:
           server: ftpupload.net
           username: if0_36494458
-          password: DwJwqTYXEMX
+          password: ${{ secrets.FTP_PASSWORD }}
           server-dir: htdocs/
