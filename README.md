@@ -1,35 +1,82 @@
-# Introduction
+# SaaS Tasks: A Laravel-based Task Management Application for Businesses
+SaaS Tasks is a web-application built with the Laravel PHP framework that helps businesses manage tasks and projects efficiently. Offered as a Software-as-a-Service (SaaS) solution. Features admin and user dashboards for application control
+## Key Features
 
-CRM Dashboard
-Task or todo project management
-**Theme switching system dark and light**
-**language changes system**
+<!-- START -->
+  - **Real-Time Chat System**:  The integrated chat system fosters real-time communication among team members. Discuss tasks, share ideas, and collaborate effectively within the platform.
 
-![dashboard](https://raw.githubusercontent.com/appsaeed/assets/main/crm/dashboard.png)
-![dashboard](https://raw.githubusercontent.com/appsaeed/assets/main/crm/admin.png)
-![dashboard](https://raw.githubusercontent.com/appsaeed/assets/main/crm/customer-dashboard-home.png)
+  - **Task Creation and Management**: Create, assign, and track tasks with due dates, priorities, and detailed descriptions.
 
-# Installation
+  - **Project Management**: Organize tasks into projects for better visibility and collaboration.
 
-![CRM Dashboard](https://raw.githubusercontent.com/appsaeed/assets/main/crm/install-start.png)
-![install admin](https://raw.githubusercontent.com/appsaeed/assets/main/crm/install-admin.png)
+  - **Automated Deadline Reminders**: Never miss a deadline again. Leverage built-in cron jobs to trigger automated notifications before deadlines, keeping everyone on track.
 
-1. make sure you have php 8.0.2 or higher and composer
+  - **Notification System**: Stay informed with customizable notifications. Receive alerts about task assignments, deadlines, and project updates to ensure everyone's in the loop.
 
-2. after unzip the project files rename .env.example to .env
+  - **Admin Control panel**:  Enjoy comprehensive admin privileges. Manage user accounts, control access levels, and configure application settings to suit your team's needs.
 
-3. if you are running in local cumputer run the bash in from root directory.
+  - **Language Translation**:  Cater to a global audience.  SaaS Tasks offers support for multiple languages, making it accessible to a broader user base.
 
-   php artisan serve
+  - **Team Collaboration**: Assign tasks to team members, track progress, and communicate within the platform.
 
-4. run the command in bash to install packages if doesn't exist root directory/vendor
+  - **User Management**: Create user accounts with different permission levels for access control.
 
-   composer install
+  - **Reporting and Analytics**: Gain insights into team productivity and project progress through reports and visualizations.
 
-5. open url to start installation your_application.com/install
+  - **Security**: Built-in security features help protect your data from unauthorized access. Secure user authentication and data encryption to ensure information confidentiality.
+
+  - **Scalability**: Laravel's modular architecture allows the application to grow seamlessly as your business needs evolve.
+
+  - **Customization**: The Applicaion offers flexibility to customize the application to your specific needs.
+
+  - **Developer-friendly**: Laravel's clean syntax and extensive functionalities make development and maintenance efficient.
+
+  - **Ideal for**: Freelancers and small businesses | Marketing agencies | Project management teams | Any organization looking to improve task management and team collaboration
+<!--FINISHED-->
+Dashboard
+<div style="display:flex;  gap: 10px;">
+    <div>
+        admin
+        <img src="https://raw.githubusercontent.com/appsaeed/assets/main/images/crm/admin.png" alt="">
+    </div>
+    <div>
+        customer dashboard
+        <img src="https://raw.githubusercontent.com/appsaeed/assets/main/images/crm/dashboard.png" alt="">
+    </div>
+    <div>
+        customer dashboard
+        <img src="https://raw.githubusercontent.com/appsaeed/assets/main/images/crm/customer-dashboard-home.png" alt="">
+    </div>
+</div>
+
+# Instructions
+1. Make sure you have [php](https://www.php.net/) 8.0.2 or higher and [composer](https://getcomposer.org)
+
+2. After initialization the project files rename .env.example to .env
+
+3. Install php dependencies
+
+```sh
+composer install
+```
+
+4. Start local development server from root directory.
+
+```sh
+php artisan serve
+```
+
+5. open url to start installation your_application.com/install and complete installation process
+![Install starting](https://raw.githubusercontent.com/appsaeed/assets/main/images/crm/install-start.png)
+![Create admin](https://raw.githubusercontent.com/appsaeed/assets/main/images/crm/install-admin.png)
 
 6. check files and folders permissions is correct by following installation
-
+7. when accurate assets issues install node modules by using the following command
+````sh
+npm install
+# build assets
+npm run build
+````
 # Admin dashboard
 
 1. user can update profile
@@ -62,7 +109,7 @@ Task or todo project management
   - Reveiew
   - Complete
 
-![admin dashboard](https://raw.githubusercontent.com/appsaeed/assets/main/crm/admin.png)
+![admin dashboard](https://raw.githubusercontent.com/appsaeed/assets/main/images/crm/admin.png)
 
 # Client dashboard
 
@@ -83,7 +130,7 @@ Task or todo project management
   - Reveiew
   - Complete
 
-![dashboard](https://raw.githubusercontent.com/appsaeed/assets/main/crm/customer-dashboard.png)
+![dashboard](https://raw.githubusercontent.com/appsaeed/assets/main/images/crm/customer-dashboard.png)
 
 # environment
 
