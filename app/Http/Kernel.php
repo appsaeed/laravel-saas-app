@@ -31,92 +31,90 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
-class Kernel extends HttpKernel
-{
-        /**
-         * The application's global HTTP middleware stack.
-         *
-         * These middleware are run during every request to your application.
-         *
-         * @var array
-         */
-        protected $middleware = [
-                CheckForMaintenanceMode::class,
-                ValidatePostSize::class,
-                TrimStrings::class,
-                ConvertEmptyStringsToNull::class,
-                HandleCors::class,
-        ];
+class Kernel extends HttpKernel {
+    /**
+     * The application's global HTTP middleware stack.
+     *
+     * These middleware are run during every request to your application.
+     *
+     * @var array
+     */
+    protected $middleware = [
+        CheckForMaintenanceMode::class,
+        ValidatePostSize::class,
+        TrimStrings::class,
+        ConvertEmptyStringsToNull::class,
+        HandleCors::class,
+    ];
 
-        /**
-         * The application's route middleware groups.
-         *
-         * @var array
-         */
-        protected $middlewareGroups = [
-                'web' => [
-                        EncryptCookies::class,
-                        AddQueuedCookiesToResponse::class,
-                        StartSession::class,
-                        // \Illuminate\Session\Middleware\AuthenticateSession::class,
-                        ShareErrorsFromSession::class,
-                        VerifyCsrfToken::class,
-                        SubstituteBindings::class,
-                        LocaleMiddleware::class,
-                ],
+    /**
+     * The application's route middleware groups.
+     *
+     * @var array
+     */
+    protected $middlewareGroups = [
+        'web' => [
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+            StartSession::class,
+            // \Illuminate\Session\Middleware\AuthenticateSession::class,
+            ShareErrorsFromSession::class,
+            VerifyCsrfToken::class,
+            SubstituteBindings::class,
+            LocaleMiddleware::class,
+        ],
 
-                'api' => [
-                        EnsureFrontendRequestsAreStateful::class,
-                        SubstituteBindings::class,
-                ],
-        ];
+        'api' => [
+            EnsureFrontendRequestsAreStateful::class,
+            SubstituteBindings::class,
+        ],
+    ];
 
-        /**
-         * The application's route middleware.
-         *
-         * These middleware may be assigned to groups or used individually.
-         *
-         * @var array
-         */
-        protected $routeMiddleware = [
-                'auth'          => Authenticate::class,
-                'auth.basic'    => AuthenticateWithBasicAuth::class,
-                'bindings'      => SubstituteBindings::class,
-                'cache.headers' => SetCacheHeaders::class,
-                'can'           => Authorize::class,
-                'guest'         => RedirectIfAuthenticated::class,
-                'signed'        => ValidateSignature::class,
-                'throttle'      => ThrottleRequests::class,
-                'verified'      => EnsureEmailIsVerified::class,
+    /**
+     * The application's route middleware.
+     *
+     * These middleware may be assigned to groups or used individually.
+     *
+     * @var array
+     */
+    protected $routeMiddleware = [
+        'auth' => Authenticate::class,
+        'auth.basic' => AuthenticateWithBasicAuth::class,
+        'bindings' => SubstituteBindings::class,
+        'cache.headers' => SetCacheHeaders::class,
+        'can' => Authorize::class,
+        'guest' => RedirectIfAuthenticated::class,
+        'signed' => ValidateSignature::class,
+        'throttle' => ThrottleRequests::class,
+        'verified' => EnsureEmailIsVerified::class,
 
-                /*
+        /*
         |--------------------------------------------------------------------------
         | CRM Based Middleware
         |--------------------------------------------------------------------------
-        */
-
-                'ValidProduct'  => RedirectIfNotValid::class,
-                'twofactor'     => TwoFactor::class,
-                'json.response' => ForceJsonResponse::class,
-                'install'       => canInstall::class,
-                'update'        => canUpdate::class,
-
-
-        ];
-
-        /**
-         * The priority-sorted list of middleware.
-         *
-         * This forces non-global middleware to always be in the given order.
-         *
-         * @var array
          */
-        protected $middlewarePriority = [
-                StartSession::class,
-                ShareErrorsFromSession::class,
-                Authenticate::class,
-                AuthenticateSession::class,
-                SubstituteBindings::class,
-                Authorize::class,
-        ];
+
+        'ValidProduct' => RedirectIfNotValid::class,
+        'twofactor' => TwoFactor::class,
+        'json.response' => ForceJsonResponse::class,
+        'install' => canInstall::class,
+        'update' => canUpdate::class,
+
+    ];
+
+    /**
+     * The priority-sorted list of middleware.
+     *
+     * This forces non-global middleware to always be in the given order.
+     *
+     * @var array
+     */
+    protected $middlewarePriority = [
+        StartSession::class,
+        ShareErrorsFromSession::class,
+        Authenticate::class,
+        AuthenticateSession::class,
+        SubstituteBindings::class,
+        Authorize::class,
+    ];
 }
