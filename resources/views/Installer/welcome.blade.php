@@ -326,11 +326,11 @@
                                         <div class="mb-1 col-md-8">
                                             <label class="form-label required" for="database_host">Database Host</label>
                                             <input type="text" id="database_host" class="form-control"
-                                                value="127.0.0.1" name="database_host" required />
+                                                value="{{ env('DB_HOST') }}" name="database_host" required />
                                         </div>
                                         <div class="mb-1 col-md-4">
                                             <label class="form-label required" for="port">Database Port</label>
-                                            <input type="number" id="port" class="form-control" value="3306"
+                                            <input type="number" id="port" class="form-control" value="{{ env('DB_PORT') }}"
                                                 name="database_port" required />
                                         </div>
                                     </div>
