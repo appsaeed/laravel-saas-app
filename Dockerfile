@@ -36,5 +36,7 @@ RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
 # Install the `bcmatch` PHP extension
 RUN docker-php-ext-install -j$(nproc) bcmath
 
-
+# start base docker script
+# https://github.com/richarvey/nginx-php-fpm/blob/main/scripts/start.sh#L222
+CMD ["/00-laravel-deploy.sh"]
 CMD ["/start.sh"]
