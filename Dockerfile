@@ -6,7 +6,7 @@ COPY . .
 ENV SKIP_COMPOSER 1
 ENV WEBROOT /var/www/html/public
 ENV PHP_ERRORS_STDERR 1
-# ENV RUN_SCRIPTS 1
+ENV RUN_SCRIPTS 1
 ENV REAL_IP_HEADER 1
 
 # Allow composer to run as root
@@ -20,7 +20,7 @@ RUN apk update
 # RUN apk add --no-cache npm
 
 # Install required packages
-RUN apk add --no-cache autoconf g++ make libmemcached-dev libpng-dev libjpeg-turbo-dev freetype-dev libbz2
+RUN apk add --no-cache autoconf g++ make libpng-dev libjpeg-turbo-dev freetype-dev libbz2
 
 # Install the `gd` PHP extension
 RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
@@ -28,7 +28,9 @@ RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
 
 # Install the `bcmatch` PHP extension
 RUN docker-php-ext-install -j$(nproc) bcmath
+# Install the `pcntl` PHP extension
+RUN docker-php-ext-install -j$(nproc) pcntl
 
 # start base docker script
 # https://github.com/richarvey/nginx-php-fpm/blob/main/scripts/start.sh#L222
-CMD ["/scripts/00-laravel-deploy.sh"]
+CMD ["/start.sh"]

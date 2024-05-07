@@ -1,3 +1,4 @@
+/.github
 /vendor
 /node_modules
 .gitignore
@@ -7,3 +8,4 @@ README.md
 .env.example
 composer.lock
 package-lock.json
+logo.png
