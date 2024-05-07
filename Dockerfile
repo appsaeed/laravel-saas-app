@@ -10,9 +10,11 @@ ENV RUN_SCRIPTS 1
 ENV REAL_IP_HEADER 1
 
 # Laravel config
-ENV APP_ENV production
-ENV APP_DEBUG false
+ENV APP_ENV local
+ENV APP_DEBUG true
 ENV LOG_CHANNEL stderr
+ENV APP_STAGE demo
+ENV APP_KEY=base64:P4SbjaUm/Yhk6lmMV50Zi02z9mVpL7DKYj3X5HDj0dI=
 
 # Allow composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER 1
@@ -33,11 +35,6 @@ RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
 
 # Install the `bcmatch` PHP extension
 RUN docker-php-ext-install -j$(nproc) bcmath
-
-RUN apk add --no-cache curl && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Install composer dependencies
-RUN composer install --no-dev
 
 
 CMD ["/start.sh"]

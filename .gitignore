@@ -1,9 +1,11 @@
-node_modules
+/vendor
+/node_modules
+
+
 /storage/*.key
 /storage/*.index
 /storage/*.xlsx
-/vendor
-.env.backup
+
 .phpunit.result.cache
 npm-debug.log
 yarn-error.log
@@ -11,7 +13,6 @@ yarn-error.log
 .idea/vcs.xml
 public/fonts/vendor/video.js/
 .DS_Store
-composer.lock
 package-lock.json
 yarn.lock
 bun.lockb
