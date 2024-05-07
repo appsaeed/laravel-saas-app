@@ -2,26 +2,23 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Country;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Seeder;
 
-class Countries extends Seeder
-{
+class Countries extends Seeder {
     /**
      * Run the database seeders.
      *
      * @return void
      */
-    public function run()
-    {
+    public function run() {
 
         $c = new Country();
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        $c->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        // DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        // $c->truncate();
+        // DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        $countries   = [];
+        $countries = [];
         $countries[] = ['iso_code' => 'AF', 'name' => 'Afghanistan', 'country_code' => '93'];
         $countries[] = ['iso_code' => 'AL', 'name' => 'Albania', 'country_code' => '355'];
         $countries[] = ['iso_code' => 'DZ', 'name' => 'Algeria', 'country_code' => '213'];
@@ -255,13 +252,13 @@ class Countries extends Seeder
         $countries[] = ['iso_code' => 'ZM', 'name' => 'Zambia', 'country_code' => '260'];
         $countries[] = ['iso_code' => 'ZW', 'name' => 'Zimbabwe', 'country_code' => '263'];
 
-        foreach ($countries as $country) {
-            Country::create([
-                    'name'         => $country['name'],
-                    'iso_code'     => $country['iso_code'],
-                    'country_code' => $country['country_code'],
-                    'status'       => true,
-            ]);
+        foreach ( $countries as $country ) {
+            Country::create( [
+                'name' => $country['name'],
+                'iso_code' => $country['iso_code'],
+                'country_code' => $country['country_code'],
+                'status' => true,
+            ] );
         }
 
     }

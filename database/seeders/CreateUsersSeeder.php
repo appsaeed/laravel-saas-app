@@ -7,7 +7,6 @@ use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CreateUsersSeeder extends Seeder {
@@ -104,12 +103,12 @@ class CreateUsersSeeder extends Seeder {
         $role = new Role();
         $customer = new Customer();
 
-        DB::statement( 'SET FOREIGN_KEY_CHECKS=0;' );
-        $user->truncate();
-        $role->truncate();
-        $customer->truncate();
-        DB::table( 'role_user' )->truncate();
-        DB::statement( 'SET FOREIGN_KEY_CHECKS=1;' );
+        // DB::statement( 'SET FOREIGN_KEY_CHECKS=0;' );
+        // $user->truncate();
+        // $role->truncate();
+        // $customer->truncate();
+        // DB::table( 'role_user' )->truncate();
+        // DB::statement( 'SET FOREIGN_KEY_CHECKS=1;' );
 
         /*
          * Create roles

@@ -17,7 +17,7 @@ return new class extends Migration {
         Schema::create( 'todos_received', function ( Blueprint $table ) {
 
             $table->id( 'id' );
-            $table->uuid( 'uid' )->default( Str::uuid() );
+            $table->text( 'uid' )->default( Str::uuid() );
 
             $table->unsignedBigInteger( 'user_id' );
             $table->unsignedBigInteger( 'todo_id' );

@@ -16,7 +16,7 @@ class CreateNotificationsTable extends Migration {
         Schema::create( 'notifications', function ( Blueprint $table ) {
 
             $table->id();
-            $table->uuid( 'uid' )->default( Str::uuid() );
+            $table->text( 'uid' )->default( Str::uuid() );
             $table->unsignedBigInteger( 'user_id' )->default( 1 );
             $table->unsignedBigInteger( 'created_by' )->default( 1 );
             $table->string( 'for' )->default( 'customer' );
