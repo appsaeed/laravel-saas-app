@@ -2,6 +2,7 @@
 echo "Running composer"
 # composer install --no-dev --working-dir=/var/www/html
 composer install --working-dir=/var/www/html
+mv /var/www/html/.env.deploy /var/www/html/.env
 
 echo "generating application key..."
 php artisan key:generate
