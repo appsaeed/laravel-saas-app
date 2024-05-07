@@ -13,6 +13,7 @@ yarn-error.log
 .idea/vcs.xml
 public/fonts/vendor/video.js/
 .DS_Store
+composer.lock
 package-lock.json
 yarn.lock
 bun.lockb
