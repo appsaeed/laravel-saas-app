@@ -4,9 +4,9 @@ COPY . .
 
 # Image config
 ENV SKIP_COMPOSER 1
-ENV WEBROOT /var/www/html
+ENV WEBROOT /var/www/html/public
 ENV PHP_ERRORS_STDERR 1
-ENV RUN_SCRIPTS 1
+# ENV RUN_SCRIPTS 1
 ENV REAL_IP_HEADER 1
 
 # Allow composer to run as root
@@ -31,4 +31,4 @@ RUN docker-php-ext-install -j$(nproc) bcmath
 
 # start base docker script
 # https://github.com/richarvey/nginx-php-fpm/blob/main/scripts/start.sh#L222
-CMD ["/start.sh"]
+CMD ["/scripts/00-laravel-deploy.sh"]
