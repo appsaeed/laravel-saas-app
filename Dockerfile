@@ -34,5 +34,8 @@ RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
 # Install the `bcmatch` PHP extension
 RUN docker-php-ext-install -j$(nproc) bcmath
 
+# Install composer dependencies
+RUN composer install --no-dev
+
 
 CMD ["/start.sh"]
