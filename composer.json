@@ -26,6 +26,7 @@
     "authorizenet/authorizenet": "^2.0",
     "barryvdh/laravel-translation-manager": "^0.6.5",
     "beyondcode/laravel-websockets": "^1.14",
+    "doctrine/dbal": "^4.0",
     "fruitcake/laravel-cors": "^2.2",
     "guzzlehttp/guzzle": "^7.4.2",
     "intervention/image": "^2.7",

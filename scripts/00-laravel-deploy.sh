@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 echo "Running composer"
-# composer install --no-dev --working-dir=/var/www/html
 composer install --working-dir=/var/www/html
-cp /var/www/html/.env.deploy /var/www/html/.env
-chmod -R 775 /var/www/html/.env
+mv /var/www/html/.env.deploy /var/www/html/.env
+
+echo "update env permissions...";
+chown www-data:www-data /var/www/html/.env
+chmod 664 /var/www/html/.env
+
 
 echo "generating application key..."
 php artisan key:generate
