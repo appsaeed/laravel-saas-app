@@ -24,7 +24,6 @@
     "arcanedev/no-captcha": "^13.0",
     "arielmejiadev/larapex-charts": "^2.1",
     "authorizenet/authorizenet": "^2.0",
-    "barryvdh/laravel-translation-manager": "^0.6.5",
     "beyondcode/laravel-websockets": "^1.14",
     "doctrine/dbal": "^4.0",
     "fruitcake/laravel-cors": "^2.2",
@@ -40,6 +39,7 @@
     "pusher/pusher-php-server": "^7.2"
   },
   "require-dev": {
+    "barryvdh/laravel-translation-manager": "^0.6.5",
     "tanmuhittin/laravel-google-translate": "^2.2",
     "fakerphp/faker": "^1.9.1",
     "laravel/horizon": "^5.9.7",

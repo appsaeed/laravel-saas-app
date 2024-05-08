@@ -20,13 +20,14 @@ class AdminBaseController extends Controller {
      * @return Application|Factory|\Illuminate\Contracts\View\View|View
      */
     public function index() {
+
         $breadcrumbs = [
             ['link' => "/dashboard", 'name' => __( 'locale.menu.Dashboard' )],
             ['name' => User::fullname()],
         ];
 
         $revenue = Invoices::CurrentMonth()
-            ->selectRaw( 'EXTRACT(DAY FROM created_at) AS day, SUM(CAST(amount AS numeric)) AS revenue' )
+            ->selectRaw( 'EXTRACT(DAY FROM created_at) as day, count(uid) as revenue' )
             ->groupBy( 'day' )
             ->pluck( 'revenue', 'day' );
 
@@ -34,15 +35,10 @@ class AdminBaseController extends Controller {
             ->addData( __( 'locale.labels.revenue' ), $revenue->values()->toArray() )
             ->setXAxis( $revenue->keys()->toArray() );
 
-        // $customers = Customer::thisYear()
-        //     ->selectRaw( 'DATE_FORMAT(created_at, "%m-%Y") as month, count(uid) as customer' )
-        //     ->groupBy( 'month' )
-        //     ->orderBy( 'month' )
-        //     ->pluck( 'customer', 'month' );
-
         $customers = Customer::thisYear()
-            ->selectRaw( 'EXTRACT(MONTH FROM created_at) AS month, SUM(CAST(uid AS numeric)) AS customer' )
+            ->selectRaw( 'EXTRACT(MONTH FROM created_at) as month, count(uid) as customer' )
             ->groupBy( 'month' )
+            ->orderBy( 'month' )
             ->pluck( 'customer', 'month' );
 
         $customer_growth = ( new LarapexChart )->barChart()
