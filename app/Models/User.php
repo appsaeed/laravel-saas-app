@@ -109,7 +109,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      *
      * @return object
      */
-    public static function findByUid( $uid ): object {
+    public static function findByUid( $uid ) {
         return self::where( 'uid', $uid )->first();
     }
 

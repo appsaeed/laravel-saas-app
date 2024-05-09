@@ -107,27 +107,18 @@ class AccountController extends Controller {
      * @return mixed
      */
     public function getAvatar( $user ) {
-
-        if ( User::findByUid( $user ) ) {
-            $user = User::findByUid( $user );
-        } else {
-            $user = User::find( $user );
-        }
-
-        if ( $user && !empty( $user->imagePath() ) ) {
-
-            try {
-                $image = Image::make( $user->imagePath() );
-            } catch ( NotReadableException $exception ) {
-                $user->image = null;
-                $user->save();
-
-                $image = Image::make( public_path( 'images/profile/profile.jpg' ) );
+        try {
+            if ( User::findByUid( $user ) ) {
+                $user = User::findByUid( $user );
+            } else {
+                $user = User::find( $user );
             }
-        } else {
+
+            $image = Image::make( $user->imagePath() );
+
+        } catch ( \Throwable $th ) {
             $image = Image::make( public_path( 'images/profile/profile.jpg' ) );
         }
-
         return $image->response();
     }
 

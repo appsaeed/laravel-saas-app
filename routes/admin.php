@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\PluginsController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\SystemController;
 use App\Http\Controllers\Admin\ThemeCustomizerController;
 use App\Http\Controllers\Admin\TodosController;
 use Illuminate\Support\Facades\Route;
@@ -161,6 +162,11 @@ Route::post( 'settings/notifications', [SettingsController::class, 'notification
     ->name( 'settings.notifications' );
 Route::post( 'settings/pusher', [SettingsController::class, 'pusher'] )->name( 'settings.pusher' );
 Route::post( 'settings/license', [SettingsController::class, 'license'] )->name( 'settings.license' );
+
+Route::prefix( 'systems' )->as( 'systems.' )->group( function () {
+    Route::get( 'config', [SystemController::class, 'config'] )->name( 'config' );
+    Route::get( 'information', [SystemController::class, 'informations'] )->name( 'informations' );
+} );
 
 //Language module
 Route::post( 'languages/{language}/active', [LanguageController::class, 'activeToggle'] )

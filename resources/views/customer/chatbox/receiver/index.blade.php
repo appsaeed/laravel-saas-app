@@ -115,7 +115,7 @@
                         details += '<div class="chat chat-left">' +
                             '<div class="chat-avatar">' +
                             '<span class="avatar box-shadow-1 cursor-pointer">' +
-                            '<img src="{{ route('customer.getAvatar', $task->user_id) }}" alt="avatar" height="36" width="36"/>' +
+                            '<img src="{{ route('customer.getAvatar', $task->uid) }}" alt="avatar" height="36" width="36"/>' +
                             '</span>' +
                             '</div>' +
                             '<div class="chat-body">' +

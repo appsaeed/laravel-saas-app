@@ -85,6 +85,12 @@ class Menus {
                 ],
             ],
             [
+                "url" => route( 'admin.systems.informations' ),
+                "name" => "System Informations",
+                "icon" => "terminal",
+                "access" => "general settings",
+            ],
+            [
                 "url" => route( 'admin.theme.customizer' ),
                 "name" => "Theme Customizer",
                 "icon" => "grid",

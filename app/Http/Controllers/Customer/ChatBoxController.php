@@ -45,7 +45,7 @@ class ChatBoxController extends Controller {
         return view( 'customer.chatbox.open', [
             'pageConfigs' => $pageConfigs,
             'chat_box' => $chat_box,
-            'todo' => $task,
+            'task' => $task,
             'box' => $box,
         ] );
     }
@@ -73,7 +73,7 @@ class ChatBoxController extends Controller {
         return view( 'customer.chatbox.receiver.index', [
             'pageConfigs' => $pageConfigs,
             'chat_box' => $chat_box,
-            'todo' => $task,
+            'task' => $task,
         ] );
     }
 
@@ -115,7 +115,7 @@ class ChatBoxController extends Controller {
 
         $chatbox = ChatBox::where( 'user_id', auth()->user()->id )->where( 'todo_id', $task->id )->get();
 
-        return view( 'customer.chatbox.new', compact( 'breadcrumbs', 'users', 'todo' ) );
+        return view( 'customer.chatbox.new', compact( 'breadcrumbs', 'users', 'task' ) );
     }
 
     /**

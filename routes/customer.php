@@ -67,8 +67,8 @@ Route::resource( 'tasks', TodosController::class );
  */
 Route::prefix( 'chat' )->name( 'chat.' )->group( function () {
     // Route::get('/', [ChatBoxController::class, 'index'])->name('index');
-    Route::get( '/{todo}', [ChatBoxController::class, 'open'] )->name( 'open' );
-    Route::get( '/{todo}/{box}', [ChatBoxController::class, 'open'] )->name( 'opne_with_user' );
+    Route::get( '/{task}', [ChatBoxController::class, 'open'] )->name( 'open' );
+    Route::get( '/{task}/{box}', [ChatBoxController::class, 'open'] )->name( 'opne_with_user' );
     Route::post( '/{box}/messages', [ChatBoxController::class, 'messages'] )->name( 'messages' );
     Route::post( '/{box}/notification', [ChatBoxController::class, 'messagesWithNotification'] )->name( 'notification' );
     Route::post( '/{box}/reply', [ChatBoxController::class, 'reply'] )->name( 'reply' );
@@ -76,9 +76,9 @@ Route::prefix( 'chat' )->name( 'chat.' )->group( function () {
     Route::post( '/{box}/delete', [ChatBoxController::class, 'delete'] )->name( 'delete' );
     Route::post( '/{box}/block', [ChatBoxController::class, 'block'] )->name( 'block' );
 } );
-Route::get( 'messages/{todo}/new', [ChatBoxController::class, 'new'] )->name( 'chat.new' );
+Route::get( 'messages/{task}/new', [ChatBoxController::class, 'new'] )->name( 'chat.new' );
 Route::post( 'messages/store', [ChatBoxController::class, 'store'] )->name( 'chat.store' );
-Route::get( 'messages/{todo}/me', [ChatBoxController::class, 'receiver'] )->name( 'chat.receiver' );
+Route::get( 'messages/{task}/me', [ChatBoxController::class, 'receiver'] )->name( 'chat.receiver' );
 
 /*
 |--------------------------------------------------------------------------
