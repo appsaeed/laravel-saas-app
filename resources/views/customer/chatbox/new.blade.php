@@ -18,7 +18,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h4 class="card-title">{{ __('locale.labels.new_conversion') }}</h4>
-                        <a href="{{ route('customer.chat.open', $todo->uid) }}"
+                        <a href="{{ route('customer.chat.open', $task->uid) }}"
                             class="text-primary d-block d-md-none">{{ __('locale.menu.Chat Box') }}</a>
                     </div>
                     <div class="card-content">
@@ -48,7 +48,7 @@
                                     </div>
 
                                 </div>
-                                <input type="hidden" name="todo_id" value="{{ $todo->id }}">
+                                <input type="hidden" name="todo_id" value="{{ $task->id }}">
                                 <div class="row">
                                     <div class="col-12">
                                         <button type="submit" class="btn btn-primary mr-1 mb-1 float-end">

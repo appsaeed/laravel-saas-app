@@ -14,7 +14,7 @@
                     placeholder="{{ __('locale.labels.search') }}">
             </div>
             <div class="d-block d-md-none">
-                <a href="{{ route('customer.chat.new', $todo->uid) }}" class="text-dark ms-1"><i
+                <a href="{{ route('customer.chat.new', $task->uid) }}" class="text-dark ms-1"><i
                         data-feather="plus-circle"></i>
                 </a>
             </div>
@@ -30,7 +30,7 @@
                     <li data-id="{{ $chat->uid }}" data-avatar="{{ route('customer.getAvatar', $chat->to) }}"
                         data-name="{{ \App\Models\User::fullname($chat->to) }}"
                         data-email="{{ \App\Models\User::getEmail($chat->to) }}"
-                        data-url="{{ route('customer.chat.opne_with_user', [$todo->uid, $chat->uid]) }}"
+                        data-url="{{ route('customer.chat.opne_with_user', [$task->uid, $chat->uid]) }}"
                         class="{{ $box->id == $chat->id ? 'active' : 'no' }}">
                         <span class="avatar">
                             <img src="{{ route('customer.getAvatar', $chat->to) }}" height="42" width="42"

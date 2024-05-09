@@ -29,7 +29,7 @@
                 {{ __('locale.labels.new_conversion') }}
             </h4>
             <h4 class="sidebar-toggle start-chat-text d-none d-md-block">
-                <a href="{{ route('customer.chat.new', $todo->uid) }}"
+                <a href="{{ route('customer.chat.new', $task->uid) }}"
                     class="text-dark">{{ __('locale.labels.new_conversion') }}</a>
             </h4>
 
@@ -57,7 +57,7 @@
                     </div>
 
                     <div class="d-flex align-items-center max:sm:d-none">
-                        Task: <span class="text-primary mx-1"> {{ $todo->name }}</span>
+                        Task: <span class="text-primary mx-1"> {{ $task->name }}</span>
                     </div>
 
 
@@ -428,7 +428,7 @@
                             var url = $(this).data('url');
 
                             window.history.pushState(null, null,
-                                "{{ route('customer.chat.open', $todo->uid) }}")
+                                "{{ route('customer.chat.open', $task->uid) }}")
 
                             if (response.status === 'success') {
                                 toastr['success'](response.message,

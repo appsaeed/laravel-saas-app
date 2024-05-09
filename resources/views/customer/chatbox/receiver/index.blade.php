@@ -30,9 +30,9 @@
             <div class="chat-navbar">
                 <header class="chat-header">
 
-                    {!! \App\Helpers\Worker::profileHtmlByid($todo->user_id) !!}
+                    {!! \App\Helpers\Worker::profileHtmlByid($task->user_id) !!}
                     <div class="d-flex align-items-center max:sm:d-none">
-                        Task: <span class="text-primary mx-1"> {{ $todo->name }}</span>
+                        Task: <span class="text-primary mx-1"> {{ $task->name }}</span>
                     </div>
 
                 </header>
@@ -115,7 +115,7 @@
                         details += '<div class="chat chat-left">' +
                             '<div class="chat-avatar">' +
                             '<span class="avatar box-shadow-1 cursor-pointer">' +
-                            '<img src="{{ route('customer.getAvatar', $todo->user_id) }}" alt="avatar" height="36" width="36"/>' +
+                            '<img src="{{ route('customer.getAvatar', $task->user_id) }}" alt="avatar" height="36" width="36"/>' +
                             '</span>' +
                             '</div>' +
                             '<div class="chat-body">' +

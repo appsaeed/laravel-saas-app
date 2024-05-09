@@ -23,14 +23,14 @@ class ChatBoxController extends Controller {
 
     /**
      * get all chat box
-     * @param \App\Models\Todos $todo
+     * @param \App\Models\Todos $task
      * @return Application|Factory|View
      * @throws AuthorizationException
      */
-    public function open( Todos $todo, ChatBox $box ) {
+    public function open( Todos $task, ChatBox $box ) {
         $this->authorize( 'view_chat' );
 
-        if ( auth()->user()->id != $todo->user_id ) {
+        if ( auth()->user()->id != $task->user_id ) {
             abort( 401 );
         }
 
@@ -45,17 +45,17 @@ class ChatBoxController extends Controller {
         return view( 'customer.chatbox.open', [
             'pageConfigs' => $pageConfigs,
             'chat_box' => $chat_box,
-            'todo' => $todo,
+            'todo' => $task,
             'box' => $box,
         ] );
     }
     /**
      * get all chat box
-     * @param \App\Models\Todos $todo
+     * @param \App\Models\Todos $task
      * @return Application|Factory|View
      * @throws AuthorizationException
      */
-    public function receiver( Todos $todo ) {
+    public function receiver( Todos $task ) {
 
         $pageConfigs = [
             'pageHeader' => false,
@@ -73,19 +73,19 @@ class ChatBoxController extends Controller {
         return view( 'customer.chatbox.receiver.index', [
             'pageConfigs' => $pageConfigs,
             'chat_box' => $chat_box,
-            'todo' => $todo,
+            'todo' => $task,
         ] );
     }
 
     /**
      * start new conversation
      *
-     * @param \App\Models\Todos $todo
+     * @param \App\Models\Todos $task
      * @return Application|Factory|View|RedirectResponse
      * @throws AuthorizationException
      *
      */
-    public function new ( Todos $todo ) {
+    public function new ( Todos $task ) {
         $this->authorize( 'create_chat' );
 
         $breadcrumbs = [
@@ -97,15 +97,15 @@ class ChatBoxController extends Controller {
         $users = [];
 
         $exist_users = ChatBox::where( 'user_id', Auth::id() )
-            ->where( 'todo_id', $todo->id )->pluck( 'to' );
+            ->where( 'todo_id', $task->id )->pluck( 'to' );
 
-        if ( in_array( 'all', $todo->assigned() ) ) {
+        if ( in_array( 'all', $task->assigned() ) ) {
             $users = User::where( 'active_portal', 'customer' )
                 ->where( 'id', '!=', auth()->user()->id )
                 ->whereNotIn( 'id', $exist_users )
                 ->get();
         } else {
-            foreach ( $todo->assigned() as $user_id ) {
+            foreach ( $task->assigned() as $user_id ) {
                 User::where( 'id', $user_id )->whereNotIn( 'id', $exist_users );
                 if ( User::where( 'id', $user_id )->whereNotIn( 'id', $exist_users )->count() > 0 ) {
                     $users[] = User::where( 'id', $user_id )->whereNotIn( 'id', $exist_users )->first();
@@ -113,7 +113,7 @@ class ChatBoxController extends Controller {
             }
         }
 
-        $chatbox = ChatBox::where( 'user_id', auth()->user()->id )->where( 'todo_id', $todo->id )->get();
+        $chatbox = ChatBox::where( 'user_id', auth()->user()->id )->where( 'todo_id', $task->id )->get();
 
         return view( 'customer.chatbox.new', compact( 'breadcrumbs', 'users', 'todo' ) );
     }
@@ -138,7 +138,7 @@ class ChatBoxController extends Controller {
             'user_id' => 'required|exists:users,id',
         ] );
 
-        $todo = Todos::find( $request->todo_id );
+        $task = Todos::find( $request->todo_id );
         $user = User::find( $request->user_id );
 
         $chatbox = ChatBox::where( 'user_id', Auth::user()->id )
@@ -146,7 +146,7 @@ class ChatBoxController extends Controller {
             ->where( 'to', $request->user_id )->count();
 
         if ( $chatbox > 0 ) {
-            return redirect()->route( 'customer.chat.new', $todo->uid )->with( [
+            return redirect()->route( 'customer.chat.new', $task->uid )->with( [
                 'status' => 'error',
                 'message' => __( 'Already exists chat with this user!' ),
             ] );
@@ -158,7 +158,7 @@ class ChatBoxController extends Controller {
             'user_id' => Auth::user()->id,
             'from' => auth()->user()->id,
             'to' => $request->user_id,
-            'todo_id' => $todo->id,
+            'todo_id' => $task->id,
             'notification' => 1,
         ] );
 
@@ -166,19 +166,19 @@ class ChatBoxController extends Controller {
 
             ChatBoxMessage::create( [
                 'box_id' => $createBox->id,
-                'message' => 'Task: ' . $todo->name,
+                'message' => 'Task: ' . $task->name,
                 'send_by' => 'from',
             ] );
 
             $createBox->touch();
 
-            return redirect()->route( 'customer.chat.opne_with_user', [$todo->uid, $createBox->uid] )->with( [
+            return redirect()->route( 'customer.chat.opne_with_user', [$task->uid, $createBox->uid] )->with( [
                 'status' => 'success',
                 'message' => __( 'chat box has been created successfully' ),
             ] );
         }
 
-        return redirect()->route( 'customer.chat.new', $todo->uid )->with( [
+        return redirect()->route( 'customer.chat.new', $task->uid )->with( [
             'status' => 'error',
             'message' => __( 'unale to create chat box' ),
         ] );

@@ -3,27 +3,17 @@
 namespace App\Repositories\Eloquent;
 
 use App\Exceptions\GeneralException;
-use App\Helpers\Helper;
 use App\Models\Customer;
 use App\Models\RoleUser;
 use App\Models\Todos;
 use App\Models\User;
-use App\Repositories\Contracts\RoleRepository;
 use App\Repositories\Contracts\TodosRepository;
-use App\Repositories\Contracts\UserRepository;
-use Carbon\Carbon;
 use Exception;
-use Illuminate\Contracts\Config\Repository;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 use Throwable;
 
-
-class EloquentTodosRepository extends EloquentBaseRepository implements TodosRepository
-{
+class EloquentTodosRepository extends EloquentBaseRepository implements TodosRepository {
 
     /**
      * @param  array  $input
@@ -34,19 +24,18 @@ class EloquentTodosRepository extends EloquentBaseRepository implements TodosRep
      * @throws Exception
      *
      */
-    public function store(array $input)
-    {
-        Todos::create([
+    public function store( array $input ) {
+        Todos::create( [
             'name' => $input['name'],
             'title' => $input['title'],
-            'description' => isset($input['description']) ?? $input['description'],
+            'description' => isset( $input['description'] ) ?? $input['description'],
             'assign_to' => $input['assign_to'],
-            'working_users' => isset($input['working_users']) ?? $input['working_users'],
-            'update_message' => isset($input['update_message']) ?? $input['update_message'],
+            'working_users' => isset( $input['working_users'] ) ?? $input['working_users'],
+            'update_message' => isset( $input['update_message'] ) ?? $input['update_message'],
             'status' => $input['status'],
-            'deadline' => isset($input['edline']) ?? $input['edline'],
-            'note'  => isset($input['note']) ?? $input['note'],
-        ]);
+            'deadline' => isset( $input['edline'] ) ?? $input['edline'],
+            'note' => isset( $input['note'] ) ?? $input['note'],
+        ] );
     }
 
     /**
@@ -58,11 +47,8 @@ class EloquentTodosRepository extends EloquentBaseRepository implements TodosRep
      *
      * @throws Exception
      */
-    public function update(array $input)
-    {
+    public function update( array $input ) {
     }
-
-
 
     /**
      * @param  User  $user
@@ -71,11 +57,8 @@ class EloquentTodosRepository extends EloquentBaseRepository implements TodosRep
      * @throws Exception|Throwable
      *
      */
-    public function destroy(User $user, Todos $todo)
-    {
+    public function destroy( User $user, Todos $task ) {
     }
-
-
 
     /**
      * @param  array  $ids
@@ -84,16 +67,15 @@ class EloquentTodosRepository extends EloquentBaseRepository implements TodosRep
      * @throws Exception|Throwable
      *
      */
-    public function batchDestroy(array $ids): bool
-    {
-        DB::transaction(function () use ($ids) {
+    public function batchDestroy( array $ids ): bool {
+        DB::transaction( function () use ( $ids ) {
             // This wont call eloquent events, change to destroy if needed
-            foreach ($this->query()->whereIn('uid', $ids)->cursor() as $administrator) {
-                RoleUser::where('user_id', $administrator->id)->delete();
-                Customer::where('user_id', $administrator->id)->delete();
+            foreach ( $this->query()->whereIn( 'uid', $ids )->cursor() as $administrator ) {
+                RoleUser::where( 'user_id', $administrator->id )->delete();
+                Customer::where( 'user_id', $administrator->id )->delete();
                 $administrator->delete();
             }
-        });
+        } );
 
         return true;
     }
@@ -105,17 +87,16 @@ class EloquentTodosRepository extends EloquentBaseRepository implements TodosRep
      * @throws Exception|Throwable
      *
      */
-    public function batchEnable(array $ids): bool
-    {
-        DB::transaction(function () use ($ids) {
-            if ($this->query()->whereIn('uid', $ids)
-                ->update(['status' => true])
+    public function batchEnable( array $ids ): bool {
+        DB::transaction( function () use ( $ids ) {
+            if ( $this->query()->whereIn( 'uid', $ids )
+                ->update( ['status' => true] )
             ) {
                 return true;
             }
 
-            throw new GeneralException(__('locale.exceptions.something_went_wrong'));
-        });
+            throw new GeneralException( __( 'locale.exceptions.something_went_wrong' ) );
+        } );
 
         return true;
     }
@@ -127,17 +108,16 @@ class EloquentTodosRepository extends EloquentBaseRepository implements TodosRep
      * @throws Exception|Throwable
      *
      */
-    public function batchDisable(array $ids): bool
-    {
-        DB::transaction(function () use ($ids) {
-            if ($this->query()->whereIn('uid', $ids)
-                ->update(['status' => false])
+    public function batchDisable( array $ids ): bool {
+        DB::transaction( function () use ( $ids ) {
+            if ( $this->query()->whereIn( 'uid', $ids )
+                ->update( ['status' => false] )
             ) {
                 return true;
             }
 
-            throw new GeneralException(__('locale.exceptions.something_went_wrong'));
-        });
+            throw new GeneralException( __( 'locale.exceptions.something_went_wrong' ) );
+        } );
 
         return true;
     }

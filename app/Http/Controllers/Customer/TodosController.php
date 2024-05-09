@@ -103,9 +103,9 @@ class TodosController extends Controller {
         }
 
         if ( !empty( $todos_data ) ) {
-            foreach ( $todos_data as $todo ) {
+            foreach ( $todos_data as $task ) {
 
-                $data[] = $this->todos->nestedData( $todo, [
+                $data[] = $this->todos->nestedData( $task, [
                     'can_update' => true,
                     'can_chat' => true,
                 ] );
@@ -156,9 +156,9 @@ class TodosController extends Controller {
         $totalFiltered = $totalReceived;
 
         if ( !empty( $received_data ) ) {
-            foreach ( $received_data as $todo ) {
+            foreach ( $received_data as $task ) {
 
-                $data[] = $this->todos->nestedData( $todo->todo, [
+                $data[] = $this->todos->nestedData( $task->todo, [
                     'can_update' => false,
                     'can_chat' => true,
                 ] );
@@ -259,8 +259,8 @@ class TodosController extends Controller {
         $data = [];
 
         if ( !empty( $todos_data ) ) {
-            foreach ( $todos_data as $todo ) {
-                $data[] = $this->todos->nestedData( $todo, [
+            foreach ( $todos_data as $task ) {
+                $data[] = $this->todos->nestedData( $task, [
                     'can_update' => true,
                     'can_chat' => true,
                 ] );
@@ -399,7 +399,7 @@ class TodosController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function will_do( Todos $todo ) {
+    public function will_do( Todos $task ) {
         try {
 
             if ( TodosReceived::where( 'user_id', auth()->user()->id )->where( 'accepted', true )->count() > 2 ) {
@@ -409,34 +409,34 @@ class TodosController extends Controller {
                 ] );
             }
 
-            if ( $todo->hasEmployee( auth()->user()->id ) ) {
+            if ( $task->hasEmployee( auth()->user()->id ) ) {
                 return response()->json( [
                     'status' => 'error',
                     'message' => __( 'You are already accepted the task!' ),
                 ] );
             }
 
-            TodosReceived::where( 'todo_id', $todo->id )->update( ['accepted' => true] );
+            TodosReceived::where( 'todo_id', $task->id )->update( ['accepted' => true] );
 
             $notifocation = new Notifications();
 
-            $show_link = route( 'customer.tasks.show', $todo->uid );
+            $show_link = route( 'customer.tasks.show', $task->uid );
             $view_link = "<a href='$show_link'> click here</a>";
 
-            if ( !$todo->addEmployee( auth()->user()->id ) ) {
+            if ( !$task->addEmployee( auth()->user()->id ) ) {
                 return response()->json( [
                     'status' => 'error',
                     'message' => __( 'Unable to add in work please try again or contact to creator!' ),
                 ] );
             };
 
-            $subject = User::fullname() . ' is now doing your task #' . $todo->uid;
+            $subject = User::fullname() . ' is now doing your task #' . $task->uid;
             $message = '<b>' . User::fullname() . '</b> is now doing your task: ';
-            $message .= '<b>' . $todo->name . '</b>  at  ' . Carbon::now()->format( 'Y m d h:m' );
+            $message .= '<b>' . $task->name . '</b>  at  ' . Carbon::now()->format( 'Y m d h:m' );
             $message .= "<br> open the task $view_link";
 
             $notifocation->create( [
-                'user_id' => $todo->user_id,
+                'user_id' => $task->user_id,
                 'type' => 'task',
                 'name' => $subject,
                 'message' => $message,
@@ -444,7 +444,7 @@ class TodosController extends Controller {
             ] )->save();
 
             if ( config( 'task.task_send_email' ) ) {
-                Mail::to( User::find( $todo->user_id ) )->send( new TodoMail( [
+                Mail::to( User::find( $task->user_id ) )->send( new TodoMail( [
                     'subject' => $subject,
                     'message' => $message,
                     'taskurl' => $show_link,
@@ -469,17 +469,17 @@ class TodosController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function send_review( Todos $todo ) {
+    public function send_review( Todos $task ) {
         try {
 
-            if ( $todo->hasReview() ) {
+            if ( $task->hasReview() ) {
                 return response()->json( [
                     'status' => 'error',
                     'message' => __( 'You are already sent to review!' ),
                 ] );
             }
 
-            if ( !$todo->addReview() ) {
+            if ( !$task->addReview() ) {
                 return response()->json( [
                     'status' => 'error',
                     'message' => __( 'unable to make for review!' ),
@@ -488,14 +488,14 @@ class TodosController extends Controller {
 
             $notifocation = new Notifications();
 
-            $show_link = route( 'customer.tasks.show', $todo->uid );
+            $show_link = route( 'customer.tasks.show', $task->uid );
             $view_link = "<a href='$show_link'> click here</a>";
 
-            $subject = User::fullname() . ' sent to review the task #' . $todo->uid;
-            $message = "Your task to <b>" . $todo->name . "</b> has now been completed by <b>" . User::fullname() . "</b> and is ready for review. for more information: $view_link";
+            $subject = User::fullname() . ' sent to review the task #' . $task->uid;
+            $message = "Your task to <b>" . $task->name . "</b> has now been completed by <b>" . User::fullname() . "</b> and is ready for review. for more information: $view_link";
 
             $notifocation->create( [
-                'user_id' => $todo->user_id,
+                'user_id' => $task->user_id,
                 'type' => 'task',
                 'name' => $subject,
                 'message' => $message,
@@ -503,7 +503,7 @@ class TodosController extends Controller {
             ] )->save();
 
             if ( config( 'task.task_send_email' ) ) {
-                Mail::to( User::find( $todo->user_id ) )->send( new TodoMail( [
+                Mail::to( User::find( $task->user_id ) )->send( new TodoMail( [
                     'subject' => $subject,
                     'message' => $message,
                     'taskurl' => $show_link,
@@ -528,8 +528,8 @@ class TodosController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy( Todos $todo ) {
-        if ( !$todo->delete() ) {
+    public function destroy( Todos $task ) {
+        if ( !$task->delete() ) {
             return response()->json( [
                 'status' => 'error',
                 'message' => Message::wentWrong(),
@@ -656,9 +656,9 @@ class TodosController extends Controller {
 
         $data = [];
         if ( !empty( $todo_data ) ) {
-            foreach ( $todo_data as $todo ) {
+            foreach ( $todo_data as $task ) {
 
-                $data[] = $this->todos->nestedData( $todo->todo, [
+                $data[] = $this->todos->nestedData( $task->todo, [
                     'can_update' => false,
                     'can_chat' => true,
                 ] );
@@ -781,9 +781,9 @@ class TodosController extends Controller {
 
         $data = [];
         if ( !empty( $received_data ) ) {
-            foreach ( $received_data as $todo ) {
+            foreach ( $received_data as $task ) {
 
-                $data[] = $this->todos->nestedData( $todo->todo, [
+                $data[] = $this->todos->nestedData( $task->todo, [
                     'can_update' => false,
                     'can_chat' => true,
                 ] );
@@ -791,9 +791,9 @@ class TodosController extends Controller {
         }
 
         if ( !empty( $todos_data ) ) {
-            foreach ( $todos_data as $todo ) {
+            foreach ( $todos_data as $task ) {
 
-                $data[] = $this->todos->nestedData( $todo, [
+                $data[] = $this->todos->nestedData( $task, [
                     'can_update' => true,
                     'can_chat' => true,
                 ] );
@@ -886,9 +886,9 @@ class TodosController extends Controller {
         }
 
         if ( !empty( $todos_data ) ) {
-            foreach ( $todos_data as $todo ) {
+            foreach ( $todos_data as $task ) {
 
-                $data[] = $this->todos->nestedData( $todo, [
+                $data[] = $this->todos->nestedData( $task, [
                     'can_update' => true,
                     'can_chat' => true,
                 ] );
@@ -951,9 +951,9 @@ class TodosController extends Controller {
         $totalFiltered = $totalReceived;
 
         if ( !empty( $received_data ) ) {
-            foreach ( $received_data as $todo ) {
+            foreach ( $received_data as $task ) {
 
-                $data[] = $this->todos->nestedData( $todo->todo, [
+                $data[] = $this->todos->nestedData( $task->todo, [
                     'can_update' => false,
                     'can_chat' => true,
                 ] );
@@ -1079,18 +1079,18 @@ class TodosController extends Controller {
 
         $data = [];
         if ( !empty( $received_data ) ) {
-            foreach ( $received_data as $todo ) {
+            foreach ( $received_data as $task ) {
 
-                $data[] = $this->todos->nestedData( $todo->todo, [
+                $data[] = $this->todos->nestedData( $task->todo, [
                     'can_update' => false,
                     'can_chat' => true,
                 ] );
             }
         }
         if ( !empty( $todos_data ) ) {
-            foreach ( $todos_data as $todo ) {
+            foreach ( $todos_data as $task ) {
 
-                $data[] = $this->todos->nestedData( $todo, [
+                $data[] = $this->todos->nestedData( $task, [
                     'can_update' => true,
                     'can_chat' => true,
                 ] );
@@ -1113,7 +1113,7 @@ class TodosController extends Controller {
      */
     /**
      * mark as complete.
-     * @param  \App\Models\Todos $todo
+     * @param  \App\Models\Todos $task
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */

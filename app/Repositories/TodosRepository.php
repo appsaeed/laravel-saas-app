@@ -161,7 +161,7 @@ class TodosRepository {
      * @param \App\Models\Todos
      * @return bool
      */
-    public function update( Request $request, Todos $todo ) {
+    public function update( Request $request, Todos $task ) {
 
         try {
 
@@ -169,43 +169,43 @@ class TodosRepository {
 
             $notifocation = new Notifications();
 
-            $show_link = route( 'customer.tasks.show', $todo->uid );
+            $show_link = route( 'customer.tasks.show', $task->uid );
             $view_link = "<a href='$show_link'> click here</a>";
 
             $subject = User::fullname() . ' has updated a task.';
             $message = '<b>' . User::fullname() . '</b> has updated status';
-            $message .= '<br><b>task name</b>: ' . $todo->name;
-            $message .= '<br><b>status</b>:' . $todo->status;
+            $message .= '<br><b>task name</b>: ' . $task->name;
+            $message .= '<br><b>status</b>:' . $task->status;
             $message .= "<br><br>for more information: " . $view_link;
 
-            if ( $request->status != $todo->status ) {
+            if ( $request->status != $task->status ) {
 
                 $subject = User::fullname() . ' has updated to ' . $request->status;
             }
 
             if ( $request->status == 'pause' ) {
-                $todo->setOption( 'auth_paused_at', now() );
+                $task->setOption( 'auth_paused_at', now() );
             }
 
-            $todo->update( $request->only( $todo->getFillable() ) );
+            $task->update( $request->only( $task->getFillable() ) );
 
             if ( $request->status == 'continue' ) {
 
-                $deadline = Carbon::parse( $todo->deadline );
-                $pause_date = Carbon::parse( $todo->getOption( 'auth_paused_at' ) );
+                $deadline = Carbon::parse( $task->deadline );
+                $pause_date = Carbon::parse( $task->getOption( 'auth_paused_at' ) );
 
                 // Add the number of seconds represented by $pause_date to $deadline
                 $deadline->addSeconds( $pause_date->diffInSeconds() );
 
-                // Update the deadline property in $todo object
-                $todo->deadline = $deadline;
+                // Update the deadline property in $task object
+                $task->deadline = $deadline;
 
-                $todo->save();
+                $task->save();
 
-                $todo->removeOption( 'auth_paused_at' );
+                $task->removeOption( 'auth_paused_at' );
             }
 
-            $this->notifications( $todo, [
+            $this->notifications( $task, [
                 'subject' => $subject,
                 'message' => $message,
                 'send_email' => $request->send_email,
@@ -223,11 +223,11 @@ class TodosRepository {
      * @param array $data
      * @return bool
      */
-    public function notifications( Todos $todo, array $data = [] ) {
+    public function notifications( Todos $task, array $data = [] ) {
         try {
             $send_email = false;
 
-            $show_link = route( 'customer.tasks.show', $todo->uid );
+            $show_link = route( 'customer.tasks.show', $task->uid );
             $view_link = "<a href='$show_link'> click here</a>";
             $subject = "You have received new task from " . User::fullname();
             $message = 'You have received new task from <b>' . User::fullname() . '</b> and for more information: ' . $view_link;
@@ -245,7 +245,7 @@ class TodosRepository {
 
             $notifies = [];
 
-            if ( in_array( 'all', $todo->assigned() ) ) {
+            if ( in_array( 'all', $task->assigned() ) ) {
 
                 $users = User::allcustomers();
 
@@ -270,7 +270,7 @@ class TodosRepository {
 
                 //complete for all users
             } else {
-                foreach ( $todo->assigned() as $id ) {
+                foreach ( $task->assigned() as $id ) {
 
                     if ( $send_email ) {
                         Mail::to( User::find( $id ) )->send( new TodoMail( [
@@ -299,29 +299,29 @@ class TodosRepository {
 
     /**
      * create markasComplete
-     * @param \App\Models\Todos $todo
+     * @param \App\Models\Todos $task
      * @param mixed $user_id
      * @param bool $send_email
      * @return bool
      */
-    public function markasComplete( Todos $todo, $user_id, $send_email = false ) {
+    public function markasComplete( Todos $task, $user_id, $send_email = false ) {
         try {
 
-            if ( !$todo->update( ['status' => 'complete', 'completed_by' => $user_id] ) ) {
+            if ( !$task->update( ['status' => 'complete', 'completed_by' => $user_id] ) ) {
                 return false;
             }
 
-            $show_link = route( 'customer.tasks.show', $todo->uid );
+            $show_link = route( 'customer.tasks.show', $task->uid );
             $view_link = "<a href='$show_link'> click here</a>";
-            $subject = '#' . $todo->uid . ' task completed by ' . User::fullname( $user_id );
-            $message = "<b>" . $todo->name . "</b> is completed by " . User::fullname( $user_id );
+            $subject = '#' . $task->uid . ' task completed by ' . User::fullname( $user_id );
+            $message = "<b>" . $task->name . "</b> is completed by " . User::fullname( $user_id );
             $message = "<br> for more information open the task: $view_link";
 
             $notifies = [];
 
-            // TodosReceived::where('todo_id', $todo->id)->delete();
+            // TodosReceived::where('todo_id', $task->id)->delete();
 
-            if ( in_array( 'all', $todo->assigned() ) ) {
+            if ( in_array( 'all', $task->assigned() ) ) {
 
                 $users = User::allcustomers();
 
@@ -346,7 +346,7 @@ class TodosRepository {
 
                 //complete for all users
             } else {
-                foreach ( $todo->assigned() as $id ) {
+                foreach ( $task->assigned() as $id ) {
 
                     if ( $send_email ) {
                         Mail::to( User::find( $id ) )->send( new TodoMail( [

@@ -19,22 +19,22 @@
         <div class="task-boxable p-1 noscroll">
             @if (isset($task['items']))
 
-                @foreach ($task['items'] as $todo)
+                @foreach ($task['items'] as $task)
                     <div class="task-card">
 
-                        <div class="task-content" style="border-left:1px solid {{ statusToColor($todo->status) }}">
+                        <div class="task-content" style="border-left:1px solid {{ statusToColor($task->status) }}">
 
                             <div class="task-link">
-                                <a href="{{ route('customer.tasks.show', $todo->uid) }}">
+                                <a href="{{ route('customer.tasks.show', $task->uid) }}">
                                     <i data-feather="link" class="font-medium-5"></i>
                                 </a>
                             </div>
 
                             <h6 class="">
-                                {{ $todo->name }}
+                                {{ $task->name }}
                             </h6>
                             <p class="m-0 pt-1 font-normal">
-                                {{ $todo->description }}
+                                {{ $task->description }}
                             </p>
                         </div>
 
