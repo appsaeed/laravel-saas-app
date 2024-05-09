@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Customer\ChatBoxController;
+use App\Http\Controllers\Customer\DeveloperController;
 use App\Http\Controllers\Customer\TodosController;
 use App\Http\Controllers\User\AccountController;
 use Illuminate\Support\Facades\Route;
@@ -78,10 +79,8 @@ Route::get( 'messages/{todo}/me', [ChatBoxController::class, 'receiver'] )->name
 | Developer module
 |--------------------------------------------------------------------------
  */
-Route::get( 'developers', 'DeveloperController@settings' )
+Route::get( 'developers', [DeveloperController::class, 'settings'] )
     ->name( 'developer.settings' );
-Route::post( 'developers/generate', 'DeveloperController@generate' )
+Route::post( 'developers/generate', [DeveloperController::class, 'generate'] )
     ->name( 'developer.generate' );
-Route::post( 'developers/sending-server', 'DeveloperController@sendingServer' )
-    ->name( 'developer.server' );
-Route::get( 'developers/docs', 'DeveloperController@docs' )->name( 'developer.docs' );
+Route::get( 'developers/docs', [DeveloperController::class, 'docs'] )->name( 'developer.docs' );

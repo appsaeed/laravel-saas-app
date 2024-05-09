@@ -446,6 +446,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Helper' => App\Helpers\Helper::class,
         'Menus' => App\Helpers\Menus::class,
+        'Apidocs' => App\Helpers\Apidocs::class,
 
     ],
 

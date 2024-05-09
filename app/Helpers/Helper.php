@@ -486,18 +486,6 @@ class Helper {
         }
     }
 
-    /**
-     * application menu
-     *
-     * @return array[]
-     */
-    public static function menuData(): array {
-        return [
-            "admin" => Menus::admin(),
-            "customer" => Menus::customer(),
-        ];
-    }
-
     public static function languages() {
         $lang_count = Language::where( 'status', 1 )->count();
         $availLocale = Session::get( 'available_languages' );

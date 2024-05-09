@@ -11,6 +11,8 @@
 |
  */
 
+use App\Http\Controllers\API\TaskController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/me', 'APIController@me')->name('profile.me');
+Route::get( '/me', 'APIController@me' )->name( 'profile.me' );
+Route::apiResource( 'task', TaskController::class );

@@ -30,20 +30,11 @@
                         <h5 class="text-success text-uppercase">{{ config('app.name') }} {{ __('locale.labels.api') }}</h5>
                         <a href="#" class="knowledge-base-question">
                             <ul class="list-group list-group-flush mt-1">
-                                <li class="list-group-item cursor-pointer contacts-api" id="contacts-api">
-                                    {{ __('locale.developers.contacts_api') }}</li>
-                                <li class="list-group-item cursor-pointer contact-groups-api" id="contact-groups-api">
-                                    {{ __('locale.developers.contact_groups_api') }}</li>
-                                <li class="list-group-item cursor-pointer sms-api" id="sms-api">
-                                    {{ __('locale.developers.sms_api') }}</li>
-                                <li class="list-group-item cursor-pointer voice-api" id="voice-api">
-                                    {{ __('locale.developers.voice_api') }}</li>
-                                <li class="list-group-item cursor-pointer mms-api" id="mms-api">
-                                    {{ __('locale.developers.mms_api') }}</li>
-                                <li class="list-group-item cursor-pointer whatsapp-api" id="whatsapp-api">
-                                    {{ __('locale.developers.whatsapp_api') }}</li>
-                                <li class="list-group-item cursor-pointer profile-api" id="profile-api">
-                                    {{ __('locale.labels.profile') }} {{ __('locale.labels.api') }}</li>
+                                @foreach (Apidocs::data() as $api)
+                                    <li class="list-group-item cursor-pointer" id="{{ Str::slug( $api->title ) }}">
+                                        {{ $api->title }}
+                                    </li>
+                                @endforeach
                             </ul>
                         </a>
                     </div>
@@ -53,10 +44,97 @@
                 <div class="card">
                     <div class="card-body features_description">
 
-                        <div class="title mb-2" id="profile-api-div">
-                            @include('customer.Developers._profile_api')
-                        </div>
+                        @foreach (Apidocs::data() as $api)
+                            <div class="title mb-2" id="{{ Str::slug($api->title) }}-div">
 
+                                <div class="text-uppercase text-primary font-medium-2 mb-3">
+                                    {{ $api->title }}
+                                </div>
+
+                                {{ $api->description }}
+
+                                <p class="font-medium-2 mt-2 text-primary">
+                                    {{ __('locale.developers.api_endpoint') }}
+                                </p>
+
+                                <pre>
+                                    <code class="language-markup text-primary">
+                                        {{ $api->endpoint }}
+                                    </code>
+                                </pre>
+
+                                <div class="mt-2 font-medium-2 text-primary">
+                                    {{ __('locale.developers.parameters') }}
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead class="thead-primary">
+                                            <tr>
+                                                <th>{{ __('locale.developers.parameter') }}</th>
+                                                <th>{{ __('locale.labels.required') }}</th>
+                                                <th style="width:50%;">{{ __('locale.labels.description') }}</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr>
+                                                <td>Authorization</td>
+                                                <td>
+                                                    <div class="badge badge-primary text-uppercase mr-1 mb-1">
+                                                        <span>{{ __('locale.labels.yes') }}</span>
+                                                    </div>
+                                                </td>
+                                                <td>When calling our API, send your api token with the authentication type
+                                                    set as <code>Bearer</code>
+                                                    (Example: <code>Authorization: Bearer {api_token}</code>)
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Accept</td>
+                                                <td>
+                                                    <div class="badge badge-primary text-uppercase mr-1 mb-1">
+                                                        <span>{{ __('locale.labels.yes') }}</span>
+                                                    </div>
+                                                </td>
+                                                <td>Set to <code>application/json</code></td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="mt-2 font-medium-2 text-primary">Example request</div>
+                                <pre>
+                                                            <code class="language-php">
+                            curl -X {{ $api->method ?? 'GET' }} {{ $api->endpoint }} \
+                                 -H 'Authorization: Bearer {{ Auth::user()->api_token }}'
+                                                            </code>
+                                                        </pre>
+
+                                <div class="mt-2 font-medium-2 text-primary">Returns</div>
+                                <p>Returns a contact object if the request was successful. </p>
+                                <pre>
+                                                            <code class="language-json">
+                            {
+                                "status": "success",
+                                "data": "profile data with all details",
+                            }
+                                                            </code>
+                                                        </pre>
+                                <p>If the request failed, an error object will be returned.</p>
+                                <pre>
+                                                            <code class="language-json">
+                            {
+                                "status": "error",
+                                "message" : "A human-readable description of the error."
+                            }
+                                                            </code>
+                                                        </pre>
+
+                            </div>
+                        @endforeach
 
                     </div>
                 </div>
@@ -73,6 +151,25 @@
 
 
 @section('page-script')
-    {{-- vendor js files --}}
-    <script src="{{ asset(mix('js/scripts/pages/api-documentation.js')) }}"></script>
+    {{-- page js files --}}
+    <script>
+        $(document).ready(function() {
+            let featureDescription = $(".features_description .title");
+            featureDescription.hide();
+
+            $("#{{ Str::slug(Apidocs::data()[0]->title) }}-div").show();
+
+            function setFeature(feature) {
+                featureDescription.each(function() {
+                    if (this !== feature) $(this).hide();
+                });
+                $("#" + feature).toggle();
+            }
+
+            $("#features li").click(function(e) {
+                e.preventDefault();
+                setFeature(this.id + "-div");
+            });
+        });
+    </script>
 @endsection

@@ -21,9 +21,6 @@
                         <div class="card-body">
                             <span class="btn btn-primary me-1 mb-1 generate-token"><i data-feather="plus-square"></i>
                                 {{ __('locale.developers.regenerate_token') }}</span>
-                            <a href="#" class="btn btn-success me-1 mb-1" data-bs-toggle="modal"
-                                data-bs-target="#sendingServer"><i data-feather="server"></i>
-                                {{ __('locale.labels.sending_server') }}</a>
 
                             <a href="{{ route('customer.developer.docs') }}" class="btn btn-outline-primary mb-1"><i
                                     data-feather="book"></i> {{ __('locale.developers.read_the_docs') }}</a>

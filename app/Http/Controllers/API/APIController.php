@@ -19,13 +19,13 @@ class APIController extends Controller {
 
     public function me(): JsonResponse {
 
-        if ( $this->checks() ) {
+        // if ( $this->checks() ) {
 
-            return response()->json( [
-                'status' => 'error',
-                'message' => 'Sorry! This option is not available in demo mode',
-            ] );
-        }
+        //     return response()->json( [
+        //         'status' => 'error',
+        //         'message' => 'Sorry! This option is not available in demo mode',
+        //     ] );
+        // }
 
         $user = auth()->user();
 

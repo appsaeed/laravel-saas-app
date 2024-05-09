@@ -207,6 +207,7 @@ class AccountController extends Controller {
      * @return RedirectResponse
      */
     public function switchView( Request $request ): RedirectResponse {
+
         if ( $this->checks() ) {
 
             return redirect()->route( Helper::home_route() )->with( [

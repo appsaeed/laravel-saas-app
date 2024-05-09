@@ -140,10 +140,15 @@ class EloquentCustomerRepository extends EloquentBaseRepository implements Custo
      * @throws GeneralException
      */
     public function updateInformation( User $user, array $input ): User {
+
         $customer = Customer::where( 'user_id', $user->id )->first();
 
         if ( !$customer ) {
-            throw new GeneralException( __( 'locale.exceptions.something_went_wrong' ) );
+            Customer::create( [
+                'user_id' => $user->id,
+                ...$input,
+            ] );
+            return $user;
         }
 
         if ( isset( $input['notifications'] ) && count( $input['notifications'] ) > 0 ) {
@@ -261,8 +266,12 @@ class EloquentCustomerRepository extends EloquentBaseRepository implements Custo
      */
 
     public function impersonate( User $customer ) {
+
         if ( $customer->is_admin ) {
-            throw new GeneralException( __( 'locale.customer.admin_cannot_be_impersonated' ) );
+            return redirect()->back()->with( [
+                'status' => 'error',
+                'message' => __( 'Admin can not be impersonate, You might be use swtich view!' ),
+            ] );
         }
 
         $authenticatedUser = auth()->user();
@@ -273,7 +282,7 @@ class EloquentCustomerRepository extends EloquentBaseRepository implements Custo
 
         if ( !Session::get( 'admin_user_id' ) ) {
             session( ['admin_user_id' => $authenticatedUser->id] );
-            session( ['admin_user_name' => $authenticatedUser->displayName()] );
+            session( ['admin_user_name' => auth()->user()->displayName()] );
             session( ['temp_user_id' => $customer->id] );
 
             $permissions = collect( json_decode( $customer->customer->permissions, true ) );

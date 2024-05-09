@@ -248,7 +248,8 @@ class CustomerController extends AdminBaseController {
             ];
         } );
 
-        $existing_permission = json_decode( $customer->customer->permissions, true );
+        $customer_permission = $customer->customer->permissions ?? '{}';
+        $existing_permission = json_decode( $customer_permission, true );
 
         return view( 'admin.customer.show', compact( 'breadcrumbs', 'customer', 'languages', 'permissions', 'existing_permission' ) );
     }
