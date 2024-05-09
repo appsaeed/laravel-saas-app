@@ -24,10 +24,8 @@ use Illuminate\View\View;
 use Rap2hpoutre\FastExcel\FastExcel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-class CurrencyController extends AdminBaseController
-{
+class CurrencyController extends AdminBaseController {
     protected $currencies;
-
 
     /**
      * CurrencyController constructor.
@@ -35,8 +33,7 @@ class CurrencyController extends AdminBaseController
      * @param  CurrencyRepository  $currencies
      */
 
-    public function __construct(CurrencyRepository $currencies)
-    {
+    public function __construct( CurrencyRepository $currencies ) {
         $this->currencies = $currencies;
     }
 
@@ -45,21 +42,18 @@ class CurrencyController extends AdminBaseController
      * @throws AuthorizationException
      */
 
-    public function index()
-    {
+    public function index() {
 
-        $this->authorize('manage currencies');
+        $this->authorize( 'manage currencies' );
 
         $breadcrumbs = [
-                ['link' => url(config('app.admin_path')."/dashboard"), 'name' => __('locale.menu.Dashboard')],
-                ['link' => url(config('app.admin_path')."/dashboard"), 'name' => __('locale.menu.Plan')],
-                ['name' => __('locale.menu.Currencies')],
+            ['link' => url( config( 'app.admin_path' ) . "/dashboard" ), 'name' => __( 'locale.menu.Dashboard' )],
+            ['link' => url( config( 'app.admin_path' ) . "/dashboard" ), 'name' => __( 'locale.menu.Plan' )],
+            ['name' => __( 'locale.menu.Currencies' )],
         ];
 
-
-        return view('admin.currency.index', compact('breadcrumbs'));
+        return view( 'admin.currency.index', compact( 'breadcrumbs' ) );
     }
-
 
     /**
      * @param  Request  $request
@@ -67,122 +61,116 @@ class CurrencyController extends AdminBaseController
      * @return void
      * @throws AuthorizationException
      */
-    public function search(Request $request)
-    {
+    public function search( Request $request ) {
 
-        $this->authorize('manage currencies');
+        $this->authorize( 'manage currencies' );
 
         $columns = [
-                0 => 'responsive_id',
-                1 => 'uid',
-                2 => 'uid',
-                3 => 'name',
-                4 => 'code',
-                5 => 'format',
-                6 => 'status',
-                7 => 'actions',
+            0 => 'responsive_id',
+            1 => 'uid',
+            2 => 'uid',
+            3 => 'name',
+            4 => 'code',
+            5 => 'format',
+            6 => 'status',
+            7 => 'actions',
         ];
 
         $totalData = Currency::count();
 
         $totalFiltered = $totalData;
 
-        $limit = $request->input('length');
-        $start = $request->input('start');
-        $order = $columns[$request->input('order.0.column')];
-        $dir   = $request->input('order.0.dir');
+        $limit = $request->input( 'length' );
+        $start = $request->input( 'start' );
+        $order = $columns[$request->input( 'order.0.column' )];
+        $dir = $request->input( 'order.0.dir' );
 
-        if (empty($request->input('search.value'))) {
-            $currencies = Currency::offset($start)
-                    ->limit($limit)
-                    ->orderBy($order, $dir)
-                    ->get();
+        if ( empty( $request->input( 'search.value' ) ) ) {
+            $currencies = Currency::offset( $start )
+                ->limit( $limit )
+                ->orderBy( $order, $dir )
+                ->get();
         } else {
-            $search = $request->input('search.value');
+            $search = $request->input( 'search.value' );
 
-            $currencies = Currency::whereLike(['uid', 'name', 'code', 'format'], $search)
-                    ->offset($start)
-                    ->limit($limit)
-                    ->orderBy($order, $dir)
-                    ->get();
+            $currencies = Currency::whereLike( ['uid', 'name', 'code', 'format'], $search )
+                ->offset( $start )
+                ->limit( $limit )
+                ->orderBy( $order, $dir )
+                ->get();
 
-            $totalFiltered = Currency::whereLike(['uid', 'name', 'code', 'format'], $search)->count();
+            $totalFiltered = Currency::whereLike( ['uid', 'name', 'code', 'format'], $search )->count();
         }
 
         $data = [];
-        if ( ! empty($currencies)) {
-            foreach ($currencies as $currency) {
-                $show = route('admin.currencies.show', $currency->uid);
+        if ( !empty( $currencies ) ) {
+            foreach ( $currencies as $currency ) {
+                $show = route( 'admin.currencies.show', $currency->uid );
 
-                if ($currency->status === true) {
+                if ( $currency->status === true ) {
                     $status = 'checked';
                 } else {
                     $status = '';
                 }
 
-                $edit   = null;
+                $edit = null;
                 $delete = null;
 
-
-                if (Auth::user()->can('edit currencies')) {
+                if ( Auth::user()->can( 'edit currencies' ) ) {
                     $edit .= $show;
                 }
 
-                if (Auth::user()->can('delete currencies')) {
+                if ( Auth::user()->can( 'delete currencies' ) ) {
                     $delete .= $currency->uid;
                 }
 
-
                 $nestedData['responsive_id'] = '';
-                $nestedData['uid']           = $currency->uid;
-                $nestedData['name']          = $currency->name;
-                $nestedData['code']          = $currency->code;
-                $nestedData['format']        = $currency->format;
-                $nestedData['status']        = "<div class='form-check form-switch form-check-primary'>
+                $nestedData['uid'] = $currency->uid;
+                $nestedData['name'] = $currency->name;
+                $nestedData['code'] = $currency->code;
+                $nestedData['format'] = $currency->format;
+                $nestedData['status'] = "<div class='form-check form-switch form-check-primary'>
                 <input type='checkbox' class='form-check-input get_status' id='status_$currency->uid' data-id='$currency->uid' name='status' $status>
                 <label class='form-check-label' for='status_$currency->uid'>
                   <span class='switch-icon-left'><i data-feather='check'></i> </span>
                   <span class='switch-icon-right'><i data-feather='x'></i> </span>
                 </label>
               </div>";
-                $nestedData['edit']          = $edit;
-                $nestedData['delete']        = $delete;
-                $data[]                      = $nestedData;
+                $nestedData['edit'] = $edit;
+                $nestedData['delete'] = $delete;
+                $data[] = $nestedData;
 
             }
         }
 
         $json_data = [
-                "draw"            => intval($request->input('draw')),
-                "recordsTotal"    => intval($totalData),
-                "recordsFiltered" => intval($totalFiltered),
-                "data"            => $data,
+            "draw" => intval( $request->input( 'draw' ) ),
+            "recordsTotal" => intval( $totalData ),
+            "recordsFiltered" => intval( $totalFiltered ),
+            "data" => $data,
         ];
 
-        echo json_encode($json_data);
+        echo json_encode( $json_data );
         exit();
 
     }
-
 
     /**
      * @return Application|Factory|View
      * @throws AuthorizationException
      */
 
-    public function create()
-    {
-        $this->authorize('create currencies');
+    public function create() {
+        $this->authorize( 'create currencies' );
 
         $breadcrumbs = [
-                ['link' => url(config('app.admin_path')."/dashboard"), 'name' => __('locale.menu.Dashboard')],
-                ['link' => url(config('app.admin_path')."/currencies"), 'name' => __('locale.menu.Currencies')],
-                ['name' => __('locale.currencies.add_new_currency')],
+            ['link' => url( config( 'app.admin_path' ) . "/dashboard" ), 'name' => __( 'locale.menu.Dashboard' )],
+            ['link' => url( config( 'app.admin_path' ) . "/currencies" ), 'name' => __( 'locale.menu.Currencies' )],
+            ['name' => __( 'locale.currencies.add_new_currency' )],
         ];
 
-        return view('admin.currency.create', compact('breadcrumbs'));
+        return view( 'admin.currency.create', compact( 'breadcrumbs' ) );
     }
-
 
     /**
      * View currency for edit
@@ -194,19 +182,17 @@ class CurrencyController extends AdminBaseController
      * @throws AuthorizationException
      */
 
-    public function show(Currency $currency)
-    {
-        $this->authorize('edit currencies');
+    public function show( Currency $currency ) {
+        $this->authorize( 'edit currencies' );
 
         $breadcrumbs = [
-                ['link' => url(config('app.admin_path')."/dashboard"), 'name' => __('locale.menu.Dashboard')],
-                ['link' => url(config('app.admin_path')."/currencies"), 'name' => __('locale.menu.Currencies')],
-                ['name' => __('locale.currencies.update_currency')],
+            ['link' => url( config( 'app.admin_path' ) . "/dashboard" ), 'name' => __( 'locale.menu.Dashboard' )],
+            ['link' => url( config( 'app.admin_path' ) . "/currencies" ), 'name' => __( 'locale.menu.Currencies' )],
+            ['name' => __( 'locale.currencies.update_currency' )],
         ];
 
-        return view('admin.currency.create', compact('breadcrumbs', 'currency'));
+        return view( 'admin.currency.create', compact( 'breadcrumbs', 'currency' ) );
     }
-
 
     /**
      * @param  StoreCurrencyRequest  $request
@@ -214,24 +200,22 @@ class CurrencyController extends AdminBaseController
      * @return RedirectResponse
      */
 
-    public function store(StoreCurrencyRequest $request): RedirectResponse
-    {
-        if (config('app.stage') == 'demo') {
-            return redirect()->route('admin.currencies.index')->with([
-                    'status'  => 'error',
-                    'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+    public function store( StoreCurrencyRequest $request ): RedirectResponse {
+        if ( $this->checks() ) {
+            return redirect()->route( 'admin.currencies.index' )->with( [
+                'status' => 'error',
+                'message' => 'Sorry! This option is not available in demo mode',
+            ] );
         }
 
-        $this->currencies->store($request->input());
+        $this->currencies->store( $request->input() );
 
-        return redirect()->route('admin.currencies.index')->with([
-                'status'  => 'success',
-                'message' => __('locale.currencies.currency_successfully_added'),
-        ]);
+        return redirect()->route( 'admin.currencies.index' )->with( [
+            'status' => 'success',
+            'message' => __( 'locale.currencies.currency_successfully_added' ),
+        ] );
 
     }
-
 
     /**
      * @param  Currency  $currency
@@ -240,21 +224,20 @@ class CurrencyController extends AdminBaseController
      * @return RedirectResponse
      */
 
-    public function update(Currency $currency, UpdateCurrencyRequest $request): RedirectResponse
-    {
-        if (config('app.stage') == 'demo') {
-            return redirect()->route('admin.currencies.index')->with([
-                    'status'  => 'error',
-                    'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+    public function update( Currency $currency, UpdateCurrencyRequest $request ): RedirectResponse {
+        if ( $this->checks() ) {
+            return redirect()->route( 'admin.currencies.index' )->with( [
+                'status' => 'error',
+                'message' => 'Sorry! This option is not available in demo mode',
+            ] );
         }
 
-        $this->currencies->update($currency, $request->input());
+        $this->currencies->update( $currency, $request->input() );
 
-        return redirect()->route('admin.currencies.index')->with([
-                'status'  => 'success',
-                'message' => __('locale.currencies.currency_successfully_updated'),
-        ]);
+        return redirect()->route( 'admin.currencies.index' )->with( [
+            'status' => 'success',
+            'message' => __( 'locale.currencies.currency_successfully_updated' ),
+        ] );
     }
 
     /**
@@ -264,22 +247,21 @@ class CurrencyController extends AdminBaseController
      *
      * @throws AuthorizationException
      */
-    public function destroy(Currency $currency): JsonResponse
-    {
-        if (config('app.stage') == 'demo') {
-            return response()->json([
-                    'status'  => 'error',
-                    'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+    public function destroy( Currency $currency ): JsonResponse {
+        if ( $this->checks() ) {
+            return response()->json( [
+                'status' => 'error',
+                'message' => 'Sorry! This option is not available in demo mode',
+            ] );
         }
-        $this->authorize('delete currencies');
+        $this->authorize( 'delete currencies' );
 
-        $this->currencies->destroy($currency);
+        $this->currencies->destroy( $currency );
 
-        return response()->json([
-                'status'  => 'success',
-                'message' => __('locale.currencies.currency_successfully_deleted'),
-        ]);
+        return response()->json( [
+            'status' => 'success',
+            'message' => __( 'locale.currencies.currency_successfully_deleted' ),
+        ] );
 
     }
 
@@ -293,36 +275,33 @@ class CurrencyController extends AdminBaseController
      * @throws AuthorizationException
      * @throws GeneralException
      */
-    public function activeToggle(Currency $currency): JsonResponse
-    {
-        if (config('app.stage') == 'demo') {
-            return response()->json([
-                    'status'  => 'error',
-                    'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+    public function activeToggle( Currency $currency ): JsonResponse {
+        if ( $this->checks() ) {
+            return response()->json( [
+                'status' => 'error',
+                'message' => 'Sorry! This option is not available in demo mode',
+            ] );
         }
 
         try {
-            $this->authorize('edit currencies');
+            $this->authorize( 'edit currencies' );
 
-            if ($currency->update(['status' => ! $currency->status])) {
-                return response()->json([
-                        'status'  => 'success',
-                        'message' => __('locale.currencies.currency_successfully_change'),
-                ]);
+            if ( $currency->update( ['status' => !$currency->status] ) ) {
+                return response()->json( [
+                    'status' => 'success',
+                    'message' => __( 'locale.currencies.currency_successfully_change' ),
+                ] );
             }
 
-            throw new GeneralException(__('locale.exceptions.something_went_wrong'));
-        } catch (ModelNotFoundException $exception) {
-            return response()->json([
-                    'status'  => 'error',
-                    'message' => $exception->getMessage(),
-            ]);
+            throw new GeneralException( __( 'locale.exceptions.something_went_wrong' ) );
+        } catch ( ModelNotFoundException $exception ) {
+            return response()->json( [
+                'status' => 'error',
+                'message' => $exception->getMessage(),
+            ] );
         }
 
-
     }
-
 
     /**
      * Bulk Action with Enable, Disable and Delete
@@ -333,66 +312,63 @@ class CurrencyController extends AdminBaseController
      * @throws AuthorizationException
      */
 
-    public function batchAction(Request $request): JsonResponse
-    {
-        if (config('app.stage') == 'demo') {
-            return response()->json([
-                    'status'  => 'error',
-                    'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+    public function batchAction( Request $request ): JsonResponse {
+        if ( $this->checks() ) {
+            return response()->json( [
+                'status' => 'error',
+                'message' => 'Sorry! This option is not available in demo mode',
+            ] );
         }
 
-        $action = $request->get('action');
-        $ids    = $request->get('ids');
+        $action = $request->get( 'action' );
+        $ids = $request->get( 'ids' );
 
-        switch ($action) {
-            case 'destroy':
-                $this->authorize('delete currencies');
+        switch ( $action ) {
+        case 'destroy':
+            $this->authorize( 'delete currencies' );
 
-                $this->currencies->batchDestroy($ids);
+            $this->currencies->batchDestroy( $ids );
 
-                return response()->json([
-                        'status'  => 'success',
-                        'message' => __('locale.currencies.currencies_deleted'),
-                ]);
+            return response()->json( [
+                'status' => 'success',
+                'message' => __( 'locale.currencies.currencies_deleted' ),
+            ] );
 
-            case 'enable':
-                $this->authorize('edit currencies');
+        case 'enable':
+            $this->authorize( 'edit currencies' );
 
-                $this->currencies->batchActive($ids);
+            $this->currencies->batchActive( $ids );
 
-                return response()->json([
-                        'status'  => 'success',
-                        'message' => __('locale.currencies.currencies_enabled'),
-                ]);
+            return response()->json( [
+                'status' => 'success',
+                'message' => __( 'locale.currencies.currencies_enabled' ),
+            ] );
 
-            case 'disable':
+        case 'disable':
 
-                $this->authorize('edit currencies');
+            $this->authorize( 'edit currencies' );
 
-                $this->currencies->batchDisable($ids);
+            $this->currencies->batchDisable( $ids );
 
-                return response()->json([
-                        'status'  => 'success',
-                        'message' => __('locale.currencies.currencies_disabled'),
-                ]);
+            return response()->json( [
+                'status' => 'success',
+                'message' => __( 'locale.currencies.currencies_disabled' ),
+            ] );
         }
 
-        return response()->json([
-                'status'  => 'error',
-                'message' => __('locale.exceptions.invalid_action'),
-        ]);
+        return response()->json( [
+            'status' => 'error',
+            'message' => __( 'locale.exceptions.invalid_action' ),
+        ] );
 
     }
-
 
     /**
      * @return Generator
      */
 
-    public function currencyGenerator(): Generator
-    {
-        foreach (Currency::cursor() as $currency) {
+    public function currencyGenerator(): Generator {
+        foreach ( Currency::cursor() as $currency ) {
             yield $currency;
         }
     }
@@ -405,20 +381,19 @@ class CurrencyController extends AdminBaseController
      * @throws UnsupportedTypeException
      * @throws WriterNotOpenedException
      */
-    public function export()
-    {
-        if (config('app.stage') == 'demo') {
-            return redirect()->route('admin.currencies.index')->with([
-                    'status'  => 'error',
-                    'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+    public function export() {
+        if ( $this->checks() ) {
+            return redirect()->route( 'admin.currencies.index' )->with( [
+                'status' => 'error',
+                'message' => 'Sorry! This option is not available in demo mode',
+            ] );
         }
 
-        $this->authorize('manage currencies');
+        $this->authorize( 'manage currencies' );
 
-        $file_name = (new FastExcel($this->currencyGenerator()))->export(storage_path('Currency_'.time().'.xlsx'));
+        $file_name = ( new FastExcel( $this->currencyGenerator() ) )->export( storage_path( 'Currency_' . time() . '.xlsx' ) );
 
-        return response()->download($file_name);
+        return response()->download( $file_name );
     }
 
 }

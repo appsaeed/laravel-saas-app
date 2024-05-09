@@ -8,8 +8,7 @@
                     $custom_classes = $submenu->classlist;
                 }
             @endphp
-
-            <li class="{{ $custom_classes }} {{ isset($submenu->submenu) ? 'dropdown dropdown-submenu' : '' }} {{ isset($submenu->slug) && str_contains(request()->path(), $submenu->slug) ? 'active' : '' }}"
+            <li class="{{ $custom_classes }} {{ isset($submenu->submenu) ? 'dropdown dropdown-submenu' : '' }} {{ request()->url() === $submenu->url ? 'active' : '' }}"
                 @if (isset($submenu->submenu)) {{ 'data-menu=dropdown-submenu' }} @endif>
                 <a href="{{ isset($submenu->url) ? url($submenu->url) : 'javascript:void(0)' }}"
                     class="dropdown-item {{ isset($submenu->submenu) ? 'dropdown-toggle' : '' }} d-flex align-items-center"
@@ -18,7 +17,7 @@
                     @if (isset($submenu->icon))
                         <i data-feather="{{ $submenu->icon }}"></i>
                     @endif
-                    <span>{{ __('locale.menu.' . $submenu->name) }}</span>
+                    <span>{{  $submenu->name }}</span>
                 </a>
                 @if (isset($submenu->submenu))
                     @include('panels/horizontalSubmenu', ['menu' => $submenu->submenu])

@@ -39,50 +39,42 @@
     <div class="main-menu-content">
         <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
             {{-- Foreach menu item starts --}}
-            @if (isset($menuData[0]))
-                @php
-                    if (auth()->user()->active_portal == 'admin') {
-                        $sidebarMenu = $menuData['0']->admin;
-                    } else {
-                        $sidebarMenu = $menuData['0']->customer;
-                    }
-                @endphp
+            @php
+                if (auth()->user()->active_portal == 'admin') {
+                    $sidebarMenu = Menus::data()->admin;
+                } else {
+                    $sidebarMenu = Menus::data()->customer;
+                }
+            @endphp
 
-                @foreach ($sidebarMenu as $menu)
-                    @if (isset($menu->navheader))
-                        <li class="navigation-header">
-                            <span>{{ $menu->navheader }}</span>
-                            <i data-feather="more-horizontal"></i>
+            @foreach ($sidebarMenu as $menu)
+                @if (isset($menu->navheader))
+                    <li class="navigation-header">
+                        <span>{{ $menu->navheader }}</span>
+                        <i data-feather="more-horizontal"></i>
+                    </li>
+                @else
+                    {{-- Add Custom Class with nav-item --}}
+                    @php
+                        $custom_classes = '';
+                        if (isset($menu->classlist)) {
+                            $custom_classes = $menu->classlist;
+                        }
+                        $permission = explode('|', $menu->access);
+                    @endphp
+                    @canany($permission, auth()->user())
+                        <li class="nav-item {{ request()->url() === $menu->url ? 'active' : '' }} {{ $custom_classes }}">
+                            <a href="{{ $menu->url }}" class="d-flex align-items-center">
+                                <i data-feather="{{ $menu->icon }}"></i>
+                                <span class="menu-title text-truncate">{{ $menu->name }}</span>
+                            </a>
+                            @if (isset($menu->submenu))
+                                @include('panels/submenu', ['menu' => $menu->submenu])
+                            @endif
                         </li>
-                    @else
-                        {{-- Add Custom Class with nav-item --}}
-                        @php
-                            $custom_classes = '';
-                            if (isset($menu->classlist)) {
-                                $custom_classes = $menu->classlist;
-                            }
-                            $translation = '';
-                            if (isset($menu->i18n)) {
-                                $translation = $menu->i18n;
-                            }
-                            $permission = explode('|', $menu->access);
-                        @endphp
-                        @canany($permission, auth()->user())
-                            <li
-                                class="nav-item {{ isset($menu->slug) && str_contains(request()->path(), $menu->slug) ? 'active' : '' }} {{ $custom_classes }}">
-                                <a href="{{ $menu->url }}" class="d-flex align-items-center">
-                                    <i data-feather="{{ $menu->icon }}"></i>
-                                    <span class="menu-title text-truncate"
-                                        data-i18n="{{ $translation }}">{{ __('locale.menu.' . $menu->name) }}</span>
-                                </a>
-                                @if (isset($menu->submenu))
-                                    @include('panels/submenu', ['menu' => $menu->submenu])
-                                @endif
-                            </li>
-                        @endcanany
-                    @endif
-                @endforeach
-            @endif
+                    @endcanany
+                @endif
+            @endforeach
             {{-- Foreach menu item ends --}}
         </ul>
     </div>

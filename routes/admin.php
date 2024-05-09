@@ -22,7 +22,10 @@ use Illuminate\Support\Facades\Route;
  * Create admin dashboard routes
  */
 
-Route::get( '/dashboard', [AdminBaseController::class, 'index'] )->name( 'home' );
+Route::resource( 'dashboard', AdminBaseController::class, [
+    'only' => ['index'],
+] )->names( ['index' => 'home'] );
+
 Route::get( '/serve', [AdminBaseController::class, 'serverDBBackup'] )->name( 'serverDBBackup' );
 
 /*
@@ -35,6 +38,7 @@ Route::get( '/serve', [AdminBaseController::class, 'serverDBBackup'] )->name( 's
  */
 Route::post( 'users/search', [CustomerController::class, 'search'] )->name( 'customers.search' );
 Route::get( 'users/export', [CustomerController::class, 'export'] )->name( 'customers.export' );
+
 Route::get( 'users/{customer}/show', [CustomerController::class, 'show'] )
     ->name( 'customers.show' );
 Route::get( 'users/{customer}/login-as', [CustomerController::class, 'impersonate'] )
@@ -208,6 +212,7 @@ Route::get( 'check-available-update', [SettingsController::class, 'checkAvailabl
 
 // Plugins route
 Route::get( 'plugins', [PluginsController::class, 'plugins'] )->name( 'plugins' );
+Route::get( 'editors', [PluginsController::class, 'editors'] )->name( 'editors' );
 
 // Invoice routes
 Route::post( 'invoices/search', [InvoiceController::class, 'search'] )->name( 'invoices.search' );
@@ -237,33 +242,32 @@ Route::post( 'customizer', [ThemeCustomizerController::class, 'postCustomizer'] 
 |
  */
 
-Route::post( 'todos/{todo}will-do', [TodosController::class, 'will_do'] )->name( 'todos.will_do' );
-Route::post( 'todos/{todo}review', [TodosController::class, 'review'] )->name( 'todos.send_review' );
-Route::post( 'todos/{todo}/mark-as-ompete', [TodosController::class, 'markAsComplete'] )
-    ->name( 'todos.mark_as_complete' );
-Route::post( 'todos/{todo}pause_task', [TodosController::class, 'pauseTask'] )->name( 'todos.pause' );
-Route::post( 'todos/{todo}continue_task', [TodosController::class, 'continueTask'] )
-    ->name( 'todos.continueTask' );
+Route::group( ['prefix' => 'tasks', 'as' => 'todos.'], function () {
 
-Route::get( 'todos/in-progress', [TodosController::class, 'inProgress'] )->name( 'todos.in_progress' );
-Route::post( 'todos/in-progress/search', [TodosController::class, 'inProgressSearch'] )
-    ->name( 'todos.in_progress.search' );
+    Route::post( '/{todo}will-do', [TodosController::class, 'will_do'] )->name( 'will_do' );
+    Route::post( '/{todo}review', [TodosController::class, 'review'] )->name( 'send_review' );
+    Route::post( '{todo}/mark-as-ompete', [TodosController::class, 'markAsComplete'] )
+        ->name( 'mark_as_complete' );
+    Route::post( '{todo}pause_task', [TodosController::class, 'pauseTask'] )->name( 'pause' );
+    Route::post( '{todo}continue_task', [TodosController::class, 'continueTask'] )
+        ->name( 'continueTask' );
 
-Route::get( 'todos/complete', [TodosController::class, 'complete'] )->name( 'todos.complete' );
-Route::post( 'todos/complete/search', [TodosController::class, 'completeSearch'] )
-    ->name( 'todos.complete.search' );
+    Route::get( 'in-progress', [TodosController::class, 'inProgress'] )->name( 'in_progress' );
+    Route::post( 'in-progress/search', [TodosController::class, 'inProgressSearch'] )
+        ->name( 'in_progress.search' );
 
-Route::get( 'todos/reviews', [TodosController::class, 'reviews'] )->name( 'todos.reviews' );
-Route::post( 'todos/reviews/search', [TodosController::class, 'reviewsSearch'] )
-    ->name( 'todos.reviewsSearch' );
+    Route::get( 'complete', [TodosController::class, 'complete'] )->name( 'complete' );
+    Route::post( 'complete/search', [TodosController::class, 'completeSearch'] )
+        ->name( 'complete.search' );
 
-Route::get( 'todos/created', [TodosController::class, 'created'] )->name( 'todos.created' );
-Route::post( 'todos/_created', [TodosController::class, '_created'] )->name( 'todos._created' );
+    Route::get( 'reviews', [TodosController::class, 'reviews'] )->name( 'reviews' );
+    Route::post( '/reviews/search', [TodosController::class, 'reviewsSearch'] )
+        ->name( 'reviewsSearch' );
+    Route::get( 'created', [TodosController::class, 'created'] )->name( 'created' );
+    Route::post( '/_created', [TodosController::class, '_created'] )->name( '_created' );
+    Route::post( '/batch_action', [TodosController::class, 'batchAction'] )
+        ->name( 'batch_action' );
 
-Route::post( 'todos/batch_action', [TodosController::class, 'batchAction'] )
-    ->name( 'todos.batch_action' );
-
-Route::get( 'todos/all', [TodosController::class, 'index'] );
-Route::post( 'todos/search', [TodosController::class, 'search'] )->name( 'todos.search' );
-
-Route::resource( 'todos', TodosController::class );
+    Route::post( '/search', [TodosController::class, 'search'] )->name( 'search' );
+    Route::resource( '/', TodosController::class );
+} );

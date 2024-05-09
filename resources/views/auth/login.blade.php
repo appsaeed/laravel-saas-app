@@ -72,8 +72,7 @@
 
                                 <div class="input-group input-group-merge form-password-toggle">
                                     <input id="password" type="password" class="form-control" name="password"
-                                        placeholder="{{ __('locale.labels.password') }}" required autocomplete="password"
-                                        @if (config('app.stage') == 'demo') value="12345678" @endif>
+                                        placeholder="{{ __('locale.labels.password') }}" required autocomplete="password">
                                     <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
                                 </div>
                             </div>
@@ -95,6 +94,17 @@
                             </div>
                             <button type="submit" class="btn btn-primary w-100"
                                 tabindex="4">{{ __('locale.auth.login') }}</button>
+
+                            @if (config('app.stage') == 'demo')
+                                <div class="d-flex justify-content-between mt-2">
+                                    <button class="btn btn-secondary admin-login">
+                                        Admin
+                                    </button>
+                                    <button class="btn btn-info client-login">
+                                        Client
+                                    </button>
+                                </div>
+                            @endif
                         </form>
 
                         @if (config('account.can_register'))
@@ -172,11 +182,13 @@
     @push('scripts')
         <script>
             $('.admin-login').on('click', function() {
-                $('#email').val('admin@Appsaeed.com')
+                $('#email').val('{{ env("DEMO_ADMIN_USERNAME", "admin@demo.com") }}')
+                $('#password').val('{{ env("DEMO_ADMIN_PASSWORD" , "12345678") }}')
             });
 
             $('.client-login').on('click', function() {
-                $('#email').val('client@Appsaeed.com')
+                $('#email').val('{{ env("DEMO_CLIENT_USERNAME", "client@demo.com") }}')
+                $('#password').val('{{ env("DEMO_CLIENT_PASSWORD", "12345678") }}')
             });
         </script>
     @endpush

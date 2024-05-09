@@ -11,10 +11,9 @@ return [
     | framework needs to place the application's name in a notification or
     | any other location as required by the application or its packages.
     |
-    */
+     */
 
-    'name' => env('APP_NAME', 'app SMS'),
-
+    'name' => env( 'APP_NAME', 'app SMS' ),
 
     /*
     |--------------------------------------------------------------------------
@@ -25,10 +24,9 @@ return [
     | framework needs to place the application's title in a notification or
     | any other location as required by the application or its packages.
     |
-    */
+     */
 
-    'title' => env('APP_TITLE', 'Bulk SMS Application For Marketing'),
-
+    'title' => env( 'APP_TITLE', 'Bulk SMS Application For Marketing' ),
 
     /*
     |--------------------------------------------------------------------------
@@ -37,10 +35,9 @@ return [
     |
     | This value is the seo keyword of your application.
     |
-    */
+     */
 
-    'keyword'       => env('APP_KEYWORD', 'CRM, appsaeed, laravel, framework'),
-
+    'keyword' => env( 'APP_KEYWORD', 'CRM, appsaeed, laravel, framework' ),
 
     /*
     |--------------------------------------------------------------------------
@@ -49,9 +46,8 @@ return [
     |
     | This is the logo of your application.
     |
-    */
-    'logo'          => env('APP_LOGO', ''),
-
+     */
+    'logo' => env( 'APP_LOGO', '' ),
 
     /*
     |--------------------------------------------------------------------------
@@ -60,9 +56,8 @@ return [
     |
     | This is the favicon of your application.
     |
-    */
-    'favicon'       => env('APP_FAVICON', ''),
-
+     */
+    'favicon' => env( 'APP_FAVICON', '' ),
 
     /*
     |--------------------------------------------------------------------------
@@ -71,9 +66,8 @@ return [
     |
     | This is the footer text of your application.
     |
-    */
-    'footer_text'   => env('APP_FOOTER_TEXT', 'Copyright &copy; CRM - 2020'),
-
+     */
+    'footer_text' => env( 'APP_FOOTER_TEXT', 'Copyright &copy; CRM - 2020' ),
 
     /*
     |--------------------------------------------------------------------------
@@ -82,9 +76,8 @@ return [
     |
     | This is the custom script of your application.
     |
-    */
-    'custom_script' => env('APP_CUSTOM_SCRIPT', ''),
-
+     */
+    'custom_script' => env( 'APP_CUSTOM_SCRIPT', '' ),
 
     /*
     |--------------------------------------------------------------------------
@@ -95,9 +88,9 @@ return [
     | running in. This may determine how you prefer to configure various
     | services the application utilizes. Set this in your ".env" file.
     |
-    */
+     */
 
-    'env' => env('APP_ENV', 'production'),
+    'env' => env( 'APP_ENV', 'production' ),
 
     /*
     |--------------------------------------------------------------------------
@@ -108,9 +101,9 @@ return [
     | running in. This may determine how you prefer to configure various
     | services the application utilizes. Set this in your ".env" file.
     |
-    */
+     */
 
-    'stage' => env('APP_STAGE', 'Live'),
+    'stage' => env( 'APP_STAGE', 'Live' ),
 
     /*
     |--------------------------------------------------------------------------
@@ -121,9 +114,9 @@ return [
     | stack traces will be shown on every error that occurs within your
     | application. If disabled, a simple generic error page is shown.
     |
-    */
+     */
 
-    'debug' => env('APP_DEBUG', false),
+    'debug' => env( 'APP_DEBUG', false ),
 
     /*
     |--------------------------------------------------------------------------
@@ -134,26 +127,11 @@ return [
     | the Artisan command line tool. You should set this to the root of
     | your application so that it is used when running Artisan tasks.
     |
-    */
+     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env( 'APP_URL', 'http://localhost' ),
 
-    'asset_url' => env('ASSET_URL', ''),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Application Timezone
-    |--------------------------------------------------------------------------
-    |
-    | Here you may specify the default timezone for your application, which
-    | will be used by the PHP date and date-time functions. We have gone
-    | ahead and set this to a sensible default for you out of the box.
-    |
-    */
-
-    'timezone' => env('APP_TIMEZONE', 'UTC'),
-
-    'date_format' => env('APP_DATE_FORMAT', 'jS M y'),
+    'asset_url' => env( 'ASSET_URL', '' ),
 
     /*
     |--------------------------------------------------------------------------
@@ -164,9 +142,24 @@ return [
     | will be used by the PHP date and date-time functions. We have gone
     | ahead and set this to a sensible default for you out of the box.
     |
-    */
+     */
 
-    'version' => env('APP_VERSION', '3.1.0'),
+    'timezone' => env( 'APP_TIMEZONE', 'UTC' ),
+
+    'date_format' => env( 'APP_DATE_FORMAT', 'jS M y' ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application Timezone
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify the default timezone for your application, which
+    | will be used by the PHP date and date-time functions. We have gone
+    | ahead and set this to a sensible default for you out of the box.
+    |
+     */
+
+    'version' => env( 'APP_VERSION', '3.1.0' ),
 
     /*
     |--------------------------------------------------------------------------
@@ -177,12 +170,11 @@ return [
     | by the translation service provider. You are free to set this value
     | to any of the locales which will be supported by the application.
     |
-    */
+     */
 
+    'locale' => env( 'APP_LOCALE', 'en' ),
 
-    'locale' => env('APP_LOCALE', 'en'),
-
-    'locale_direction' => env('APP_DIRECTION', 'ltr'),
+    'locale_direction' => env( 'APP_DIRECTION', 'ltr' ),
     /*
     |--------------------------------------------------------------------------
     | Application Fallback Locale
@@ -192,10 +184,9 @@ return [
     | is not available. You may change the value to correspond to any of
     | the language folders that are provided through your application.
     |
-    */
+     */
 
-
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+    'fallback_locale' => env( 'APP_FALLBACK_LOCALE', 'en' ),
 
     /*
     |--------------------------------------------------------------------------
@@ -206,7 +197,7 @@ return [
     | data for your database seeders. For example, this will be used to get
     | localized telephone numbers, street address information and more.
     |
-    */
+     */
 
     'faker_locale' => 'en_US',
 
@@ -219,147 +210,137 @@ return [
     | to a random, 32 character string, otherwise these encrypted strings
     | will not be safe. Please do this before deploying an application!
     |
-    */
+     */
 
-    'key' => env('APP_KEY'),
+    'key' => env( 'APP_KEY' ),
 
     'cipher' => 'AES-256-CBC',
-
 
     /*
     |--------------------------------------------------------------------------
     | Application Default Country
     |--------------------------------------------------------------------------
-    */
+     */
 
-    'country' => env('APP_COUNTRY', 'Bangladesh'),
-
+    'country' => env( 'APP_COUNTRY', 'Bangladesh' ),
 
     /*
     |--------------------------------------------------------------------------
     | Application Custom admin path
     |--------------------------------------------------------------------------
-    */
+     */
 
-    'admin_path' => env('ADMIN_PATH', 'admin'),
+    'admin_path' => env( 'ADMIN_PATH', 'admin' ),
 
     /*
     |--------------------------------------------------------------------------
     | Application Site Editor
     |--------------------------------------------------------------------------
-    */
+     */
 
-    'editor_name' => env('EDITOR_NAME'),
+    'editor_name' => env( 'EDITOR_NAME' ),
 
-    'editor_site_url' => env('EDITOR_SITE_URL'),
+    'editor_site_url' => env( 'EDITOR_SITE_URL' ),
 
-    'editor_alert_mail' => env('EDITOR_ALERT_MAIL'),
+    'editor_alert_mail' => env( 'EDITOR_ALERT_MAIL' ),
 
     /*
     |--------------------------------------------------------------------------
     | Application Site Google Tag Manager
     |--------------------------------------------------------------------------
-    */
+     */
 
-    'gtm_user_id' => env('GTM_USER_ID'),
+    'gtm_user_id' => env( 'GTM_USER_ID' ),
 
     /*
     |--------------------------------------------------------------------------
     | URL config
     |--------------------------------------------------------------------------
-    */
+     */
 
-    'url_force_https' => env('URL_FORCE_HTTPS', false),
+    'url_force_https' => env( 'URL_FORCE_HTTPS', false ),
 
     /*
     |--------------------------------------------------------------------------
     | Set App on read-only mode (demo purpose)
     |--------------------------------------------------------------------------
-    */
+     */
 
-    'read_only' => env('READ_ONLY', false),
-
+    'read_only' => env( 'READ_ONLY', false ),
 
     /*
     |--------------------------------------------------------------------------
     | purchase code from envato marketplace for verify real product
     |--------------------------------------------------------------------------
-    */
+     */
 
-    'purchase_key' => env('PURCHASE_CODE', ''),
-
+    'purchase_key' => env( 'PURCHASE_CODE', '' ),
 
     /*
     |--------------------------------------------------------------------------
     | Two step verification in login
     |--------------------------------------------------------------------------
-    */
+     */
 
-    'two_factor' => env('TWO_FACTOR', false),
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Two step verification send by
-    |--------------------------------------------------------------------------
-    */
-
-    'two_factor_send_by' => env('AUTH_CODE_SEND_BY', 'email'),
-
+    'two_factor' => env( 'TWO_FACTOR', false ),
 
     /*
     |--------------------------------------------------------------------------
     | Two step verification send by
     |--------------------------------------------------------------------------
-    */
+     */
 
-    'super_admin_email' => env('SUPER_ADMIN_EMAIL', 'appsaeed7@gmail.com'),
+    'two_factor_send_by' => env( 'AUTH_CODE_SEND_BY', 'email' ),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Two step verification send by
+    |--------------------------------------------------------------------------
+     */
+
+    'super_admin_email' => env( 'SUPER_ADMIN_EMAIL', 'appsaeed7@gmail.com' ),
 
     /*
     |--------------------------------------------------------------------------
     | API Rate Limit
     |--------------------------------------------------------------------------
-    */
+     */
 
-    'api_rate_limit' => env('API_RATE_LIMIT', '1000'),
-
+    'api_rate_limit' => env( 'API_RATE_LIMIT', '1000' ),
 
     /*
     |--------------------------------------------------------------------------
     | Theme layout type
     |--------------------------------------------------------------------------
-    */
+     */
 
-    'theme_layout_type'  => env('THEME_LAYOUT_TYPE', 'vertical'),
-
+    'theme_layout_type' => env( 'THEME_LAYOUT_TYPE', 'vertical' ),
 
     /*
     |--------------------------------------------------------------------------
     | import csv file fields for contact import
     |--------------------------------------------------------------------------
-    */
-    'db_fields'          => [
-        '--'         => '--',
-        'phone'      => 'Phone',
+     */
+    'db_fields' => [
+        '--' => '--',
+        'phone' => 'Phone',
         'first_name' => 'First name',
-        'last_name'  => 'Last name',
-        'email'      => 'Email',
-        'username'   => 'Username',
-        'company'    => 'Company',
-        'address'    => 'Address',
+        'last_name' => 'Last name',
+        'email' => 'Email',
+        'username' => 'Username',
+        'company' => 'Company',
+        'address' => 'Address',
     ],
 
     /*
     |--------------------------------------------------------------------------
     | import csv file fields for campaign
     |--------------------------------------------------------------------------
-    */
+     */
     'campaign_db_fields' => [
-        '--'    => '--',
+        '--' => '--',
         'phone' => 'Phone',
     ],
-
 
     /*
     |--------------------------------------------------------------------------
@@ -370,13 +351,13 @@ return [
     | request to your application. Feel free to add your own services to
     | this array to grant expanded functionality to your applications.
     |
-    */
+     */
 
     'providers' => [
 
         /*
-             * Laravel Framework Service Providers...
-             */
+         * Laravel Framework Service Providers...
+         */
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
@@ -401,18 +382,18 @@ return [
         Illuminate\View\ViewServiceProvider::class,
 
         /*
-             * Package Service Providers...
-             */
+         * Package Service Providers...
+         */
 
         /*
-             * Application Service Providers...
-             */
+         * Application Service Providers...
+         */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\MenuServiceProvider::class,
+        // App\Providers\MenuServiceProvider::class,
     ],
 
     /*
@@ -424,46 +405,47 @@ return [
     | is started. However, feel free to register as many as you wish as
     | the aliases are "lazy" loaded so they don't hinder performance.
     |
-    */
+     */
 
     'aliases' => [
 
-        'App'          => Illuminate\Support\Facades\App::class,
-        'Arr'          => Illuminate\Support\Arr::class,
-        'Artisan'      => Illuminate\Support\Facades\Artisan::class,
-        'Auth'         => Illuminate\Support\Facades\Auth::class,
-        'Blade'        => Illuminate\Support\Facades\Blade::class,
-        'Broadcast'    => Illuminate\Support\Facades\Broadcast::class,
-        'Bus'          => Illuminate\Support\Facades\Bus::class,
-        'Cache'        => Illuminate\Support\Facades\Cache::class,
-        'Config'       => Illuminate\Support\Facades\Config::class,
-        'Cookie'       => Illuminate\Support\Facades\Cookie::class,
-        'Crypt'        => Illuminate\Support\Facades\Crypt::class,
-        'DB'           => Illuminate\Support\Facades\DB::class,
-        'Eloquent'     => Illuminate\Database\Eloquent\Model::class,
-        'Event'        => Illuminate\Support\Facades\Event::class,
-        'File'         => Illuminate\Support\Facades\File::class,
-        'Gate'         => Illuminate\Support\Facades\Gate::class,
-        'Hash'         => Illuminate\Support\Facades\Hash::class,
-        'Lang'         => Illuminate\Support\Facades\Lang::class,
-        'Log'          => Illuminate\Support\Facades\Log::class,
-        'Mail'         => Illuminate\Support\Facades\Mail::class,
+        'App' => Illuminate\Support\Facades\App::class,
+        'Arr' => Illuminate\Support\Arr::class,
+        'Artisan' => Illuminate\Support\Facades\Artisan::class,
+        'Auth' => Illuminate\Support\Facades\Auth::class,
+        'Blade' => Illuminate\Support\Facades\Blade::class,
+        'Broadcast' => Illuminate\Support\Facades\Broadcast::class,
+        'Bus' => Illuminate\Support\Facades\Bus::class,
+        'Cache' => Illuminate\Support\Facades\Cache::class,
+        'Config' => Illuminate\Support\Facades\Config::class,
+        'Cookie' => Illuminate\Support\Facades\Cookie::class,
+        'Crypt' => Illuminate\Support\Facades\Crypt::class,
+        'DB' => Illuminate\Support\Facades\DB::class,
+        'Eloquent' => Illuminate\Database\Eloquent\Model::class,
+        'Event' => Illuminate\Support\Facades\Event::class,
+        'File' => Illuminate\Support\Facades\File::class,
+        'Gate' => Illuminate\Support\Facades\Gate::class,
+        'Hash' => Illuminate\Support\Facades\Hash::class,
+        'Lang' => Illuminate\Support\Facades\Lang::class,
+        'Log' => Illuminate\Support\Facades\Log::class,
+        'Mail' => Illuminate\Support\Facades\Mail::class,
         'Notification' => Illuminate\Support\Facades\Notification::class,
-        'Password'     => Illuminate\Support\Facades\Password::class,
-        'Queue'        => Illuminate\Support\Facades\Queue::class,
-        'Redirect'     => Illuminate\Support\Facades\Redirect::class,
-        'Redis'        => Illuminate\Support\Facades\Redis::class,
-        'Request'      => Illuminate\Support\Facades\Request::class,
-        'Response'     => Illuminate\Support\Facades\Response::class,
-        'Route'        => Illuminate\Support\Facades\Route::class,
-        'Schema'       => Illuminate\Support\Facades\Schema::class,
-        'Session'      => Illuminate\Support\Facades\Session::class,
-        'Storage'      => Illuminate\Support\Facades\Storage::class,
-        'Str'          => Illuminate\Support\Str::class,
-        'URL'          => Illuminate\Support\Facades\URL::class,
-        'Validator'    => Illuminate\Support\Facades\Validator::class,
-        'View'         => Illuminate\Support\Facades\View::class,
-        'Helper'       => App\Helpers\Helper::class,
+        'Password' => Illuminate\Support\Facades\Password::class,
+        'Queue' => Illuminate\Support\Facades\Queue::class,
+        'Redirect' => Illuminate\Support\Facades\Redirect::class,
+        'Redis' => Illuminate\Support\Facades\Redis::class,
+        'Request' => Illuminate\Support\Facades\Request::class,
+        'Response' => Illuminate\Support\Facades\Response::class,
+        'Route' => Illuminate\Support\Facades\Route::class,
+        'Schema' => Illuminate\Support\Facades\Schema::class,
+        'Session' => Illuminate\Support\Facades\Session::class,
+        'Storage' => Illuminate\Support\Facades\Storage::class,
+        'Str' => Illuminate\Support\Str::class,
+        'URL' => Illuminate\Support\Facades\URL::class,
+        'Validator' => Illuminate\Support\Facades\Validator::class,
+        'View' => Illuminate\Support\Facades\View::class,
+        'Helper' => App\Helpers\Helper::class,
+        'Menus' => App\Helpers\Menus::class,
 
     ],
 

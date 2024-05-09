@@ -28,8 +28,7 @@ use Illuminate\View\View;
 use Rap2hpoutre\FastExcel\FastExcel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-class AdministratorController extends AdminBaseController
-{
+class AdministratorController extends AdminBaseController {
 
     /**
      * @var UserRepository
@@ -47,32 +46,28 @@ class AdministratorController extends AdminBaseController
      * @param  UserRepository  $users
      * @param  RoleRepository  $roles
      */
-    public function __construct(UserRepository $users, RoleRepository $roles)
-    {
+    public function __construct( UserRepository $users, RoleRepository $roles ) {
         $this->users = $users;
         $this->roles = $roles;
     }
-
 
     /**
      * @return Application|Factory|View
      * @throws AuthorizationException
      */
 
-    public function index()
-    {
+    public function index() {
 
-        $this->authorize('view administrator');
+        $this->authorize( 'view administrator' );
 
         $breadcrumbs = [
-                ['link' => url(config('app.admin_path')."/dashboard"), 'name' => __('locale.menu.Dashboard')],
-                ['link' => url(config('app.admin_path')."/dashboard"), 'name' => __('locale.menu.Administrator')],
-                ['name' => __('locale.menu.Administrators')],
+            ['link' => url( config( 'app.admin_path' ) . "/dashboard" ), 'name' => __( 'locale.menu.Dashboard' )],
+            ['link' => url( config( 'app.admin_path' ) . "/dashboard" ), 'name' => __( 'locale.menu.Administrator' )],
+            ['name' => __( 'locale.menu.Administrators' )],
         ];
 
-        return view('admin.Administrator.index', compact('breadcrumbs'));
+        return view( 'admin.Administrator.index', compact( 'breadcrumbs' ) );
     }
-
 
     /**
      * @param  Request  $request
@@ -80,93 +75,90 @@ class AdministratorController extends AdminBaseController
      * @return void
      * @throws AuthorizationException
      */
-    public function search(Request $request)
-    {
+    public function search( Request $request ) {
 
-        $this->authorize('view administrator');
+        $this->authorize( 'view administrator' );
 
         $columns = [
-                0 => 'responsive_id',
-                1 => 'uid',
-                2 => 'uid',
-                3 => 'name',
-                4 => 'roles',
-                5 => 'created_at',
-                6 => 'status',
-                7 => 'actions',
+            0 => 'responsive_id',
+            1 => 'uid',
+            2 => 'uid',
+            3 => 'name',
+            4 => 'roles',
+            5 => 'created_at',
+            6 => 'status',
+            7 => 'actions',
         ];
 
-
-        $totalData = User::where('is_admin', 1)->where('id', '!=', 1)->count();
+        $totalData = User::where( 'is_admin', 1 )->where( 'id', '!=', 1 )->count();
 
         $totalFiltered = $totalData;
 
-        $limit = $request->input('length');
-        $start = $request->input('start');
-        $order = $columns[$request->input('order.0.column')];
-        $dir   = $request->input('order.0.dir');
-        if ($order == 'name'){
+        $limit = $request->input( 'length' );
+        $start = $request->input( 'start' );
+        $order = $columns[$request->input( 'order.0.column' )];
+        $dir = $request->input( 'order.0.dir' );
+        if ( $order == 'name' ) {
             $order = 'first_name';
         }
 
-        if (empty($request->input('search.value'))) {
-            $administrators = User::where('is_admin', 1)->where('id', '!=', 1)->offset($start)
-                    ->limit($limit)
-                    ->orderBy($order, $dir)
-                    ->get();
+        if ( empty( $request->input( 'search.value' ) ) ) {
+            $administrators = User::where( 'is_admin', 1 )->where( 'id', '!=', 1 )->offset( $start )
+                ->limit( $limit )
+                ->orderBy( $order, $dir )
+                ->get();
         } else {
-            $search = $request->input('search.value');
+            $search = $request->input( 'search.value' );
 
-            $administrators = User::where('is_admin', 1)->where('id', '!=', 1)->whereLike(['uid', 'first_name', 'last_name', 'status', 'email', 'created_at'], $search)
-                    ->offset($start)
-                    ->limit($limit)
-                    ->orderBy($order, $dir)
-                    ->get();
+            $administrators = User::where( 'is_admin', 1 )->where( 'id', '!=', 1 )->whereLike( ['uid', 'first_name', 'last_name', 'status', 'email', 'created_at'], $search )
+                ->offset( $start )
+                ->limit( $limit )
+                ->orderBy( $order, $dir )
+                ->get();
 
-            $totalFiltered = User::where('is_admin', 1)->where('id', '!=', 1)->whereLike(['uid', 'first_name', 'last_name', 'status', 'email', 'created_at'], $search)->count();
+            $totalFiltered = User::where( 'is_admin', 1 )->where( 'id', '!=', 1 )->whereLike( ['uid', 'first_name', 'last_name', 'status', 'email', 'created_at'], $search )->count();
         }
 
         $data = [];
-        if ( ! empty($administrators)) {
-            foreach ($administrators as $administrator) {
-                $show = route('admin.administrators.show', $administrator->uid);
+        if ( !empty( $administrators ) ) {
+            foreach ( $administrators as $administrator ) {
+                $show = route( 'admin.administrators.show', $administrator->uid );
 
-                if ($administrator->status == true) {
+                if ( $administrator->status == true ) {
                     $status = 'checked';
                 } else {
                     $status = '';
                 }
 
-                $get_roles = collect($administrator->roles)->map(function ($key) {
-                    return ucfirst($key->display_name());
-                })->join(',');
+                $get_roles = collect( $administrator->roles )->map( function ( $key ) {
+                    return ucfirst( $key->display_name() );
+                } )->join( ',' );
 
-                if ($get_roles) {
+                if ( $get_roles ) {
                     $roles = $get_roles;
                 } else {
-                    $roles = __('locale.administrator.no_active_roles');
+                    $roles = __( 'locale.administrator.no_active_roles' );
                 }
 
-                $edit   = null;
+                $edit = null;
                 $delete = null;
 
-                if (Auth::user()->can('edit administrator')) {
+                if ( Auth::user()->can( 'edit administrator' ) ) {
                     $edit .= $show;
                 }
 
-                if (Auth::user()->can('delete administrator')) {
+                if ( Auth::user()->can( 'delete administrator' ) ) {
                     $delete .= $administrator->uid;
                 }
 
-
-                $nestedData['uid']           = $administrator->uid;
+                $nestedData['uid'] = $administrator->uid;
                 $nestedData['responsive_id'] = '';
-                $nestedData['avatar']        = route('admin.customers.avatar', $administrator->uid);
-                $nestedData['email']         = $administrator->email;
-                $nestedData['name']          = $administrator->first_name.' '.$administrator->last_name;
-                $nestedData['roles']         = $roles;
-                $nestedData['created_at']    = Tool::formatDate($administrator->created_at);
-                $nestedData['status']        = "<div class='form-check form-switch form-check-primary'>
+                $nestedData['avatar'] = route( 'admin.customers.avatar', $administrator->uid );
+                $nestedData['email'] = $administrator->email;
+                $nestedData['name'] = $administrator->first_name . ' ' . $administrator->last_name;
+                $nestedData['roles'] = $roles;
+                $nestedData['created_at'] = Tool::formatDate( $administrator->created_at );
+                $nestedData['status'] = "<div class='form-check form-switch form-check-primary'>
                 <input type='checkbox' class='form-check-input get_status' id='status_$administrator->uid' data-id='$administrator->uid' name='status' $status>
                 <label class='form-check-label' for='status_$administrator->uid'>
                   <span class='switch-icon-left'><i data-feather='check'></i> </span>
@@ -174,24 +166,22 @@ class AdministratorController extends AdminBaseController
                 </label>
               </div>";
 
-
-                $nestedData['edit']   = $edit;
+                $nestedData['edit'] = $edit;
                 $nestedData['delete'] = $delete;
-                $data[]               = $nestedData;
+                $data[] = $nestedData;
 
             }
         }
 
         $json_data = [
-                "draw"            => intval($request->input('draw')),
-                "recordsTotal"    => intval($totalData),
-                "recordsFiltered" => intval($totalFiltered),
-                "data"            => $data,
+            "draw" => intval( $request->input( 'draw' ) ),
+            "recordsTotal" => intval( $totalData ),
+            "recordsFiltered" => intval( $totalFiltered ),
+            "data" => $data,
         ];
 
-        echo json_encode($json_data);
+        echo json_encode( $json_data );
         exit();
-
 
     }
 
@@ -201,49 +191,45 @@ class AdministratorController extends AdminBaseController
      * @return Application|Factory|\Illuminate\Contracts\View\View
      * @throws AuthorizationException
      */
-    public function create()
-    {
+    public function create() {
 
-        $this->authorize('create administrator');
+        $this->authorize( 'create administrator' );
 
         $breadcrumbs = [
-                ['link' => url(config('app.admin_path')."/dashboard"), 'name' => __('locale.menu.Dashboard')],
-                ['link' => url(config('app.admin_path')."/administrators"), 'name' => __('locale.menu.Administrators')],
-                ['name' => __('locale.administrator.create_administrator')],
+            ['link' => url( config( 'app.admin_path' ) . "/dashboard" ), 'name' => __( 'locale.menu.Dashboard' )],
+            ['link' => url( config( 'app.admin_path' ) . "/administrators" ), 'name' => __( 'locale.menu.Administrators' )],
+            ['name' => __( 'locale.administrator.create_administrator' )],
         ];
 
         $roles = $this->roles->getAllowedRoles();
 
-        return view('admin.Administrator.create', compact('breadcrumbs', 'roles'));
+        return view( 'admin.Administrator.create', compact( 'breadcrumbs', 'roles' ) );
     }
 
-
-    public function store(StoreAdministrator $request): RedirectResponse
-    {
-        if (config('app.stage') == 'demo') {
-            return redirect()->route('admin.administrators.index')->with([
-                    'status'  => 'error',
-                    'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+    public function store( StoreAdministrator $request ): RedirectResponse {
+        if ( $this->checks() ) {
+            return redirect()->route( 'admin.administrators.index' )->with( [
+                'status' => 'error',
+                'message' => 'Sorry! This option is not available in demo mode',
+            ] );
         }
 
-        $admin = $this->users->store($request->input());
+        $admin = $this->users->store( $request->input() );
 
         // Upload and save image
-        if ($request->hasFile('image')) {
-            if ($request->file('image')->isValid()) {
-                $admin->image = $admin->uploadImage($request->file('image'));
+        if ( $request->hasFile( 'image' ) ) {
+            if ( $request->file( 'image' )->isValid() ) {
+                $admin->image = $admin->uploadImage( $request->file( 'image' ) );
                 $admin->save();
             }
         }
 
-        return redirect()->route('admin.administrators.index')->with([
-                'status'  => 'success',
-                'message' => __('locale.administrator.administrator_successfully_added'),
-        ]);
+        return redirect()->route( 'admin.administrators.index' )->with( [
+            'status' => 'success',
+            'message' => __( 'locale.administrator.administrator_successfully_added' ),
+        ] );
 
     }
-
 
     /**
      * View administrator for edit
@@ -255,26 +241,24 @@ class AdministratorController extends AdminBaseController
      * @throws AuthorizationException
      */
 
-    public function show(User $administrator)
-    {
-        $this->authorize('edit administrator');
+    public function show( User $administrator ) {
+        $this->authorize( 'edit administrator' );
 
         $breadcrumbs = [
-                ['link' => url(config('app.admin_path')."/dashboard"), 'name' => __('locale.menu.Dashboard')],
-                ['link' => url(config('app.admin_path')."/administrators"), 'name' => __('locale.menu.Administrators')],
-                ['name' => $administrator->displayName()],
+            ['link' => url( config( 'app.admin_path' ) . "/dashboard" ), 'name' => __( 'locale.menu.Dashboard' )],
+            ['link' => url( config( 'app.admin_path' ) . "/administrators" ), 'name' => __( 'locale.menu.Administrators' )],
+            ['name' => $administrator->displayName()],
         ];
 
-        $get_roles = collect($administrator->roles)->map(function ($key) {
+        $get_roles = collect( $administrator->roles )->map( function ( $key ) {
             return $key->id;
-        })->join(',');
+        } )->join( ',' );
 
-        $languages = Language::where('status', 1)->get();
-        $roles     = $this->roles->getAllowedRoles();
+        $languages = Language::where( 'status', 1 )->get();
+        $roles = $this->roles->getAllowedRoles();
 
-        return view('admin.Administrator.show', compact('breadcrumbs', 'administrator', 'languages', 'roles', 'get_roles'));
+        return view( 'admin.Administrator.show', compact( 'breadcrumbs', 'administrator', 'languages', 'roles', 'get_roles' ) );
     }
-
 
     /**
      * @param  User  $administrator
@@ -282,31 +266,29 @@ class AdministratorController extends AdminBaseController
      *
      * @return RedirectResponse
      */
-    public function update(User $administrator, UpdateAdministrator $request): RedirectResponse
-    {
-        if (config('app.stage') == 'demo') {
-            return redirect()->route('admin.administrators.index')->with([
-                    'status'  => 'error',
-                    'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+    public function update( User $administrator, UpdateAdministrator $request ): RedirectResponse {
+        if ( $this->checks() ) {
+            return redirect()->route( 'admin.administrators.index' )->with( [
+                'status' => 'error',
+                'message' => 'Sorry! This option is not available in demo mode',
+            ] );
         }
 
-        $this->users->update($administrator, $request->input());
+        $this->users->update( $administrator, $request->input() );
 
         // Upload and save image
-        if ($request->hasFile('image')) {
-            if ($request->file('image')->isValid()) {
-                $administrator->image = $administrator->uploadImage($request->file('image'));
+        if ( $request->hasFile( 'image' ) ) {
+            if ( $request->file( 'image' )->isValid() ) {
+                $administrator->image = $administrator->uploadImage( $request->file( 'image' ) );
                 $administrator->save();
             }
         }
 
-        return redirect()->route('admin.administrators.index')->with([
-                'status'  => 'success',
-                'message' => __('locale.administrator.administrator_successfully_updated'),
-        ]);
+        return redirect()->route( 'admin.administrators.index' )->with( [
+            'status' => 'success',
+            'message' => __( 'locale.administrator.administrator_successfully_updated' ),
+        ] );
     }
-
 
     /**
      * change administrator status
@@ -317,34 +299,32 @@ class AdministratorController extends AdminBaseController
      * @throws AuthorizationException
      * @throws GeneralException
      */
-    public function activeToggle(User $administrator): JsonResponse
-    {
-        if (config('app.stage') == 'demo') {
-            return response()->json([
-                    'status'  => 'error',
-                    'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+    public function activeToggle( User $administrator ): JsonResponse {
+        if ( $this->checks() ) {
+            return response()->json( [
+                'status' => 'error',
+                'message' => 'Sorry! This option is not available in demo mode',
+            ] );
         }
         try {
-            $this->authorize('edit administrator');
+            $this->authorize( 'edit administrator' );
 
-            if ($administrator->update(['status' => ! $administrator->status])) {
-                return response()->json([
-                        'status'  => 'success',
-                        'message' => __('locale.administrator.administrator_successfully_change'),
-                ]);
+            if ( $administrator->update( ['status' => !$administrator->status] ) ) {
+                return response()->json( [
+                    'status' => 'success',
+                    'message' => __( 'locale.administrator.administrator_successfully_change' ),
+                ] );
             }
 
-            throw new GeneralException(__('locale.exceptions.something_went_wrong'));
+            throw new GeneralException( __( 'locale.exceptions.something_went_wrong' ) );
 
-        } catch (ModelNotFoundException $exception) {
-            return response()->json([
-                    'status'  => 'error',
-                    'message' => $exception->getMessage(),
-            ]);
+        } catch ( ModelNotFoundException $exception ) {
+            return response()->json( [
+                'status' => 'error',
+                'message' => $exception->getMessage(),
+            ] );
         }
     }
-
 
     /**
      * delete administrator
@@ -354,25 +334,23 @@ class AdministratorController extends AdminBaseController
      * @return JsonResponse
      * @throws AuthorizationException
      */
-    public function destroy(User $administrator): JsonResponse
-    {
-        if (config('app.stage') == 'demo') {
-            return response()->json([
-                    'status'  => 'error',
-                    'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+    public function destroy( User $administrator ): JsonResponse {
+        if ( $this->checks() ) {
+            return response()->json( [
+                'status' => 'error',
+                'message' => 'Sorry! This option is not available in demo mode',
+            ] );
         }
 
-        $this->authorize('delete administrator');
+        $this->authorize( 'delete administrator' );
 
-        $this->users->destroy($administrator);
+        $this->users->destroy( $administrator );
 
-        return response()->json([
-                'status'  => 'success',
-                'message' => __('locale.administrator.administrator_successfully_deleted'),
-        ]);
+        return response()->json( [
+            'status' => 'success',
+            'message' => __( 'locale.administrator.administrator_successfully_deleted' ),
+        ] );
     }
-
 
     /**
      * Bulk Action with Enable, Disable and Delete
@@ -383,70 +361,66 @@ class AdministratorController extends AdminBaseController
      * @throws AuthorizationException
      */
 
-    public function batchAction(Request $request): JsonResponse
-    {
-        if (config('app.stage') == 'demo') {
-            return response()->json([
-                    'status'  => 'error',
-                    'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+    public function batchAction( Request $request ): JsonResponse {
+        if ( $this->checks() ) {
+            return response()->json( [
+                'status' => 'error',
+                'message' => 'Sorry! This option is not available in demo mode',
+            ] );
         }
 
-        $action = $request->get('action');
-        $ids    = $request->get('ids');
+        $action = $request->get( 'action' );
+        $ids = $request->get( 'ids' );
 
-        switch ($action) {
-            case 'destroy':
-                $this->authorize('delete administrator');
+        switch ( $action ) {
+        case 'destroy':
+            $this->authorize( 'delete administrator' );
 
-                $this->users->batchDestroy($ids);
+            $this->users->batchDestroy( $ids );
 
-                return response()->json([
-                        'status'  => 'success',
-                        'message' => __('locale.administrator.administrators_deleted'),
-                ]);
+            return response()->json( [
+                'status' => 'success',
+                'message' => __( 'locale.administrator.administrators_deleted' ),
+            ] );
 
-            case 'enable':
-                $this->authorize('edit administrator');
+        case 'enable':
+            $this->authorize( 'edit administrator' );
 
-                $this->users->batchEnable($ids);
+            $this->users->batchEnable( $ids );
 
-                return response()->json([
-                        'status'  => 'success',
-                        'message' => __('locale.administrator.administrators_enabled'),
-                ]);
+            return response()->json( [
+                'status' => 'success',
+                'message' => __( 'locale.administrator.administrators_enabled' ),
+            ] );
 
-            case 'disable':
+        case 'disable':
 
-                $this->authorize('edit administrator');
+            $this->authorize( 'edit administrator' );
 
-                $this->users->batchDisable($ids);
+            $this->users->batchDisable( $ids );
 
-                return response()->json([
-                        'status'  => 'success',
-                        'message' => __('locale.administrator.administrators_disabled'),
-                ]);
+            return response()->json( [
+                'status' => 'success',
+                'message' => __( 'locale.administrator.administrators_disabled' ),
+            ] );
         }
 
-        return response()->json([
-                'status'  => 'error',
-                'message' => __('locale.exceptions.invalid_action'),
-        ]);
+        return response()->json( [
+            'status' => 'error',
+            'message' => __( 'locale.exceptions.invalid_action' ),
+        ] );
 
     }
-
 
     /**
      * @return Generator
      */
 
-    public function AdministratorGenerator(): Generator
-    {
-        foreach (User::where('is_admin', 1)->cursor() as $administrator) {
+    public function AdministratorGenerator(): Generator {
+        foreach ( User::where( 'is_admin', 1 )->cursor() as $administrator ) {
             yield $administrator;
         }
     }
-
 
     /**
      *
@@ -457,21 +431,20 @@ class AdministratorController extends AdminBaseController
      * @throws UnsupportedTypeException
      * @throws WriterNotOpenedException
      */
-    public function export()
-    {
+    public function export() {
 
-        if (config('app.stage') == 'demo') {
-            return redirect()->route('admin.administrators.index')->with([
-                    'status'  => 'error',
-                    'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+        if ( $this->checks() ) {
+            return redirect()->route( 'admin.administrators.index' )->with( [
+                'status' => 'error',
+                'message' => 'Sorry! This option is not available in demo mode',
+            ] );
         }
 
-        $this->authorize('edit administrator');
+        $this->authorize( 'edit administrator' );
 
-        $file_name = (new FastExcel($this->AdministratorGenerator()))->export(storage_path('Administrator_'.time().'.xlsx'));
+        $file_name = ( new FastExcel( $this->AdministratorGenerator() ) )->export( storage_path( 'Administrator_' . time() . '.xlsx' ) );
 
-        return response()->download($file_name);
+        return response()->download( $file_name );
     }
 
     /**
@@ -479,8 +452,7 @@ class AdministratorController extends AdminBaseController
      *
      * @return Collection
      */
-    public function getRoles(): Collection
-    {
+    public function getRoles(): Collection {
         return $this->roles->getAllowedRoles();
     }
 }

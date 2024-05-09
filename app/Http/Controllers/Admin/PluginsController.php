@@ -5,23 +5,33 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class PluginsController extends Controller
-{
-    public function plugins()
-    {
+class PluginsController extends Controller {
+    public function plugins() {
         $pageConfigs = [
-                'bodyClass' => 'ecommerce-application',
+            'bodyClass' => 'ecommerce-application',
         ];
 
         $breadcrumbs = [
-                ['link' => url(config('app.admin_path')."/dashboard"), 'name' => __('locale.menu.Dashboard')],
-                ['name' => __('locale.menu.Plugins')],
+            ['link' => url( config( 'app.admin_path' ) . "/dashboard" ), 'name' => __( 'locale.menu.Dashboard' )],
+            ['name' => __( 'locale.menu.Plugins' )],
         ];
 
+        return view( 'admin.Plugins.index', [
+            'pageConfigs' => $pageConfigs,
+            'breadcrumbs' => $breadcrumbs,
+        ] );
+    }
+    public function editors( Request $request ) {
 
-        return view('admin.Plugins.index', [
-                'pageConfigs' => $pageConfigs,
-                'breadcrumbs' => $breadcrumbs,
-        ]);
+        $content = $request->data ?? 'Hello, Welcome to new editor';
+        $breadcrumbs = [
+            ['link' => route( 'admin.editors' )],
+            ['name' => __( 'Editors' )],
+        ];
+
+        return view( 'plugins.editor', [
+            'breadcrumbs' => $breadcrumbs,
+            'content' => $content,
+        ] );
     }
 }

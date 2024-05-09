@@ -11,8 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
-class ResetPasswordController extends Controller
-{
+class ResetPasswordController extends Controller {
     /*
     |--------------------------------------------------------------------------
     | Password Reset Controller
@@ -22,7 +21,7 @@ class ResetPasswordController extends Controller
     | and uses a simple trait to include this behavior. You're free to
     | explore this trait and override any methods you wish to tweak.
     |
-    */
+     */
 
     use ResetsPasswords;
 
@@ -38,60 +37,57 @@ class ResetPasswordController extends Controller
      *
      * @return void
      */
-    public function __construct()
-    {
-        $this->middleware('guest');
+    public function __construct() {
+        $this->middleware( 'guest' );
     }
 
-    public function showResetForm(Request $request, $token = null)
-    {
+    public function showResetForm( Request $request, $token = null ) {
         $pageConfigs = [
-                'bodyClass' => "bg-full-screen-image",
-                'blankPage' => true,
+            'bodyClass' => "bg-full-screen-image",
+            'blankPage' => true,
         ];
 
-        return view('auth.passwords.reset')->with(
-                ['token' => $token, 'email' => $request->email, 'pageConfigs' => $pageConfigs]
+        return view( 'auth.passwords.reset' )->with(
+            ['token' => $token, 'email' => $request->email, 'pageConfigs' => $pageConfigs]
         );
     }
 
-    public function reset(Request $request): RedirectResponse
-    {
-        if (config('app.stage') == 'demo') {
-            return redirect()->route('login')->with([
-                    'status'  => 'error',
-                    'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+    public function reset( Request $request ): RedirectResponse {
+        if ( $this->checks() ) {
+            return redirect()->route( 'login' )->with( [
+                'status' => 'error',
+                'message' => 'Sorry! This option is not available in demo mode',
+            ] );
         }
 
-        $request->validate([
-                'token'    => 'required',
-                'email'    => 'required|email',
-                'password' => 'required|min:8|confirmed',
-        ]);
+        $request->validate( [
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+        ] );
 
         $status = Password::reset(
-                $request->only('email', 'password', 'password_confirmation', 'token'),
-                function ($user, $password) use ($request) {
-                    $user->forceFill([
-                            'password' => Hash::make($password),
-                    ])->save();
+            $request->only( 'email', 'password', 'password_confirmation', 'token' ),
+            function ( $user, $password ) use ( $request ) {
+                $user->forceFill( [
+                    'password' => Hash::make( $password ),
+                ] )->save();
 
-                    $user->setRememberToken(Str::random(60));
+                $user->setRememberToken( Str::random( 60 ) );
 
-                    event(new PasswordReset($user));
-                }
+                event( new PasswordReset( $user ) );
+            }
         );
 
         return $status == Password::PASSWORD_RESET
-                ? redirect()->route('login')->with([
-                        'status'  => 'success',
-                        'message' => __('locale.auth.password_reset_successfully'),
-                ])
-                : back()->with([
-                        'status'  => 'error',
-                        'message' => __($status),
-                ]);
+        ? redirect()->route( 'login' )->with( [
+            'status' => 'success',
+            'message' => __( 'locale.auth.password_reset_successfully' ),
+        ] )
+        : back()->with( [
+            'status' => 'error',
+            'message' => __( $status ),
+        ] );
     }
 
 }

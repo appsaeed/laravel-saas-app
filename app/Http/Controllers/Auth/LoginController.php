@@ -6,7 +6,6 @@ use App\Exceptions\GeneralException;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Notifications\LoginConfirmation;
 use App\Repositories\Contracts\AccountRepository;
 use Arcanedev\NoCaptcha\Rules\CaptchaRule;
 use Exception;
@@ -28,10 +27,8 @@ use Laravel\Socialite\Facades\Socialite;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use function in_array;
 
-class LoginController extends Controller
-{
+class LoginController extends Controller {
     /*
     |--------------------------------------------------------------------------
     | Login Controller
@@ -41,10 +38,9 @@ class LoginController extends Controller
     | redirecting them to your home screen. The controller uses a trait
     | to conveniently provide its functionality to your applications.
     |
-    */
+     */
 
     use AuthenticatesUsers;
-
 
     protected array $supportedProviders = [
         'facebook',
@@ -63,18 +59,16 @@ class LoginController extends Controller
      *
      * @param  AccountRepository  $account
      */
-    public function __construct(AccountRepository $account)
-    {
-        $this->middleware('guest')->except('logout', 'avatar', 'downloadSampleFile');
+    public function __construct( AccountRepository $account ) {
+        $this->middleware( 'guest' )->except( 'logout', 'avatar', 'downloadSampleFile' );
         $this->account = $account;
     }
 
     // Login
-    public function showLoginForm(): View|Factory|Redirector|Application|RedirectResponse
-    {
+    public function showLoginForm(): View | Factory | Redirector | Application | RedirectResponse {
 
-        if (\auth()->check()) {
-            return redirect(Helper::home_route());
+        if ( auth()->check() ) {
+            return redirect( Helper::home_route() );
         }
 
         $pageConfigs = [
@@ -82,82 +76,77 @@ class LoginController extends Controller
             'blankPage' => true,
         ];
 
-        return view('/auth/login', [
+        return view( '/auth/login', [
             'pageConfigs' => $pageConfigs,
-        ]);
+        ] );
     }
-
 
     /**
      * @param  Request  $request
      *
      * @return RedirectResponse
      */
-    public function login(Request $request): RedirectResponse
-    {
+    public function login( Request $request ): RedirectResponse {
         $rules = [
-            'email'       => 'required|string|email|min:3',
-            'password'    => 'required|string|min:3|max:50',
+            'email' => 'required|string|email|min:3',
+            'password' => 'required|string|min:3|max:50',
             'remember_me' => 'boolean',
         ];
 
-        if (config('no-captcha.login')) {
+        if ( config( 'no-captcha.login' ) ) {
             $rules['g-recaptcha-response'] = ['required', new CaptchaRule()];
         }
 
         $messages = [
-            'g-recaptcha-response.required' => __('locale.auth.recaptcha_required'),
-            'g-recaptcha-response.captcha'  => __('locale.auth.recaptcha_required'),
+            'g-recaptcha-response.required' => __( 'locale.auth.recaptcha_required' ),
+            'g-recaptcha-response.captcha' => __( 'locale.auth.recaptcha_required' ),
         ];
 
-        $validator = Validator::make($request->all(), $rules, $messages);
+        $validator = Validator::make( $request->all(), $rules, $messages );
 
-        if ($validator->fails()) {
-            return redirect()->back()->withInput($request->only('email'))->with([
-                'status'  => 'warning',
+        if ( $validator->fails() ) {
+            return redirect()->back()->withInput( $request->only( 'email' ) )->with( [
+                'status' => 'warning',
                 'message' => $validator->errors()->first(),
-            ]);
+            ] );
         }
 
         try {
 
-            $credentials = request(['email', 'password', 'status' => 1]);
+            $credentials = request( ['email', 'password', 'status' => 1] );
 
-            if (!Auth::attempt($credentials, $request->remember)) {
-                return redirect()->back()->withInput($request->only('email'))->with([
-                    'status'  => 'error',
-                    'message' => __('locale.auth.failed'),
-                ]);
+            if ( !Auth::attempt( $credentials, $request->remember ) ) {
+                return redirect()->back()->withInput( $request->only( 'email' ) )->with( [
+                    'status' => 'error',
+                    'message' => __( 'locale.auth.failed' ),
+                ] );
             }
 
-            if (!Auth::user()->status) {
+            if ( !Auth::user()->status ) {
 
                 Auth::logout();
 
-                return redirect()->back()->withInput($request->only('email'))->with([
-                    'status'  => 'error',
-                    'message' => __('locale.auth.disabled'),
-                ]);
+                return redirect()->back()->withInput( $request->only( 'email' ) )->with( [
+                    'status' => 'error',
+                    'message' => __( 'locale.auth.disabled' ),
+                ] );
             }
-
 
             $user = Auth::user();
 
-            $this->account->redirectAfterLogin($user);
+            $this->account->redirectAfterLogin( $user );
 
-
-            return redirect(Helper::home_route())->with([
-                'status'  => 'success',
-                'message' => __('locale.auth.welcome_come_back', ['name' => $user->displayName()]),
-            ]);
-        } catch (Exception $exception) {
-            return redirect()->back()->with([
-                'status'  => 'error',
+            return redirect( Helper::home_route() )->with( [
+                'status' => 'success',
+                'message' => __( 'locale.auth.welcome_come_back', ['name' => $user->displayName()] ),
+            ] );
+        } catch ( Exception $exception ) {
+            return redirect()->back()->with( [
+                'status' => 'error',
                 'message' => $exception->getMessage(),
-            ]);
+            ] );
         }
     }
-
 
     /**
      * get customer avatar
@@ -166,21 +155,20 @@ class LoginController extends Controller
      *
      * @return mixed
      */
-    public function avatar(User $user): mixed
-    {
+    public function avatar( User $user ): mixed {
 
-        if (!empty($user->imagePath())) {
+        if ( !empty( $user->imagePath() ) ) {
 
             try {
-                $image = Image::make($user->imagePath());
-            } catch (NotReadableException) {
+                $image = Image::make( $user->imagePath() );
+            } catch ( NotReadableException ) {
                 $user->image = null;
                 $user->save();
 
-                $image = Image::make(public_path('images/profile/profile.jpg'));
+                $image = Image::make( public_path( 'images/profile/profile.jpg' ) );
             }
         } else {
-            $image = Image::make(public_path('images/profile/profile.jpg'));
+            $image = Image::make( public_path( 'images/profile/profile.jpg' ) );
         }
 
         return $image->response();
@@ -195,37 +183,35 @@ class LoginController extends Controller
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function logout(Request $request): Response|Redirector|Application|RedirectResponse
-    {
+    public function logout( Request $request ): Response | Redirector | Application | RedirectResponse {
 
-        if ($admin_id = Session::get('admin_user_id')) {
+        if ( $admin_id = Session::get( 'admin_user_id' ) ) {
             // Impersonate mode, back to original User
-            session()->forget('admin_user_id');
-            session()->forget('admin_user_name');
-            session()->forget('temp_user_id');
-            session()->forget('permissions');
+            session()->forget( 'admin_user_id' );
+            session()->forget( 'admin_user_name' );
+            session()->forget( 'temp_user_id' );
+            session()->forget( 'permissions' );
 
-            auth()->loginUsingId((int) $admin_id);
+            auth()->loginUsingId( (int) $admin_id );
 
-            session(['permissions' => auth()->user()->getPermissions()]);
+            session( ['permissions' => auth()->user()->getPermissions()] );
 
-            return redirect()->route('admin.home');
+            return redirect()->route( 'admin.home' );
         }
 
         $this->guard()->logout();
 
         $request->session()->invalidate();
 
-        if ($this->loggedOut($request)) {
-            return $this->loggedOut($request)->with([
-                'status'  => 'success',
+        if ( $this->loggedOut( $request ) ) {
+            return $this->loggedOut( $request )->with( [
+                'status' => 'success',
                 'message' => 'Logout was successfully done',
-            ]);
+            ] );
         } else {
-            return redirect('/login');
+            return redirect( '/login' );
         }
     }
-
 
     /**
      * Get the throttle key for the given request.
@@ -234,11 +220,9 @@ class LoginController extends Controller
      *
      * @return string
      */
-    protected function throttleKey(Request $request): string
-    {
-        return Str::lower($request->ip());
+    protected function throttleKey( Request $request ): string {
+        return Str::lower( $request->ip() );
     }
-
 
     /**
      * redirect socialite
@@ -248,24 +232,24 @@ class LoginController extends Controller
      * @return \Symfony\Component\HttpFoundation\RedirectResponse]
      */
 
-    public function redirectToProvider($provider): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function redirectToProvider( $provider ): \Symfony\Component\HttpFoundation\RedirectResponse
     {
 
-        if (config('app.stage') == 'demo') {
-            return redirect()->route('login')->with([
-                'status'  => 'error',
+        if ( $this->checks() ) {
+            return redirect()->route( 'login' )->with( [
+                'status' => 'error',
                 'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+            ] );
         }
 
-        if (!in_array($provider, $this->supportedProviders, true)) {
-            return redirect()->route('user.home')->with([
-                'status'  => 'error',
-                'message' => __('locale.auth.socialite.unacceptable', ['provider' => $provider]),
-            ]);
+        if ( !in_array( $provider, $this->supportedProviders, true ) ) {
+            return redirect()->route( 'user.home' )->with( [
+                'status' => 'error',
+                'message' => __( 'locale.auth.socialite.unacceptable', ['provider' => $provider] ),
+            ] );
         }
 
-        return Socialite::driver($provider)->redirect();
+        return Socialite::driver( $provider )->redirect();
     }
 
     /**
@@ -275,47 +259,46 @@ class LoginController extends Controller
      *
      * @return RedirectResponse
      */
-    public function handleProviderCallback($provider): RedirectResponse
-    {
-        if (config('app.stage') == 'demo') {
-            return redirect()->route('login')->with([
-                'status'  => 'error',
+    public function handleProviderCallback( $provider ): RedirectResponse {
+        if ( $this->checks() ) {
+            return redirect()->route( 'login' )->with( [
+                'status' => 'error',
                 'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+            ] );
         }
 
-        $data = Socialite::driver($provider)->user();
+        $data = Socialite::driver( $provider )->user();
 
         try {
-            $user = $this->account->findOrCreateSocial($provider, $data);
+            $user = $this->account->findOrCreateSocial( $provider, $data );
 
-            if (!$user->status) {
-                return redirect()->route('login')->with([
-                    'status'  => 'error',
-                    'message' => __('locale.auth.disabled'),
-                ]);
+            if ( !$user->status ) {
+                return redirect()->route( 'login' )->with( [
+                    'status' => 'error',
+                    'message' => __( 'locale.auth.disabled' ),
+                ] );
             }
 
-            $this->account->redirectAfterLogin($user);
+            $this->account->redirectAfterLogin( $user );
 
-            \auth()->login($user, true);
+            \auth()->login( $user, true );
 
-            if ($user->active_portal == 'customer') {
-                return redirect()->route('user.home')->with([
-                    'status'  => 'success',
-                    'message' => __('locale.auth.welcome_come_back', ['name' => $user->displayName()]),
-                ]);
+            if ( $user->active_portal == 'customer' ) {
+                return redirect()->route( 'user.home' )->with( [
+                    'status' => 'success',
+                    'message' => __( 'locale.auth.welcome_come_back', ['name' => $user->displayName()] ),
+                ] );
             }
 
-            return redirect()->route('admin.home')->with([
-                'status'  => 'success',
-                'message' => __('locale.auth.welcome_come_back', ['name' => $user->displayName()]),
-            ]);
-        } catch (GeneralException $e) {
-            return redirect()->route('login')->with([
-                'status'  => 'error',
+            return redirect()->route( 'admin.home' )->with( [
+                'status' => 'success',
+                'message' => __( 'locale.auth.welcome_come_back', ['name' => $user->displayName()] ),
+            ] );
+        } catch ( GeneralException $e ) {
+            return redirect()->route( 'login' )->with( [
+                'status' => 'error',
                 'message' => $e->getMessage(),
-            ]);
+            ] );
         }
     }
 
@@ -324,28 +307,26 @@ class LoginController extends Controller
      *
      * @return BinaryFileResponse
      */
-    public function downloadSampleFile(): BinaryFileResponse
-    {
-        return \response()->download(storage_path('app/import_file_demo.csv'));
+    public function downloadSampleFile(): BinaryFileResponse {
+        return \response()->download( storage_path( 'app/import_file_demo.csv' ) );
     }
 
     /*
      * test or debug or var_dump function
      */
-    public function debug(): bool|string|RedirectResponse
-    {
-        if (config('app.stage') == 'demo') {
-            return redirect()->route('login')->with([
-                'status'  => 'error',
+    public function debug(): bool | string | RedirectResponse {
+        if ( $this->checks() ) {
+            return redirect()->route( 'login' )->with( [
+                'status' => 'error',
                 'message' => 'Sorry! This option is not available in demo mode',
-            ]);
+            ] );
         }
 
         $backUpCode = [];
-        for ($i = 0; $i < 8; $i++) {
-            $backUpCode[] = rand(100000, 999999);
+        for ( $i = 0; $i < 8; $i++ ) {
+            $backUpCode[] = rand( 100000, 999999 );
         }
 
-        return json_encode($backUpCode);
+        return json_encode( $backUpCode );
     }
 }

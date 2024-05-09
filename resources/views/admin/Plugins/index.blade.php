@@ -3,7 +3,7 @@
 @section('title', __('locale.menu.Plugins'))
 
 @section('page-style')
-    <link rel="stylesheet" href="{{ asset(mix('css/pages/checkout.css')) }}">
+    {{-- <link rel="stylesheet" href="{{ asset(mix('css/pages/checkout.css')) }}"> --}}
 @endsection
 
 @section('content')
