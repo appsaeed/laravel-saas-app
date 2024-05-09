@@ -63,12 +63,12 @@ class SystemController extends AdminBaseController {
      */
     public function config() {
 
-        // if ( auth()->id() != 1 ) {
-        //     return response()->json( [
-        //         'status' => 'error',
-        //         'message' => 'Unauthorized access',
-        //     ] );
-        // }
+        if ( auth()->id() != 1 ) {
+            return response()->json( [
+                'status' => 'error',
+                'message' => 'Unauthorized access',
+            ] );
+        }
 
         return response()->json( [config()->all()] );
     }
