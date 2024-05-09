@@ -470,8 +470,7 @@ class TodosRepository {
         $nestedData['responsive_id'] = '';
         $nestedData['id'] = $task->id;
         $nestedData['uid'] = $task->uid;
-        // $nestedData['avatar']        = route('customer.getAvatar', $task->user->uid);
-        $nestedData['avatar'] = '';
+        $nestedData['avatar'] = route( 'customer.getAvatar', $task->user->uid );
         $nestedData['email'] = $task->user->email;
         $nestedData['user_name'] = $task->user->displayName();
         $nestedData['created_at'] = Worker::todoCreated_at( $task->created_at );

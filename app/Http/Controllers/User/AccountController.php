@@ -107,10 +107,11 @@ class AccountController extends Controller {
      * @return mixed
      */
     public function getAvatar( $user ) {
-        if ( User::find( $user ) ) {
-            $user = User::find( $user );
+
+        if ( User::findByUid( $user ) ) {
+            $user = User::findByUid( $user );
         } else {
-            $user = User::where( 'uid', $user )->first();
+            $user = User::find( $user );
         }
 
         if ( $user && !empty( $user->imagePath() ) ) {

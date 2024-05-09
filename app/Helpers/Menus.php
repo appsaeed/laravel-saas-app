@@ -186,6 +186,50 @@ class Menus {
                     ],
                 ],
             ],
+            // [
+            //     "url" => "",
+            //     "name" => "Projects",
+            //     "icon" => "file-text",
+            //     "access" => "view_todos|create_todos|update_todos|delete_todos",
+            //     "submenu" => [
+            //         [
+            //             "url" => route( 'customer.projects.index' ),
+            //             "name" => "All projects",
+            //             "access" => "view_todos",
+            //             "icon" => "file-text",
+            //         ],
+            //         [
+            //             "url" => route( 'customer.projects.mytasks' ),
+            //             "name" => "Your projects",
+            //             "access" => "view_todos",
+            //             "icon" => "file-text",
+            //         ],
+            //         [
+            //             "url" => route( 'customer.projects.receives' ),
+            //             "name" => "Receives",
+            //             "access" => "view_todos",
+            //             "icon" => "download",
+            //         ],
+            //         [
+            //             "url" => route( 'customer.projects.in_progress' ),
+            //             "name" => "In progress",
+            //             "access" => "view_todos",
+            //             "icon" => "circle",
+            //         ],
+            //         [
+            //             "url" => route( 'customer.projects.reviews' ),
+            //             "name" => "Reviews",
+            //             "access" => "view_todos",
+            //             "icon" => "star",
+            //         ],
+            //         [
+            //             "url" => route( 'customer.projects.complete' ),
+            //             "name" => "Complete",
+            //             "access" => "view_todos",
+            //             "icon" => "check",
+            //         ],
+            //     ],
+            // ],
             [
                 "url" => route( 'customer.developer.settings' ),
                 "name" => "Developers",

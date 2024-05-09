@@ -82,6 +82,53 @@ Route::get( 'messages/{todo}/me', [ChatBoxController::class, 'receiver'] )->name
 
 /*
 |--------------------------------------------------------------------------
+| Todos module
+|--------------------------------------------------------------------------
+ */
+Route::group( ['prefix' => 'projects', 'as' => 'projects.'], function () {
+
+    Route::post( '/{task}/will-do', [TodosController::class, 'will_do'] )->name( 'will_do' );
+    //task send to review
+    Route::post( '/{task}/review', [TodosController::class, 'send_review'] )->name( 'send_review' );
+    //task mark as completed
+    Route::post( '/{task}/mark-as-ompete', [TodosController::class, 'markAsComplete'] )
+        ->name( 'mark_as_complete' );
+
+    //task pause and continue
+    Route::post( '/{task}/pause_task', [TodosController::class, 'pauseTask'] )->name( 'pause' );
+    Route::post( '/{task}/continue_task', [TodosController::class, 'continueTask'] )
+        ->name( 'continueTask' );
+
+    Route::get( '/reviews', [TodosController::class, 'reviews'] )->name( 'reviews' );
+    Route::post( '/reviews', [TodosController::class, 'reviewsSearch'] )
+        ->name( 'reviewsSearch' );
+
+    Route::get( '/in-progress', [TodosController::class, 'inProgress'] )->name( 'in_progress' );
+    Route::post( '/in-progress', [TodosController::class, 'inProgressSearch'] )
+        ->name( 'in_progress.search' );
+
+    Route::post( '/batch_action', [TodosController::class, 'batchAction'] )
+        ->name( 'batch_action' );
+
+    Route::get( '/receives', [TodosController::class, 'received'] )
+        ->name( 'receives' );
+
+    Route::post( '/receives', [TodosController::class, 'receivedSearch'] )
+        ->name( 'receivedSearch' );
+
+    Route::get( '/complete', [TodosController::class, 'complete'] )->name( 'complete' );
+    Route::post( '/complete', [TodosController::class, 'completeSearch'] )
+        ->name( 'complete.search' );
+
+    Route::get( '/yours-tasks', [TodosController::class, 'mytasks'] )->name( 'mytasks' );
+    Route::post( '/yours-tasks', [TodosController::class, 'mytasksSearch'] )->name( 'mytasksSearch' );
+
+    Route::post( '/search', [TodosController::class, 'search'] )->name( 'search' );
+} );
+Route::resource( 'projects', TodosController::class );
+
+/*
+|--------------------------------------------------------------------------
 | Developer module
 |--------------------------------------------------------------------------
  */

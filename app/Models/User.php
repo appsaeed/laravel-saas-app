@@ -113,6 +113,15 @@ class User extends Authenticatable implements MustVerifyEmail {
         return self::where( 'uid', $uid )->first();
     }
 
+    /**
+     * get route key by uid
+     *
+     * @return string
+     */
+    public function getRouteKeyName(): string {
+        return 'uid';
+    }
+
     public function customer(): HasOne {
         return $this->hasOne( Customer::class );
     }
@@ -301,15 +310,6 @@ class User extends Authenticatable implements MustVerifyEmail {
         }
 
         return collect( $permissions );
-    }
-
-    /**
-     * get route key by uid
-     *
-     * @return string
-     */
-    public function getRouteKeyName(): string {
-        return 'uid';
     }
 
     /**
