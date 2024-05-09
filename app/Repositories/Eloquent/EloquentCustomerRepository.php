@@ -2,28 +2,24 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Exceptions\GeneralException;
 use App\Helpers\Helper;
 use App\Models\Customer;
-
 use App\Models\User;
 use App\Notifications\WelcomeEmailNotification;
 use App\Repositories\Contracts\CustomerRepository;
 use Exception;
 use Illuminate\Config\Repository;
 use Illuminate\Support\Arr;
-use App\Exceptions\GeneralException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Throwable;
 
-
 /**
  * Class EloquentCustomerRepository.
  */
-class EloquentCustomerRepository extends EloquentBaseRepository implements CustomerRepository
-{
-
+class EloquentCustomerRepository extends EloquentBaseRepository implements CustomerRepository {
 
     /**
      * @var Repository
@@ -36,9 +32,8 @@ class EloquentCustomerRepository extends EloquentBaseRepository implements Custo
      * @param  User  $user
      * @param  Repository  $config
      */
-    public function __construct(User $user, Repository $config)
-    {
-        parent::__construct($user);
+    public function __construct( User $user, Repository $config ) {
+        parent::__construct( $user );
         $this->config = $config;
     }
 
@@ -50,46 +45,54 @@ class EloquentCustomerRepository extends EloquentBaseRepository implements Custo
      * @throws GeneralException
      *
      */
-    public function store(array $input, $confirmed = false): User
-    {
+    public function store( array $input, $confirmed = false ): User {
 
         /** @var User $user */
-        $user = $this->make(Arr::only($input, ['first_name', 'last_name', 'email', 'status', 'timezone', 'locale']));
+        $user = $this->make( Arr::only( $input, ['first_name', 'last_name', 'email', 'status', 'timezone', 'locale'] ) );
 
-        if (empty($user->locale)) {
-            $user->locale = $this->config->get('app.locale');
+        if ( empty( $user->locale ) ) {
+            $user->locale = $this->config->get( 'app.locale' );
         }
 
-        if (empty($user->timezone)) {
-            $user->timezone = $this->config->get('app.timezone');
+        if ( empty( $user->timezone ) ) {
+            $user->timezone = $this->config->get( 'app.timezone' );
         }
 
         $user->email_verified_at = now();
-        $user->is_admin          = false;
-        $user->is_customer       = true;
-        $user->active_portal     = 'customer';
+        $user->is_admin = false;
+        $user->is_customer = true;
+        $user->active_portal = 'customer';
 
-        if (!$this->save($user, $input)) {
-            throw new GeneralException(__('locale.exceptions.something_went_wrong'));
+        if ( !$this->save( $user, $input ) ) {
+            throw new GeneralException( __( 'locale.exceptions.something_went_wrong' ) );
         }
 
-        Customer::create([
-            'user_id'       => $user->id,
-            'phone'         => $input['phone'],
-            'notifications' => json_encode([
-                'login'        => 'no',
-                'promotion'    => 'yes',
-                'profile'      => 'yes',
-            ]),
-        ]);
+        Customer::create( [
+            'user_id' => $user->id,
+            'phone' => $input['phone'],
+            'notifications' => json_encode( [
+                'login' => 'no',
+                'promotion' => 'yes',
+                'profile' => 'yes',
+            ] ),
+        ] );
 
-        if (isset($input['welcome_message'])) {
-            $user->notify(new WelcomeEmailNotification($user->first_name, $user->last_name, $user->email, route('login'), $input['password']));
+        if ( isset( $input['welcome_message'] ) ) {
+            $user->notify( new WelcomeEmailNotification( $user->first_name, $user->last_name, $user->email, route( 'login' ), $input['password'] ) );
         }
+
+        $permissions = [];
+        $permissions['permissions'] = [];
+        foreach ( config( 'customer-permissions' ) as $key => $permission ) {
+            if ( isset( $permission['default'] ) ) {
+                $permissions['permissions'][] = $key;
+            }
+        }
+
+        $this->permissions( $user, $permissions );
 
         return $user;
     }
-
 
     /**
      * @param  User  $customer
@@ -98,13 +101,12 @@ class EloquentCustomerRepository extends EloquentBaseRepository implements Custo
      * @return User
      * @throws GeneralException
      */
-    public function update(User $customer, array $input): User
-    {
+    public function update( User $customer, array $input ): User {
 
-        $customer->fill(Arr::except($input, 'password'));
+        $customer->fill( Arr::except( $input, 'password' ) );
 
-        if (!$this->save($customer, $input)) {
-            throw new GeneralException(__('locale.exceptions.something_went_wrong'));
+        if ( !$this->save( $customer, $input ) ) {
+            throw new GeneralException( __( 'locale.exceptions.something_went_wrong' ) );
         }
 
         return $customer;
@@ -116,13 +118,12 @@ class EloquentCustomerRepository extends EloquentBaseRepository implements Custo
      *
      * @return bool
      */
-    private function save(User $user, array $input): bool
-    {
-        if (isset($input['password']) && !empty($input['password'])) {
-            $user->password = Hash::make($input['password']);
+    private function save( User $user, array $input ): bool {
+        if ( isset( $input['password'] ) && !empty( $input['password'] ) ) {
+            $user->password = Hash::make( $input['password'] );
         }
 
-        if (!$user->save()) {
+        if ( !$user->save() ) {
             return false;
         }
 
@@ -138,35 +139,33 @@ class EloquentCustomerRepository extends EloquentBaseRepository implements Custo
      * @return User
      * @throws GeneralException
      */
-    public function updateInformation(User $user, array $input): User
-    {
-        $customer = Customer::where('user_id', $user->id)->first();
+    public function updateInformation( User $user, array $input ): User {
+        $customer = Customer::where( 'user_id', $user->id )->first();
 
-        if (!$customer) {
-            throw new GeneralException(__('locale.exceptions.something_went_wrong'));
+        if ( !$customer ) {
+            throw new GeneralException( __( 'locale.exceptions.something_went_wrong' ) );
         }
 
-        if (isset($input['notifications']) && count($input['notifications']) > 0) {
+        if ( isset( $input['notifications'] ) && count( $input['notifications'] ) > 0 ) {
 
             $defaultNotifications = [
-                'login'        => 'no',
-                'promotion'    => 'yes',
-                'profile'      => 'yes',
+                'login' => 'no',
+                'promotion' => 'yes',
+                'profile' => 'yes',
             ];
 
-            $notifications          = array_merge($defaultNotifications, $input['notifications']);
-            $input['notifications'] = json_encode($notifications);
+            $notifications = array_merge( $defaultNotifications, $input['notifications'] );
+            $input['notifications'] = json_encode( $notifications );
         }
 
-        $data = $customer->update($input);
+        $data = $customer->update( $input );
 
-        if (!$data) {
-            throw new GeneralException(__('locale.exceptions.something_went_wrong'));
+        if ( !$data ) {
+            throw new GeneralException( __( 'locale.exceptions.something_went_wrong' ) );
         }
 
         return $user;
     }
-
 
     /**
      * update permissions
@@ -177,21 +176,19 @@ class EloquentCustomerRepository extends EloquentBaseRepository implements Custo
      * @return User
      * @throws GeneralException
      */
-    public function permissions(User $user, array $input): User
-    {
-        $data = array_values($input['permissions']);
+    public function permissions( User $user, array $input ): User {
+        $data = array_values( $input['permissions'] );
 
-        $status = $user->customer()->update([
-            'permissions' => json_encode($data),
-        ]);
+        $status = $user->customer()->update( [
+            'permissions' => json_encode( $data ),
+        ] );
 
-        if (!$status) {
-            throw new GeneralException(__('locale.exceptions.something_went_wrong'));
+        if ( !$status ) {
+            throw new GeneralException( __( 'locale.exceptions.something_went_wrong' ) );
         }
 
         return $user;
     }
-
 
     /**
      * @param  User  $customer
@@ -200,14 +197,13 @@ class EloquentCustomerRepository extends EloquentBaseRepository implements Custo
      * @throws Exception|Throwable
      *
      */
-    public function destroy(User $customer)
-    {
-        if (!$customer->can_delete) {
-            throw new GeneralException(__('exceptions.backend.users.first_user_cannot_be_destroyed'));
+    public function destroy( User $customer ) {
+        if ( !$customer->can_delete ) {
+            throw new GeneralException( __( 'exceptions.backend.users.first_user_cannot_be_destroyed' ) );
         }
 
-        if (!$customer->delete()) {
-            throw new GeneralException(__('exceptions.backend.users.delete'));
+        if ( !$customer->delete() ) {
+            throw new GeneralException( __( 'exceptions.backend.users.delete' ) );
         }
 
         return true;
@@ -220,17 +216,16 @@ class EloquentCustomerRepository extends EloquentBaseRepository implements Custo
      * @throws Exception|Throwable
      *
      */
-    public function batchEnable(array $ids): bool
-    {
-        DB::transaction(function () use ($ids) {
-            if ($this->query()->whereIn('uid', $ids)
-                ->update(['status' => true])
+    public function batchEnable( array $ids ): bool {
+        DB::transaction( function () use ( $ids ) {
+            if ( $this->query()->whereIn( 'uid', $ids )
+                ->update( ['status' => true] )
             ) {
                 return true;
             }
 
-            throw new GeneralException(__('exceptions.backend.users.update'));
-        });
+            throw new GeneralException( __( 'exceptions.backend.users.update' ) );
+        } );
 
         return true;
     }
@@ -242,21 +237,19 @@ class EloquentCustomerRepository extends EloquentBaseRepository implements Custo
      * @throws Exception|Throwable
      *
      */
-    public function batchDisable(array $ids): bool
-    {
-        DB::transaction(function () use ($ids) {
-            if ($this->query()->whereIn('uid', $ids)
-                ->update(['status' => false])
+    public function batchDisable( array $ids ): bool {
+        DB::transaction( function () use ( $ids ) {
+            if ( $this->query()->whereIn( 'uid', $ids )
+                ->update( ['status' => false] )
             ) {
                 return true;
             }
 
-            throw new GeneralException(__('exceptions.backend.users.update'));
-        });
+            throw new GeneralException( __( 'exceptions.backend.users.update' ) );
+        } );
 
         return true;
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -265,32 +258,31 @@ class EloquentCustomerRepository extends EloquentBaseRepository implements Custo
     |
     | Logged in as customer
     |
-    */
+     */
 
-    public function impersonate(User $customer)
-    {
-        if ($customer->is_admin) {
-            throw new GeneralException(__('locale.customer.admin_cannot_be_impersonated'));
+    public function impersonate( User $customer ) {
+        if ( $customer->is_admin ) {
+            throw new GeneralException( __( 'locale.customer.admin_cannot_be_impersonated' ) );
         }
 
         $authenticatedUser = auth()->user();
 
-        if ($authenticatedUser->id === $customer->id || Session::get('admin_user_id') === $customer->id) {
-            return redirect()->route('admin.home');
+        if ( $authenticatedUser->id === $customer->id || Session::get( 'admin_user_id' ) === $customer->id ) {
+            return redirect()->route( 'admin.home' );
         }
 
-        if (!Session::get('admin_user_id')) {
-            session(['admin_user_id' => $authenticatedUser->id]);
-            session(['admin_user_name' => $authenticatedUser->displayName()]);
-            session(['temp_user_id' => $customer->id]);
+        if ( !Session::get( 'admin_user_id' ) ) {
+            session( ['admin_user_id' => $authenticatedUser->id] );
+            session( ['admin_user_name' => $authenticatedUser->displayName()] );
+            session( ['temp_user_id' => $customer->id] );
 
-            $permissions = collect(json_decode($customer->customer->permissions, true));
-            session(['permissions' => $permissions]);
+            $permissions = collect( json_decode( $customer->customer->permissions, true ) );
+            session( ['permissions' => $permissions] );
         }
 
         //Login user
-        auth()->loginUsingId($customer->id);
+        auth()->loginUsingId( $customer->id );
 
-        return redirect(Helper::home_route());
+        return redirect( Helper::home_route() );
     }
 }
