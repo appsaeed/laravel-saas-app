@@ -3,13 +3,12 @@
 namespace App\Providers;
 
 use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
 
-class RouteServiceProvider extends ServiceProvider
-{
+class RouteServiceProvider extends ServiceProvider {
     /**
      * This namespace is applied to your controller routes.
      *
@@ -24,8 +23,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
-    {
+    public function boot() {
         //
 
         parent::boot();
@@ -36,8 +34,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function map()
-    {
+    public function map() {
         $this->mapApiRoutes();
 
         $this->mapWebRoutes();
@@ -52,31 +49,35 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function mapWebRoutes()
-    {
+    protected function mapWebRoutes() {
 
-        Route::middleware('web')
-            ->namespace($this->namespace)
-            ->group(base_path('routes/web.php'));
+        Route::middleware( 'web' )
+            ->namespace( $this->namespace )
+            ->group( base_path( 'routes/web.php' ) );
 
-        Route::middleware('web')
-            ->namespace($this->namespace)
-            ->group(base_path('routes/public.php'));
+        Route::middleware( 'web' )
+            ->namespace( $this->namespace )
+            ->group( base_path( 'routes/public.php' ) );
 
-        Route::middleware(['web', 'auth', 'can:access backend', 'ValidProduct', 'twofactor'])
-            ->namespace($this->namespace)
-            ->prefix(config('app.admin_path'))
-            ->as('admin.')
-            ->group(base_path('routes/admin.php'));
+        Route::middleware( ['web', 'auth', 'can:access backend', 'ValidProduct', 'twofactor'] )
+            ->namespace( $this->namespace )
+            ->prefix( config( 'app.admin_path' ) )
+            ->as( 'admin.' )
+            ->group( base_path( 'routes/admin.php' ) );
 
-        Route::middleware(['web', 'twofactor'])
-            ->namespace($this->namespace)
-            ->group(base_path('routes/auth.php'));
+        Route::middleware( ['web', 'twofactor'] )
+            ->namespace( $this->namespace )
+            ->group( base_path( 'routes/auth.php' ) );
 
-        Route::middleware(['web', 'auth', 'can:access_backend', 'ValidProduct', 'twofactor'])
-            ->namespace($this->namespace)
-            ->as('customer.')
-            ->group(base_path('routes/customer.php'));
+        Route::middleware( ['web', 'twofactor', 'auth', 'verified'] )
+            ->namespace( $this->namespace )
+            ->as( 'user.' )
+            ->group( base_path( 'routes/user.php' ) );
+
+        Route::middleware( ['web', 'auth', 'can:access_backend', 'ValidProduct', 'twofactor'] )
+            ->namespace( $this->namespace )
+            ->as( 'customer.' )
+            ->group( base_path( 'routes/customer.php' ) );
     }
 
     /**
@@ -86,15 +87,14 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function mapApiRoutes()
-    {
+    protected function mapApiRoutes() {
         $this->configureRateLimiting();
 
-        Route::prefix('api/v3')
-            ->name('api.')
-            ->middleware(['api', 'auth:sanctum', 'json.response'])
-            ->namespace($this->namespace . '\API')
-            ->group(base_path('routes/api.php'));
+        Route::prefix( 'api/v3' )
+            ->name( 'api.' )
+            ->middleware( ['api', 'auth:sanctum', 'json.response'] )
+            ->namespace( $this->namespace . '\API' )
+            ->group( base_path( 'routes/api.php' ) );
     }
 
     /**
@@ -102,10 +102,9 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function configureRateLimiting()
-    {
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(config('app.api_rate_limit'))->by(optional($request->user())->id ?: $request->ip());
-        });
+    protected function configureRateLimiting() {
+        RateLimiter::for( 'api', function ( Request $request ) {
+            return Limit::perMinute( config( 'app.api_rate_limit' ) )->by( optional( $request->user() )->id ?: $request->ip() );
+        } );
     }
 }
