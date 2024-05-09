@@ -104,28 +104,28 @@ class TodosController extends AdminBaseController {
         $data = [];
 
         if ( !empty( $todos_data ) ) {
-            foreach ( $todos_data as $todo ) {
+            foreach ( $todos_data as $task ) {
 
-                $show_link = route( 'admin.tasks.show', $todo->uid );
+                $show_link = route( 'admin.tasks.show', $task->uid );
 
-                $user_image = route( 'user.avatar', $todo->user->uid );
-                $user_email = $todo->user->email;
-                $user_names = $todo->user->displayName();
+                $user_image = route( 'user.avatar', $task->user->uid );
+                $user_email = $task->user->email;
+                $user_names = $task->user->displayName();
 
                 $nestedData['responsive_id'] = '';
-                $nestedData['uid'] = $todo->uid;
+                $nestedData['uid'] = $task->uid;
                 $nestedData['name'] = Worker::todoNameHtml(
-                    $todo->name,
-                    $todo->deadline,
+                    $task->name,
+                    $task->deadline,
                     $show_link
                 );
-                $nestedData['assign_to'] = Worker::todoAissignedUsers( $todo );
-                $nestedData['status'] = Worker::todoStatus( $todo->status );
-                $nestedData['edit'] = route( 'admin.tasks.edit', $todo->uid );
-                $nestedData['delete'] = $todo->uid;
+                $nestedData['assign_to'] = Worker::todoAissignedUsers( $task );
+                $nestedData['status'] = Worker::todoStatus( $task->status );
+                $nestedData['edit'] = route( 'admin.tasks.edit', $task->uid );
+                $nestedData['delete'] = $task->uid;
                 $nestedData['can_delete'] = true;
 
-                if ( $todo->user_id === auth()->user()->id ) {
+                if ( $task->user_id === auth()->user()->id ) {
                     $nestedData['created_by'] = 'You';
                 } else {
                     $nestedData['created_by'] = Worker::todoCreatedBy(
@@ -136,7 +136,7 @@ class TodosController extends AdminBaseController {
                 }
 
                 $nestedData['can_chat'] = false;
-                $nestedData['chat_url'] = route( 'customer.chat.open', $todo->uid );
+                $nestedData['chat_url'] = route( 'customer.chat.open', $task->uid );
 
                 $data[] = $nestedData;
             }
@@ -178,7 +178,7 @@ class TodosController extends AdminBaseController {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show( Todos $todo ) {
+    public function show( Todos $task ) {
         $this->authorize( 'view_todos' );
 
         $breadcrumbs = [
@@ -186,12 +186,12 @@ class TodosController extends AdminBaseController {
             ['name' => __( 'locale.labels.view' )],
         ];
 
-        if ( $todo->isCreator() ) {
-            $reviewers = $todo->getReviewers();
-            return view( 'customer.tasks.show', compact( 'breadcrumbs', 'todo', 'reviewers' ) );
+        if ( $task->isCreator() ) {
+            $reviewers = $task->getReviewers();
+            return view( 'customer.tasks.show', compact( 'breadcrumbs', 'task', 'reviewers' ) );
         }
 
-        return view( 'customer.tasks.show', compact( 'breadcrumbs', 'todo' ) );
+        return view( 'customer.tasks.show', compact( 'breadcrumbs', 'task' ) );
     }
 
     /**
@@ -200,7 +200,7 @@ class TodosController extends AdminBaseController {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit( Todos $todo ) {
+    public function edit( Todos $task ) {
         $this->authorize( 'update_todos' );
 
         $breadcrumbs = [
@@ -211,7 +211,7 @@ class TodosController extends AdminBaseController {
         $customers = User::where( 'active_portal', 'customer' )
             ->where( 'id', '!=', auth()->user()->id )->get();
 
-        return view( 'admin.tasks.edit', compact( 'breadcrumbs', 'customers', 'todo' ) );
+        return view( 'admin.tasks.edit', compact( 'breadcrumbs', 'customers', 'task' ) );
     }
 
     /**
@@ -231,7 +231,7 @@ class TodosController extends AdminBaseController {
         if ( $this->todos->store( $request ) ) {
             return redirect()->route( 'customer.tasks.all' )->with( [
                 'status' => 'success',
-                'message' => __( 'Todo was successfully created' ),
+                'message' => __( 'task was successfully created' ),
             ] );
         }
 
@@ -248,10 +248,10 @@ class TodosController extends AdminBaseController {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update( Request $request, Todos $todo ) {
+    public function update( Request $request, Todos $task ) {
 
         if ( $this->checks() ) {
-            return redirect()->route( 'admin.tasks.edit', $todo->uid )->with( [
+            return redirect()->route( 'admin.tasks.edit', $task->uid )->with( [
                 'status' => 'error',
                 'message' => 'Sorry! This option is not available in demo mode',
             ] );
@@ -259,15 +259,15 @@ class TodosController extends AdminBaseController {
 
         $this->authorize( 'update_todos' );
 
-        if ( $this->todos->update( $request, $todo ) ) {
+        if ( $this->todos->update( $request, $task ) ) {
 
-            return redirect()->route( 'admin.tasks.edit', $todo->uid )->with( [
+            return redirect()->route( 'admin.tasks.edit', $task->uid )->with( [
                 'status' => 'success',
                 'message' => __( 'Successfully updated' ),
             ] );
         }
 
-        return redirect()->route( 'admin.tasks.edit', $todo->uid )->with( [
+        return redirect()->route( 'admin.tasks.edit', $task->uid )->with( [
             'status' => 'error',
             'message' => Message::wentWrong(),
         ] );
@@ -278,7 +278,7 @@ class TodosController extends AdminBaseController {
      *
      * @return \Illuminate\Http\Response
      */
-    public function created() {
+    public function myTasks() {
 
         $this->authorize( 'view_todos' );
 
@@ -287,7 +287,7 @@ class TodosController extends AdminBaseController {
             ['name' => __( 'locale.menu.Todos' )],
         ];
 
-        return view( 'admin.tasks.__created', compact( 'breadcrumbs' ) );
+        return view( 'admin.tasks.myTasks', compact( 'breadcrumbs' ) );
     }
 
     /**
@@ -296,7 +296,7 @@ class TodosController extends AdminBaseController {
      * @return void
      * @throws AuthorizationException
      */
-    public function _created( Request $request ) {
+    public function myTasksSearch( Request $request ) {
 
         if ( $this->checks() ) {
             return redirect()->route( 'admin.tasks.create' )->with( [
@@ -352,25 +352,25 @@ class TodosController extends AdminBaseController {
         $data = [];
 
         if ( !empty( $todos_data ) ) {
-            foreach ( $todos_data as $todo ) {
+            foreach ( $todos_data as $task ) {
 
-                $show_link = route( 'customer.tasks.show', $todo->uid );
+                $show_link = route( 'customer.tasks.show', $task->uid );
 
                 $nestedData['responsive_id'] = '';
-                $nestedData['uid'] = $todo->uid;
+                $nestedData['uid'] = $task->uid;
                 $nestedData['name'] = Worker::todoNameHtml(
-                    $todo->name,
-                    $todo->deadline,
+                    $task->name,
+                    $task->deadline,
                     $show_link
                 );
-                $nestedData['assign_to'] = Worker::todoAissignedUsers( $todo );
-                $nestedData['status'] = Worker::todoStatus( $todo->status );
-                $nestedData['edit'] = route( 'customer.tasks.edit', $todo->uid );
-                $nestedData['delete'] = $todo->uid;
-                $nestedData['can_delete'] = $todo->isCreator();
+                $nestedData['assign_to'] = Worker::todoAissignedUsers( $task );
+                $nestedData['status'] = Worker::todoStatus( $task->status );
+                $nestedData['edit'] = route( 'customer.tasks.edit', $task->uid );
+                $nestedData['delete'] = $task->uid;
+                $nestedData['can_delete'] = $task->isCreator();
 
                 $nestedData['can_chat'] = true;
-                $nestedData['chat_url'] = route( 'customer.chat.open', $todo->uid );
+                $nestedData['chat_url'] = route( 'customer.chat.open', $task->uid );
 
                 $data[] = $nestedData;
             }
@@ -394,7 +394,7 @@ class TodosController extends AdminBaseController {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function will_do( Todos $todo ) {
+    public function will_do( Todos $task ) {
 
         if ( $this->checks() ) {
             return response()->json( [
@@ -412,34 +412,34 @@ class TodosController extends AdminBaseController {
                 ] );
             }
 
-            if ( $todo->hasEmployee( auth()->user()->id ) ) {
+            if ( $task->hasEmployee( auth()->user()->id ) ) {
                 return response()->json( [
                     'status' => 'error',
                     'message' => __( 'You are already accepted the task!' ),
                 ] );
             }
 
-            TodosReceived::where( 'todo_id', $todo->id )->update( ['accepted' => true] );
+            TodosReceived::where( 'todo_id', $task->id )->update( ['accepted' => true] );
 
             $notifocation = new Notifications();
 
-            $show_link = route( 'customer.tasks.show', $todo->uid );
+            $show_link = route( 'customer.tasks.show', $task->uid );
             $view_link = "<a href='$show_link'> click here</a>";
 
-            if ( !$todo->addEmployee( auth()->user()->id ) ) {
+            if ( !$task->addEmployee( auth()->user()->id ) ) {
                 return response()->json( [
                     'status' => 'error',
                     'message' => __( 'Unable to add in work please try again or contact to creator!' ),
                 ] );
             };
 
-            $subject = User::fullname() . ' is now doing your task #' . $todo->uid;
+            $subject = User::fullname() . ' is now doing your task #' . $task->uid;
             $message = '<b>' . User::fullname() . '</b> is now doing your task: ';
-            $message .= '<b>' . $todo->name . '</b>  at  ' . Carbon::now()->format( 'Y m d h:m' );
+            $message .= '<b>' . $task->name . '</b>  at  ' . Carbon::now()->format( 'Y m d h:m' );
             $message .= "<br> open the task $view_link";
 
             $notifocation->create( [
-                'user_id' => $todo->user_id,
+                'user_id' => $task->user_id,
                 'type' => 'task',
                 'name' => $subject,
                 'message' => $message,
@@ -447,7 +447,7 @@ class TodosController extends AdminBaseController {
             ] )->save();
 
             if ( config( 'task.task_send_email' ) ) {
-                Mail::to( User::find( $todo->user_id ) )->send( new TodoMail( [
+                Mail::to( User::find( $task->user_id ) )->send( new TodoMail( [
                     'subject' => $subject,
                     'message' => $message,
                     'taskurl' => $show_link,
@@ -472,7 +472,7 @@ class TodosController extends AdminBaseController {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function review( Todos $todo ) {
+    public function review( Todos $task ) {
 
         if ( $this->checks() ) {
             return response()->json( [
@@ -483,14 +483,14 @@ class TodosController extends AdminBaseController {
 
         try {
 
-            if ( $todo->hasReview() ) {
+            if ( $task->hasReview() ) {
                 return response()->json( [
                     'status' => 'error',
                     'message' => __( 'You are already sent to review!' ),
                 ] );
             }
 
-            if ( !$todo->addReview() ) {
+            if ( !$task->addReview() ) {
                 return response()->json( [
                     'status' => 'error',
                     'message' => __( 'unable to make for review!' ),
@@ -499,14 +499,14 @@ class TodosController extends AdminBaseController {
 
             $notifocation = new Notifications();
 
-            $show_link = route( 'customer.tasks.show', $todo->uid );
+            $show_link = route( 'customer.tasks.show', $task->uid );
             $view_link = "<a href='$show_link'> click here</a>";
 
-            $subject = User::fullname() . ' sent to review the task #' . $todo->uid;
-            $message = "Your task to <b>" . $todo->name . "</b> has now been completed by <b>" . User::fullname() . "</b> and is ready for review. for more information: $view_link";
+            $subject = User::fullname() . ' sent to review the task #' . $task->uid;
+            $message = "Your task to <b>" . $task->name . "</b> has now been completed by <b>" . User::fullname() . "</b> and is ready for review. for more information: $view_link";
 
             $notifocation->create( [
-                'user_id' => $todo->user_id,
+                'user_id' => $task->user_id,
                 'type' => 'task',
                 'name' => $subject,
                 'message' => $message,
@@ -514,7 +514,7 @@ class TodosController extends AdminBaseController {
             ] )->save();
 
             if ( config( 'task.task_send_email' ) ) {
-                Mail::to( User::find( $todo->user_id ) )->send( new TodoMail( [
+                Mail::to( User::find( $task->user_id ) )->send( new TodoMail( [
                     'subject' => $subject,
                     'message' => $message,
                     'taskurl' => $show_link,
@@ -539,7 +539,7 @@ class TodosController extends AdminBaseController {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy( Todos $todo ) {
+    public function destroy( Todos $task ) {
 
         if ( $this->checks() ) {
             return response()->json( [
@@ -548,7 +548,7 @@ class TodosController extends AdminBaseController {
             ] );
         }
 
-        if ( !$todo->delete() ) {
+        if ( !$task->delete() ) {
             return response()->json( [
                 'status' => 'error',
                 'message' => Message::wentWrong(),
@@ -678,33 +678,33 @@ class TodosController extends AdminBaseController {
 
         $data = [];
         if ( !empty( $todo_data ) ) {
-            foreach ( $todo_data as $todo ) {
+            foreach ( $todo_data as $task ) {
 
-                $show_link = route( 'customer.tasks.show', $todo->todo->uid );
+                $show_link = route( 'customer.tasks.show', $task->todo->uid );
 
-                $uImage = route( 'user.avatar', $todo->todo->user->uid );
-                $uEmail = $todo->todo->user->email;
-                $u_name = $todo->todo->user->displayName();
+                $uImage = route( 'user.avatar', $task->todo->user->uid );
+                $uEmail = $task->todo->user->email;
+                $u_name = $task->todo->user->displayName();
 
                 $nestedData['responsive_id'] = '';
-                $nestedData['uid'] = $todo->uid;
-                $nestedData['avatar'] = route( 'user.avatar', $todo->todo->user->uid );
-                $nestedData['email'] = $todo->todo->user->email;
-                $nestedData['user_name'] = $todo->todo->user->displayName();
-                $nestedData['created_at'] = __( 'locale.labels.created_at' ) . ': ' . Tool::formatDate( $todo->todo->created_at );
+                $nestedData['uid'] = $task->uid;
+                $nestedData['avatar'] = route( 'user.avatar', $task->todo->user->uid );
+                $nestedData['email'] = $task->todo->user->email;
+                $nestedData['user_name'] = $task->todo->user->displayName();
+                $nestedData['created_at'] = __( 'locale.labels.created_at' ) . ': ' . Tool::formatDate( $task->todo->created_at );
 
-                $nestedData['name'] = Worker::todoNameHtml( $todo->todo->name, $todo->todo->deadline, $show_link );
+                $nestedData['name'] = Worker::todoNameHtml( $task->todo->name, $task->todo->deadline, $show_link );
 
-                if ( $todo->todo->user_id === auth()->user()->id ) {
+                if ( $task->todo->user_id === auth()->user()->id ) {
                     $nestedData['created_by'] = 'You';
                 } else {
                     $nestedData['created_by'] = Worker::todoCreatedBy( $u_name, $uEmail, $uImage );
                 }
-                $nestedData['status'] = Worker::todoStatus( $todo->todo->status );
-                $nestedData['edit'] = route( 'customer.tasks.edit', $todo->todo->uid );
-                $nestedData['show'] = route( 'customer.tasks.show', $todo->todo->uid );
+                $nestedData['status'] = Worker::todoStatus( $task->todo->status );
+                $nestedData['edit'] = route( 'customer.tasks.edit', $task->todo->uid );
+                $nestedData['show'] = route( 'customer.tasks.show', $task->todo->uid );
                 $nestedData['can_chat'] = true;
-                $nestedData['chat_url'] = route( 'customer.chat.receiver', $todo->todo->uid );
+                $nestedData['chat_url'] = route( 'customer.chat.receiver', $task->todo->uid );
 
                 $data[] = $nestedData;
             }
@@ -795,28 +795,28 @@ class TodosController extends AdminBaseController {
         $data = [];
 
         if ( !empty( $todos_data ) ) {
-            foreach ( $todos_data as $todo ) {
+            foreach ( $todos_data as $task ) {
 
-                $show_link = route( 'admin.tasks.show', $todo->uid );
+                $show_link = route( 'admin.tasks.show', $task->uid );
 
-                $user_image = route( 'user.avatar', $todo->user->uid );
-                $user_email = $todo->user->email;
-                $user_names = $todo->user->displayName();
+                $user_image = route( 'user.avatar', $task->user->uid );
+                $user_email = $task->user->email;
+                $user_names = $task->user->displayName();
 
                 $nestedData['responsive_id'] = '';
-                $nestedData['uid'] = $todo->uid;
+                $nestedData['uid'] = $task->uid;
                 $nestedData['name'] = Worker::todoNameHtml(
-                    $todo->name,
-                    $todo->deadline,
+                    $task->name,
+                    $task->deadline,
                     $show_link
                 );
-                $nestedData['assign_to'] = Worker::todoAissignedUsers( $todo );
-                $nestedData['status'] = Worker::todoStatus( $todo->status );
-                $nestedData['edit'] = route( 'admin.tasks.edit', $todo->uid );
-                $nestedData['delete'] = $todo->uid;
+                $nestedData['assign_to'] = Worker::todoAissignedUsers( $task );
+                $nestedData['status'] = Worker::todoStatus( $task->status );
+                $nestedData['edit'] = route( 'admin.tasks.edit', $task->uid );
+                $nestedData['delete'] = $task->uid;
                 $nestedData['can_delete'] = true;
 
-                if ( $todo->user_id === auth()->user()->id ) {
+                if ( $task->user_id === auth()->user()->id ) {
                     $nestedData['created_by'] = 'You';
                 } else {
                     $nestedData['created_by'] = Worker::todoCreatedBy(
@@ -827,7 +827,7 @@ class TodosController extends AdminBaseController {
                 }
 
                 $nestedData['can_chat'] = false;
-                $nestedData['chat_url'] = route( 'customer.chat.open', $todo->uid );
+                $nestedData['chat_url'] = route( 'customer.chat.open', $task->uid );
 
                 $data[] = $nestedData;
             }
@@ -915,26 +915,26 @@ class TodosController extends AdminBaseController {
         $data = [];
 
         if ( !empty( $todos_data ) ) {
-            foreach ( $todos_data as $todo ) {
+            foreach ( $todos_data as $task ) {
 
-                $show_link = route( 'admin.tasks.show', $todo->uid );
+                $show_link = route( 'admin.tasks.show', $task->uid );
 
-                $user_image = route( 'user.avatar', $todo->user->uid );
-                $user_email = $todo->user->email;
-                $user_names = $todo->user->displayName();
+                $user_image = route( 'user.avatar', $task->user->uid );
+                $user_email = $task->user->email;
+                $user_names = $task->user->displayName();
 
-                $deadline = Carbon::create( $todo->deadline )->longRelativeDiffForHumans( \Carbon\Carbon::now(), 1 );
+                $deadline = Carbon::create( $task->deadline )->longRelativeDiffForHumans( \Carbon\Carbon::now(), 1 );
 
                 $nestedData['responsive_id'] = '';
-                $nestedData['uid'] = $todo->uid;
-                $nestedData['avatar'] = route( 'user.avatar', $todo->user->uid );
-                $nestedData['email'] = $todo->user->email;
-                $nestedData['user_name'] = $todo->user->displayName();
-                $nestedData['created_at'] = __( 'locale.labels.created_at' ) . ': ' . Tool::formatDate( $todo->created_at );
+                $nestedData['uid'] = $task->uid;
+                $nestedData['avatar'] = route( 'user.avatar', $task->user->uid );
+                $nestedData['email'] = $task->user->email;
+                $nestedData['user_name'] = $task->user->displayName();
+                $nestedData['created_at'] = __( 'locale.labels.created_at' ) . ': ' . Tool::formatDate( $task->created_at );
 
-                $nestedData['name'] = Worker::todoNameHtml( $todo->name, $todo->deadline, $show_link );
+                $nestedData['name'] = Worker::todoNameHtml( $task->name, $task->deadline, $show_link );
 
-                if ( $todo->user_id === auth()->user()->id ) {
+                if ( $task->user_id === auth()->user()->id ) {
                     $nestedData['created_by'] = 'You';
                 } else {
                     $nestedData['created_by'] = Worker::todoCreatedBy(
@@ -943,14 +943,14 @@ class TodosController extends AdminBaseController {
                         $user_image
                     );
                 }
-                $nestedData['completed_by'] = Worker::todoCompletedByid( $todo->completed_by );
-                $nestedData['completed_at'] = Tool::formatDate( $todo->updated_at );
+                $nestedData['completed_by'] = Worker::todoCompletedByid( $task->completed_by );
+                $nestedData['completed_at'] = Tool::formatDate( $task->updated_at );
 
                 $nestedData['can_update'] = true;
-                $nestedData['edit'] = route( 'admin.tasks.edit', $todo->uid );
+                $nestedData['edit'] = route( 'admin.tasks.edit', $task->uid );
 
-                $nestedData['delete'] = $todo->uid;
-                $nestedData['can_delete'] = route( 'admin.tasks.edit', $todo->uid );
+                $nestedData['delete'] = $task->uid;
+                $nestedData['can_delete'] = route( 'admin.tasks.edit', $task->uid );
 
                 $data[] = $nestedData;
             }
@@ -1039,28 +1039,28 @@ class TodosController extends AdminBaseController {
         $data = [];
 
         if ( !empty( $todos_data ) ) {
-            foreach ( $todos_data as $todo ) {
+            foreach ( $todos_data as $task ) {
 
-                $show_link = route( 'admin.tasks.show', $todo->uid );
+                $show_link = route( 'admin.tasks.show', $task->uid );
 
-                $user_image = route( 'user.avatar', $todo->user->uid );
-                $user_email = $todo->user->email;
-                $user_names = $todo->user->displayName();
+                $user_image = route( 'user.avatar', $task->user->uid );
+                $user_email = $task->user->email;
+                $user_names = $task->user->displayName();
 
                 $nestedData['responsive_id'] = '';
-                $nestedData['uid'] = $todo->uid;
+                $nestedData['uid'] = $task->uid;
                 $nestedData['name'] = Worker::todoNameHtml(
-                    $todo->name,
-                    $todo->deadline,
+                    $task->name,
+                    $task->deadline,
                     $show_link
                 );
-                $nestedData['assign_to'] = Worker::todoAissignedUsers( $todo );
-                $nestedData['status'] = Worker::todoStatus( $todo->status );
-                $nestedData['edit'] = route( 'admin.tasks.edit', $todo->uid );
-                $nestedData['delete'] = $todo->uid;
+                $nestedData['assign_to'] = Worker::todoAissignedUsers( $task );
+                $nestedData['status'] = Worker::todoStatus( $task->status );
+                $nestedData['edit'] = route( 'admin.tasks.edit', $task->uid );
+                $nestedData['delete'] = $task->uid;
                 $nestedData['can_delete'] = true;
 
-                if ( $todo->user_id === auth()->user()->id ) {
+                if ( $task->user_id === auth()->user()->id ) {
                     $nestedData['created_by'] = 'You';
                 } else {
                     $nestedData['created_by'] = Worker::todoCreatedBy(
@@ -1071,7 +1071,7 @@ class TodosController extends AdminBaseController {
                 }
 
                 $nestedData['can_chat'] = false;
-                $nestedData['chat_url'] = route( 'customer.chat.open', $todo->uid );
+                $nestedData['chat_url'] = route( 'customer.chat.open', $task->uid );
 
                 $data[] = $nestedData;
             }
@@ -1093,11 +1093,11 @@ class TodosController extends AdminBaseController {
      */
     /**
      * mark as complete.
-     * @param  \App\Models\Todos $todo
+     * @param  \App\Models\Todos $task
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function markAsComplete( Todos $todo, Request $request ) {
+    public function markAsComplete( Todos $task, Request $request ) {
 
         if ( $this->checks() ) {
             return redirect()->back()->with( [
@@ -1110,7 +1110,7 @@ class TodosController extends AdminBaseController {
 
         $request->validate( ['completed_by' => 'required|exists:users,id'] );
 
-        if ( $this->todos->markAsComplete( $todo, $request->completed_by ) ) {
+        if ( $this->todos->markAsComplete( $task, $request->completed_by ) ) {
             return redirect()->back()->with( [
                 'status' => 'success',
                 'message' => "Task marked as complete",
@@ -1125,9 +1125,9 @@ class TodosController extends AdminBaseController {
 
     /**
      * pase tha task and send notification
-     * @param \App\Models\Todos $todo
+     * @param \App\Models\Todos $task
      */
-    public function pauseTask( Todos $todo ) {
+    public function pauseTask( Todos $task ) {
 
         if ( $this->checks() ) {
             return response()->json( [
@@ -1136,7 +1136,7 @@ class TodosController extends AdminBaseController {
             ] );
         }
 
-        if ( $todo->getOption( 'task_paused_by_' . auth()->user()->id ) ) {
+        if ( $task->getOption( 'task_paused_by_' . auth()->user()->id ) ) {
             return response()->json( [
                 'status' => 'error',
                 'message' => 'You are already requested to pause the task. please wait until creator accept!',
@@ -1144,16 +1144,16 @@ class TodosController extends AdminBaseController {
         }
 
         $username = User::fullname();
-        $show_link = route( 'customer.tasks.show', $todo->uid );
-        $edit_link = route( 'customer.tasks.edit', $todo->uid );
+        $show_link = route( 'customer.tasks.show', $task->uid );
+        $edit_link = route( 'customer.tasks.edit', $task->uid );
         $view_link = "<a href='$show_link'> click here</a>";
-        $subject = "$username has requested to pause the task #" . $todo->uid;
-        $message = "<b>$username</b> has requested to resume the task " . $todo->name;
+        $subject = "$username has requested to pause the task #" . $task->uid;
+        $message = "<b>$username</b> has requested to resume the task " . $task->name;
         $message .= '<br>To accept the the request you have update the task: ' . $edit_link;
         $message .= '<br>For more information: ' . $view_link;
 
         Notifications::create( [
-            'user_id' => $todo->user_id,
+            'user_id' => $task->user_id,
             'type' => 'task',
             'name' => $subject,
             'message' => $message,
@@ -1161,14 +1161,14 @@ class TodosController extends AdminBaseController {
         ] );
 
         if ( config( 'task.task_send_email' ) ) {
-            Mail::to( User::find( $todo->user_id ) )->send( new TodoMail( [
+            Mail::to( User::find( $task->user_id ) )->send( new TodoMail( [
                 'subject' => $subject,
                 'message' => $message,
                 'taskurl' => $show_link,
             ] ) );
         }
 
-        if ( $todo->setOption( 'task_paused_by_' . Auth::id(), true ) ) {
+        if ( $task->setOption( 'task_paused_by_' . Auth::id(), true ) ) {
             return response()->json( [
                 'status' => 'success',
                 'message' => 'Your task pause request is made successfully',
@@ -1182,9 +1182,9 @@ class TodosController extends AdminBaseController {
     }
     /**
      * pase tha task and send notification
-     * @param \App\Models\Todos $todo
+     * @param \App\Models\Todos $task
      */
-    public function continueTask( Todos $todo ) {
+    public function continueTask( Todos $task ) {
 
         if ( $this->checks() ) {
             return response()->json( [
@@ -1193,7 +1193,7 @@ class TodosController extends AdminBaseController {
             ] );
         }
 
-        if ( !$todo->getOption( 'task_paused_by_' . auth()->user()->id ) ) {
+        if ( !$task->getOption( 'task_paused_by_' . auth()->user()->id ) ) {
             return response()->json( [
                 'status' => 'error',
                 'message' => 'probably the task is made paused you!',
@@ -1201,16 +1201,16 @@ class TodosController extends AdminBaseController {
         }
 
         $username = User::fullname();
-        $show_link = route( 'customer.tasks.show', $todo->uid );
-        $edit_link = route( 'customer.tasks.edit', $todo->uid );
+        $show_link = route( 'customer.tasks.show', $task->uid );
+        $edit_link = route( 'customer.tasks.edit', $task->uid );
         $view_link = "<a href='$show_link'> click here</a>";
-        $subject = "$username has requested to continue the task #" . $todo->uid;
-        $message = "<b>$username</b> has requested to continue the task " . $todo->name;
+        $subject = "$username has requested to continue the task #" . $task->uid;
+        $message = "<b>$username</b> has requested to continue the task " . $task->name;
         $message .= '<br>continue start the task you have update the task: ' . $edit_link;
         $message .= '<br>For more information: ' . $view_link;
 
         Notifications::create( [
-            'user_id' => $todo->user_id,
+            'user_id' => $task->user_id,
             'type' => 'task',
             'name' => $subject,
             'message' => $message,
@@ -1218,14 +1218,14 @@ class TodosController extends AdminBaseController {
         ] );
 
         if ( config( 'task.task_send_email' ) ) {
-            Mail::to( User::find( $todo->user_id ) )->send( new TodoMail( [
+            Mail::to( User::find( $task->user_id ) )->send( new TodoMail( [
                 'subject' => $subject,
                 'message' => $message,
                 'taskurl' => $show_link,
             ] ) );
         }
 
-        if ( $todo->setOption( 'task_paused_by_' . Auth::id(), false ) ) {
+        if ( $task->setOption( 'task_paused_by_' . Auth::id(), false ) ) {
             return response()->json( [
                 'status' => 'success',
                 'message' => 'Your request has been processed',

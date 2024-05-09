@@ -94,7 +94,7 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": "{{ route('customer.tasks._created') }}",
+                    "url": "{{ route('admin.tasks.myTasksSearch') }}",
                     "dataType": "json",
                     "type": "POST",
                     "data": {

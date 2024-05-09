@@ -4,7 +4,7 @@
         <div class="mb-1">
             <label for="name" class="required form-label">{{ __('locale.labels.name') }}</label>
             <input type="text" id="name" class="form-control @error('name') is-invalid @enderror"
-                value="{{ $task->name }}" name="name" placeholder="Todo name">
+                value="{{ $task->name }}" name="name" placeholder="task name">
             @error('name')
                 <div class="invalid-feedback">
                     {{ $message }}
@@ -18,7 +18,7 @@
         <div class="mb-1">
             <label for="title" class="form-label">{{ __('locale.labels.title') }}</label>
             <input type="text" id="title" class="form-control @error('title') is-invalid @enderror"
-                value="{{ $task->title }}" name="title" placeholder="Todo title">
+                value="{{ $task->title }}" name="title" placeholder="task title">
             @error('title')
                 <div class="invalid-feedback">
                     {{ $message }}
@@ -97,7 +97,7 @@
                 {{ __('locale.labels.description') }}
             </label>
             <textarea type="text" id="description"
-                class="form-control @error('description') is-invalid @enderror"name="description" placeholder="Todo description">{{ $task->description }}</textarea>
+                class="form-control @error('description') is-invalid @enderror"name="description" placeholder="task description">{{ $task->description }}</textarea>
             @error('description')
                 <div class="invalid-feedback">
                     {{ $message }}

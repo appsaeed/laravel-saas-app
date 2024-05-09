@@ -32,7 +32,7 @@
 
                 <div class="card" style="margin-bottom: 300px">
                     <div class="card-header">
-                        <h4 class="card-title"> {{ __('Update todo') }} </h4>
+                        <h4 class="card-title"> {{ __('Update task') }} </h4>
                     </div>
                     <div class="card-content">
                         <div class="card-body">

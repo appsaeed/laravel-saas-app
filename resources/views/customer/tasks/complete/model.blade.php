@@ -9,7 +9,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form action="{{ route('customer.tasks.mark_as_complete', $todo->uid) }}" method="POST"
+            <form action="{{ route('customer.tasks.mark_as_complete', $task->uid) }}" method="POST"
                 enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">

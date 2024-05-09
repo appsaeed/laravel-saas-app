@@ -244,16 +244,16 @@ Route::post( 'customizer', [ThemeCustomizerController::class, 'postCustomizer'] 
 
 Route::group( ['prefix' => 'tasks', 'as' => 'tasks.'], function () {
 
-    Route::post( '/{todo}will-do', [TodosController::class, 'will_do'] )->name( 'will_do' );
-    Route::post( '/{todo}review', [TodosController::class, 'review'] )->name( 'send_review' );
-    Route::post( '{todo}/mark-as-ompete', [TodosController::class, 'markAsComplete'] )
+    Route::post( '/{task}will-do', [TodosController::class, 'will_do'] )->name( 'will_do' );
+    Route::post( '/{task}review', [TodosController::class, 'review'] )->name( 'send_review' );
+    Route::post( '{task}/mark-as-ompete', [TodosController::class, 'markAsComplete'] )
         ->name( 'mark_as_complete' );
-    Route::post( '{todo}pause_task', [TodosController::class, 'pauseTask'] )->name( 'pause' );
-    Route::post( '{todo}continue_task', [TodosController::class, 'continueTask'] )
+    Route::post( '{task}pause_task', [TodosController::class, 'pauseTask'] )->name( 'pause' );
+    Route::post( '{task}continue_task', [TodosController::class, 'continueTask'] )
         ->name( 'continueTask' );
 
     Route::get( 'in-progress', [TodosController::class, 'inProgress'] )->name( 'in_progress' );
-    Route::post( 'in-progress/search', [TodosController::class, 'inProgressSearch'] )
+    Route::post( 'in-progress', [TodosController::class, 'inProgressSearch'] )
         ->name( 'in_progress.search' );
 
     Route::get( 'complete', [TodosController::class, 'complete'] )->name( 'complete' );
@@ -263,11 +263,12 @@ Route::group( ['prefix' => 'tasks', 'as' => 'tasks.'], function () {
     Route::get( 'reviews', [TodosController::class, 'reviews'] )->name( 'reviews' );
     Route::post( '/reviews/search', [TodosController::class, 'reviewsSearch'] )
         ->name( 'reviewsSearch' );
-    Route::get( 'created', [TodosController::class, 'created'] )->name( 'created' );
-    Route::post( '/_created', [TodosController::class, '_created'] )->name( '_created' );
+    Route::get( '/my-tasks', [TodosController::class, 'myTasks'] )->name( 'myTasks' );
+    Route::post( '/your-tasks', [TodosController::class, 'myTasksSearch'] )->name( 'myTasksSearch' );
     Route::post( '/batch_action', [TodosController::class, 'batchAction'] )
         ->name( 'batch_action' );
 
     Route::post( '/search', [TodosController::class, 'search'] )->name( 'search' );
-    Route::resource( '/', TodosController::class );
 } );
+
+Route::resource( 'tasks', TodosController::class );

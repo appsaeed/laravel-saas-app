@@ -6,14 +6,14 @@
             <tr>
                 <td style="word-break: initial">{{ __('locale.labels.name') }}</td>
                 <td>
-                    <a href="{{ route('customer.tasks.show', $todo->uid) }}">{{ $todo->name }}</a>
+                    <a href="{{ route('customer.tasks.show', $task->uid) }}">{{ $task->name }}</a>
                 </td>
             </tr>
 
             <tr>
                 <td style="word-break: initial">{{ __('messages.deadline') }}</td>
                 <td>
-                    {{ \Carbon\Carbon::create($todo->deadline)->longRelativeDiffForHumans(\Carbon\Carbon::now(), 1) }}
+                    {{ \Carbon\Carbon::create($task->deadline)->longRelativeDiffForHumans(\Carbon\Carbon::now(), 1) }}
                 </td>
             </tr>
 
@@ -28,7 +28,7 @@
                 {{ __('locale.labels.status') }}</label>
             <select class="select2 w-100" id="timezone" name="status">
                 @foreach (['in_progress', 'review', 'pause', 'continue'] as $status)
-                    <option value="{{ $status }}" @if ($todo->status == $status) selected @endif>
+                    <option value="{{ $status }}" @if ($task->status == $status) selected @endif>
                         {{ str_replace('_', ' ', $status) }}</option>
                 @endforeach
             </select>
@@ -48,7 +48,7 @@
                 Note
             </label>
             <textarea type="text" id="note" class="form-control @error('note') is-invalid @enderror"name="note"
-                placeholder="place note">{{ $todo->note }}</textarea>
+                placeholder="place note">{{ $task->note }}</textarea>
             @error('note')
                 <div class="invalid-feedback">
                     {{ $message }}

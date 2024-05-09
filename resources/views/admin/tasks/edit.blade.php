@@ -18,11 +18,11 @@
     <!-- Basic Vertical form layout section start -->
     <div class="mb-3 mt-2">
         <div class="btn-group">
-            <a href="{{ route('customer.tasks.all') }}" class="btn btn-primary fw-bold me-1" type="button">
+            <a href="{{ route('customer.tasks.index') }}" class="btn btn-primary fw-bold me-1" type="button">
                 {{ __('locale.buttons.back') }} </a>
         </div>
         <div class="btn-group">
-            <a href="{{ route('admin.tasks.show', $todo->uid) }}" class="btn btn-success fw-bold me-1" type="button">
+            <a href="{{ route('admin.tasks.show', $task->uid) }}" class="btn btn-success fw-bold me-1" type="button">
                 open </a>
         </div>
     </div>
@@ -32,11 +32,11 @@
 
                 <div class="card" style="margin-bottom: 300px">
                     <div class="card-header">
-                        <h4 class="card-title"> {{ __('Update todo') }} </h4>
+                        <h4 class="card-title"> {{ __('Update task') }} </h4>
                     </div>
                     <div class="card-content">
                         <div class="card-body">
-                            <form class="form form-vertical" action="{{ route('admin.tasks.update', $todo->uid) }}"
+                            <form class="form form-vertical" action="{{ route('admin.tasks.update', $task->uid) }}"
                                 method="post" enctype="multipart/form-data">
                                 @csrf
                                 @method('PATCH')
@@ -67,7 +67,7 @@
     <script>
         $('input#deadline').flatpickr({
             weekNumbers: true,
-            defaultDate: new Date('{{ $todo->deadline }}'),
+            defaultDate: new Date('{{ $task->deadline }}'),
             // defaultDate: Date.now(),
             enableTime: true,
             // dateFormat: "Y-m-d h:m",

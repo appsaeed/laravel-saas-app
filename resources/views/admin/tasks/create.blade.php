@@ -1,6 +1,6 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', __('messages.Add new todo'))
+@section('title', __('messages.Add new task'))
 
 @section('vendor-style')
     <!-- vendor css files -->
@@ -22,7 +22,7 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title"> {{ __('messages.Add new todo') }} </h4>
+                        <h4 class="card-title"> {{ __('messages.Add new task') }} </h4>
                     </div>
                     <div class="card-content">
                         <div class="card-body">
@@ -37,7 +37,7 @@
                                                 class="required form-label">{{ __('locale.labels.name') }}</label>
                                             <input type="text" id="name"
                                                 class="form-control @error('name') is-invalid @enderror"
-                                                value="{{ old('name') }}" name="name" placeholder="Todo name" required>
+                                                value="{{ old('name') }}" name="name" placeholder="task name" required>
                                             @error('name')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
@@ -52,7 +52,7 @@
                                             <label for="title" class="form-label">{{ __('locale.labels.title') }}</label>
                                             <input type="text" id="title"
                                                 class="form-control @error('title') is-invalid @enderror"
-                                                value="{{ old('title') }}" name="title" placeholder="Todo title">
+                                                value="{{ old('title') }}" name="title" placeholder="task title">
                                             @error('title')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
@@ -133,7 +133,7 @@
                                                 {{ __('locale.labels.description') }}
                                             </label>
                                             <textarea type="text" id="description"
-                                                class="form-control @error('description') is-invalid @enderror"name="description" placeholder="Todo description">{{ old('description') }}</textarea>
+                                                class="form-control @error('description') is-invalid @enderror"name="description" placeholder="task description">{{ old('description') }}</textarea>
                                             @error('description')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}

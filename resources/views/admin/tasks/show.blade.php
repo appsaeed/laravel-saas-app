@@ -37,7 +37,7 @@
                 <a href="{{ route('customer.tasks.all') }}" class="btn btn-primary fw-bold me-1" type="button">
                     {{ __('locale.buttons.back') }} </a>
             </div>
-            @if (auth()->user()->id != $todo->user_id)
+            @if (auth()->user()->id != $task->user_id)
                 @include('customer.tasks.show.public-buttons')
             @else
                 @include('customer.tasks.show.auth-buttons')
@@ -48,7 +48,7 @@
             <div class="col-md-8">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h4 class="card-title"> {{ $todo->name }} </h4>
+                        <h4 class="card-title"> {{ $task->name }} </h4>
                     </div>
                     <div class="card-content">
                         <div class="card-body">
@@ -59,10 +59,10 @@
                                         <tr>
                                             <td style="word-break: initial">{{ __('messages.deadline') }}</td>
                                             <td>
-                                                {{ \Carbon\Carbon::create($todo->deadline)->longRelativeDiffForHumans(\Carbon\Carbon::now(), 2) }}
+                                                {{ \Carbon\Carbon::create($task->deadline)->longRelativeDiffForHumans(\Carbon\Carbon::now(), 2) }}
                                                 <br>
                                                 <small class="emp_post text-truncate text-muted">
-                                                    {{ \Carbon\Carbon::parse($todo->deadline)->format('Y m M d,  D m:h') }}
+                                                    {{ \Carbon\Carbon::parse($task->deadline)->format('Y m M d,  D m:h') }}
                                                 </small>
                                             </td>
                                         </tr>
@@ -71,8 +71,8 @@
                                             <td style="word-break: initial">{{ __('locale.labels.state') }}</td>
                                             <td>
                                                 <span
-                                                    class="text-{{ \App\Helpers\Message::todoStatusclass($todo->status) }}">
-                                                    {{ str_replace('_', ' ', $todo->status) }}
+                                                    class="text-{{ \App\Helpers\Message::todoStatusclass($task->status) }}">
+                                                    {{ str_replace('_', ' ', $task->status) }}
                                                 </span>
                                             </td>
                                         </tr>
@@ -81,32 +81,32 @@
                                         <tr>
                                             <td style="word-break: initial">{{ __('locale.labels.created_at') }}</td>
                                             <td>
-                                                {{ \App\Library\Tool::formatHumanTime($todo->created_at) }}
+                                                {{ \App\Library\Tool::formatHumanTime($task->created_at) }}
                                             </td>
                                         </tr>
-                                        @if ($todo->status === 'complete')
+                                        @if ($task->status === 'complete')
                                             <tr>
                                                 <td style="word-break: initial">Completed by</td>
                                                 <td>
-                                                    {!! App\Helpers\Worker::todoCompletedByid($todo->completed_by) !!}
+                                                    {!! App\Helpers\Worker::todoCompletedByid($task->completed_by) !!}
                                                 </td>
                                             </tr>
                                         @endif
                                         <tr>
                                             <td style="word-break: initial">{{ __('messages.created_by') }}</td>
                                             <td>
-                                                @if (auth()->user()->id == $todo->user_id)
+                                                @if (auth()->user()->id == $task->user_id)
                                                     You
                                                 @else
                                                     <div class="d-flex justify-content-left align-items-center">
                                                         <div class="avatar  me-1"><img
-                                                                src="{{ route('user.avatar', $todo->user->uid) }}"
+                                                                src="{{ route('user.avatar', $task->user->uid) }}"
                                                                 alt="Avatar" width="32" height="32"></div>
                                                         <div class="d-flex flex-column">
                                                             <span class="emp_name text-truncate fw-bold">
-                                                                {{ $todo->user->displayName() }}
+                                                                {{ $task->user->displayName() }}
                                                             </span><small class="emp_post text-truncate text-muted">
-                                                                {{ $todo->user->email }}
+                                                                {{ $task->user->email }}
                                                         </div>
                                                     </div>
                                                 @endif
@@ -116,11 +116,11 @@
                                         <tr>
                                             <td style="word-break: initial">{{ __('locale.labels.assign_to') }}</td>
                                             <td>
-                                                @if (in_array('all', json_decode($todo->assign_to)))
+                                                @if (in_array('all', json_decode($task->assign_to)))
                                                     <span class='emp_name text-truncate'>Avalble for
                                                         all</span>
                                                 @else
-                                                    @foreach (json_decode($todo->assign_to) as $id)
+                                                    @foreach (json_decode($task->assign_to) as $id)
                                                         <div class='emp_name text-truncate'>
                                                             {{ \App\Models\User::find($id)->displayName() }}
                                                         </div>
@@ -131,19 +131,19 @@
 
                                         <tr>
                                             <td style="word-break: initial">{{ __('locale.labels.title') }}</td>
-                                            <td>{{ $todo->title }}</td>
+                                            <td>{{ $task->title }}</td>
                                         </tr>
 
                                         <tr style="border: none">
                                             <td style="word-break: initial">
                                                 {{ __('locale.labels.description') }}
                                             </td>
-                                            <td>{{ $todo->description }}</td>
+                                            <td>{{ $task->description }}</td>
                                         </tr>
                                         <tr style="border: none">
                                             <td style="word-break: initial">
                                                 note </td>
-                                            <td>{{ $todo->note }}</td>
+                                            <td>{{ $task->note }}</td>
                                         </tr>
 
                                     </tbody>
@@ -197,7 +197,7 @@
         @endforeach
     @endif
 
-    @if (auth()->user()->id === $todo->user_id)
+    @if (auth()->user()->id === $task->user_id)
         <script>
             'use strict';
         </script>
@@ -223,7 +223,7 @@
                     }).then(function(result) {
                         if (result.value) {
                             $.ajax({
-                                url: "{{ route('customer.tasks.will_do', $todo->uid) }}",
+                                url: "{{ route('customer.tasks.will_do', $task->uid) }}",
                                 type: "POST",
                                 data: {
                                     _token: "{{ csrf_token() }}"
@@ -257,7 +257,7 @@
                     }).then(function(result) {
                         if (result.value) {
                             $.ajax({
-                                url: "{{ route('customer.tasks.send_review', $todo->uid) }}",
+                                url: "{{ route('customer.tasks.send_review', $task->uid) }}",
                                 type: "POST",
                                 data: {
                                     _token: "{{ csrf_token() }}"
@@ -291,7 +291,7 @@
                     }).then(function(result) {
                         if (result.value) {
                             $.ajax({
-                                url: "{{ route('customer.tasks.pause', $todo->uid) }}",
+                                url: "{{ route('customer.tasks.pause', $task->uid) }}",
                                 type: "POST",
                                 data: {
                                     _token: "{{ csrf_token() }}"
@@ -324,7 +324,7 @@
                     }).then(function(result) {
                         if (result.value) {
                             $.ajax({
-                                url: "{{ route('customer.tasks.continueTask', $todo->uid) }}",
+                                url: "{{ route('customer.tasks.continueTask', $task->uid) }}",
                                 type: "POST",
                                 data: {
                                     _token: "{{ csrf_token() }}"

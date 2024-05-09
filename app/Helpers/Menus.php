@@ -103,6 +103,12 @@ class Menus {
                         "icon" => "file-text",
                     ],
                     [
+                        "url" => route( 'admin.tasks.myTasks' ),
+                        "name" => __( 'MY Tasks' ),
+                        "access" => "view_todos",
+                        "icon" => "file-text",
+                    ],
+                    [
                         "url" => route( 'admin.tasks.in_progress' ),
                         "name" => "In progress",
                         "access" => "view_todos",
