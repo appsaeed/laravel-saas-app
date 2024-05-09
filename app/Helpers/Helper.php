@@ -504,4 +504,15 @@ class Helper {
 
         return $availLocale;
     }
+
+    public static function bladeTitle( $data = [], $default = null ) {
+        if ( gettype( $data ) === 'array' || gettype( $data ) === 'object' ) {
+            foreach ( array_reverse( $data, true ) as $value ) {
+                if ( isset( $value['name'] ) ) {
+                    return $value['name'];
+                }
+            }
+        }
+        return $default;
+    }
 }

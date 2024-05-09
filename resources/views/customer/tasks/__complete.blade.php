@@ -18,7 +18,7 @@
         <div class="mb-3 mt-2">
             @can('create_todos')
                 <div class="btn-group">
-                    <a href="{{ route('customer.todos.create') }}"
+                    <a href="{{ route('customer.tasks.create') }}"
                         class="btn btn-success waves-light waves-effect fw-bold mx-1">
                         {{ __('locale.buttons.create') }} <i data-feather="plus-circle"></i></a>
                 </div>
@@ -105,7 +105,7 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": "{{ route('customer.todos.complete.search') }}",
+                    "url": "{{ route('customer.tasks.complete.search') }}",
                     "dataType": "json",
                     "type": "POST",
                     "data": {

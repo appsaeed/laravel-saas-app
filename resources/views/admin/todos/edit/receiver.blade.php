@@ -6,7 +6,7 @@
             <tr>
                 <td style="word-break: initial">{{ __('locale.labels.name') }}</td>
                 <td>
-                    <a href="{{ route('customer.todos.show', $todo->uid) }}">{{ $todo->name }}</a>
+                    <a href="{{ route('customer.tasks.show', $todo->uid) }}">{{ $todo->name }}</a>
                 </td>
             </tr>
 

@@ -18,41 +18,47 @@ Route::get( 'get-avatar/{user}', [AccountController::class, 'getAvatar'] )->name
 | Todos module
 |--------------------------------------------------------------------------
  */
+Route::group( ['prefix' => 'tasks', 'as' => 'tasks.'], function () {
 
-Route::post( 'todos/complete/search', [TodosController::class, 'completeSearch'] )
-    ->name( 'todos.complete.search' );
-Route::post( 'todos/reviews/search', [TodosController::class, 'reviewsSearch'] )
-    ->name( 'todos.reviewsSearch' );
+    Route::post( '/{task}/will-do', [TodosController::class, 'will_do'] )->name( 'will_do' );
+    //task send to review
+    Route::post( '/{task}/review', [TodosController::class, 'send_review'] )->name( 'send_review' );
+    //task mark as completed
+    Route::post( '/{task}/mark-as-ompete', [TodosController::class, 'markAsComplete'] )
+        ->name( 'mark_as_complete' );
 
-Route::post( 'todos/{todo}will-do', [TodosController::class, 'will_do'] )->name( 'todos.will_do' );
-Route::post( 'todos/{todo}review', [TodosController::class, 'review'] )->name( 'todos.send_review' );
-Route::post( 'todos/{todo}/mark-as-ompete', [TodosController::class, 'markAsComplete'] )
-    ->name( 'todos.mark_as_complete' );
-Route::post( 'todos/{todo}pause_task', [TodosController::class, 'pauseTask'] )->name( 'todos.pause' );
-Route::post( 'todos/{todo}continue_task', [TodosController::class, 'continueTask'] )
-    ->name( 'todos.continueTask' );
+    //task pause and continue
+    Route::post( '/{task}/pause_task', [TodosController::class, 'pauseTask'] )->name( 'pause' );
+    Route::post( '/{task}/continue_task', [TodosController::class, 'continueTask'] )
+        ->name( 'continueTask' );
 
-Route::get( 'todos/complete', [TodosController::class, 'complete'] )->name( 'todos.complete' );
-Route::get( 'todos/reviews', [TodosController::class, 'reviews'] )->name( 'todos.reviews' );
-Route::get( 'todos/all', [TodosController::class, 'created'] )->name( 'todos.all' );
+    Route::get( '/reviews', [TodosController::class, 'reviews'] )->name( 'reviews' );
+    Route::post( '/reviews', [TodosController::class, 'reviewsSearch'] )
+        ->name( 'reviewsSearch' );
 
-Route::post( 'todos/search', [TodosController::class, 'search'] )->name( 'todos.search' );
+    Route::get( '/in-progress', [TodosController::class, 'inProgress'] )->name( 'in_progress' );
+    Route::post( '/in-progress', [TodosController::class, 'inProgressSearch'] )
+        ->name( 'in_progress.search' );
 
-Route::get( 'todos/created', [TodosController::class, 'created'] )->name( 'todos.created' );
-Route::post( 'todos/_created', [TodosController::class, 'createdSearch'] )->name( 'todos._created' );
+    Route::post( '/batch_action', [TodosController::class, 'batchAction'] )
+        ->name( 'batch_action' );
 
-Route::get( 'todos/in-progress', [TodosController::class, 'inProgress'] )->name( 'todos.in_progress' );
-Route::post( 'todos/inp-search', [TodosController::class, 'inProgressSearch'] )
-    ->name( 'todos.in_progress.search' );
+    Route::get( '/receives', [TodosController::class, 'received'] )
+        ->name( 'receives' );
 
-Route::post( 'todos/batch_action', [TodosController::class, 'batchAction'] )
-    ->name( 'todos.batch_action' );
+    Route::post( '/receives', [TodosController::class, 'receivedSearch'] )
+        ->name( 'receivedSearch' );
 
-Route::get( 'todos/receives', [TodosController::class, 'received'] )->name( 'todos.receives' );
-Route::post( 'todos/received-all', [TodosController::class, 'receivedSearch'] )
-    ->name( 'todos.receivedSearch' );
+    Route::get( '/complete', [TodosController::class, 'complete'] )->name( 'complete' );
+    Route::post( '/complete', [TodosController::class, 'completeSearch'] )
+        ->name( 'complete.search' );
 
-Route::resource( 'todos', TodosController::class );
+    Route::get( '/yours-tasks', [TodosController::class, 'mytasks'] )->name( 'mytasks' );
+    Route::post( '/yours-tasks', [TodosController::class, 'mytasksSearch'] )->name( 'mytasksSearch' );
+
+    Route::post( '/search', [TodosController::class, 'search'] )->name( 'search' );
+} );
+Route::resource( 'tasks', TodosController::class );
 
 /*
 |-------------------

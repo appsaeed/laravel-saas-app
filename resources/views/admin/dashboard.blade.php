@@ -36,7 +36,7 @@
                             <h2 class="fw-bolder mb-0">{{ $task->in_progress }}</h2>
                             <p class="card-text">{{ __('locale.menu.In progress') }}</p>
                         </div>
-                        <a href="{{ route('admin.todos.index') }}" class="avatar bg-light-info p-50 m-0">
+                        <a href="{{ route('admin.tasks.index') }}" class="avatar bg-light-info p-50 m-0">
                             <div class="avatar-content">
                                 <i data-feather="disc" class="text-info font-medium-5"></i>
                             </div>
@@ -53,7 +53,7 @@
                             <h2 class="fw-bolder mb-0">{{ $task->reviews }}</h2>
                             <p class="card-text">{{ __('locale.menu.Reviews') }}</p>
                         </div>
-                        <a href="{{ route('admin.todos.index') }}" class="avatar bg-light-warning p-50 m-0">
+                        <a href="{{ route('admin.tasks.index') }}" class="avatar bg-light-warning p-50 m-0">
                             <div class="avatar-content">
                                 <i data-feather="star" class="text-warning font-medium-5"></i>
                             </div>
@@ -70,7 +70,7 @@
                             <h2 class="fw-bolder mb-0">{{ $task->complete }}</h2>
                             <p class="card-text">{{ __('locale.menu.Completed') }}</p>
                         </div>
-                        <a href="{{ route('admin.todos.index') }}" class="avatar bg-light-success p-50 m-0">
+                        <a href="{{ route('admin.tasks.index') }}" class="avatar bg-light-success p-50 m-0">
                             <div class="avatar-content">
                                 <i data-feather="check-square" class="text-success font-medium-5"></i>
                             </div>
@@ -86,7 +86,7 @@
                             <h2 class="fw-bolder mb-0">{{ $task->all }}</h2>
                             <p class="card-text">{{ __('locale.menu.All ads') }}</p>
                         </div>
-                        <a href="{{ route('customer.todos.all') }}" class="avatar bg-light-primary p-50 m-0">
+                        <a href="{{ route('customer.tasks.index') }}" class="avatar bg-light-primary p-50 m-0">
                             <div class="avatar-content">
                                 <i data-feather="credit-card" class="text-primary font-medium-5"></i>
                             </div>

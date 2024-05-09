@@ -242,7 +242,7 @@ Route::post( 'customizer', [ThemeCustomizerController::class, 'postCustomizer'] 
 |
  */
 
-Route::group( ['prefix' => 'tasks', 'as' => 'todos.'], function () {
+Route::group( ['prefix' => 'tasks', 'as' => 'tasks.'], function () {
 
     Route::post( '/{todo}will-do', [TodosController::class, 'will_do'] )->name( 'will_do' );
     Route::post( '/{todo}review', [TodosController::class, 'review'] )->name( 'send_review' );

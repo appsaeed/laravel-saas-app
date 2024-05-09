@@ -1,7 +1,5 @@
 @extends('layouts/contentLayoutMaster')
 
-@section('title', __('locale.menu.Todos'))
-
 @section('vendor-style')
     {{-- vendor css files --}}
     <link rel="stylesheet" href="{{ asset(mix('vendors/css/tables/datatable/dataTables.bootstrap5.min.css')) }}">
@@ -16,9 +14,22 @@
     <!-- Basic table -->
     <section id="datatables-basic">
         <div class="mb-3 mt-2">
+            @can('view_todos')
+                <div class="btn-group">
+                    <button class="btn btn-primary fw-bold dropdown-toggle" type="button" id="bulk_actions"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ __('locale.labels.actions') }}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="bulk_actions">
+                        <a class="dropdown-item bulk-delete" href="#"><i data-feather="trash"></i>
+                            {{ __('locale.datatables.bulk_delete') }}</a>
+                    </div>
+                </div>
+            @endcan
+
             @can('create_todos')
                 <div class="btn-group">
-                    <a href="{{ route('customer.todos.create') }}"
+                    <a href="{{ route('customer.tasks.create') }}"
                         class="btn btn-success waves-light waves-effect fw-bold mx-1">
                         {{ __('locale.buttons.create') }} <i data-feather="plus-circle"></i></a>
                 </div>
@@ -81,7 +92,7 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": "{{ route('customer.todos.reviewsSearch') }}",
+                    "url": "{{ route('customer.tasks.search') }}",
                     "dataType": "json",
                     "type": "POST",
                     "data": {
@@ -219,6 +230,101 @@
                     [2, "desc"]
                 ],
                 displayLength: 10,
+            });
+
+
+            // On Delete
+            Table.delegate(".action-delete", "click", function(e) {
+                e.stopPropagation();
+                let id = $(this).data('id');
+                Swal.fire({
+                    title: "{{ __('locale.labels.are_you_sure') }}",
+                    text: "{{ __('locale.labels.able_to_revert') }}",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: "{{ __('locale.labels.delete_it') }}",
+                    customClass: {
+                        confirmButton: 'btn btn-primary',
+                        cancelButton: 'btn btn-outline-danger ms-1'
+                    },
+                    buttonsStyling: false,
+                }).then(function(result) {
+                    if (result.value) {
+                        $.ajax({
+                            url: "{{ route('customer.tasks.index') }}/" + id,
+                            type: "POST",
+                            data: {
+                                _method: 'DELETE',
+                                _token: "{{ csrf_token() }}"
+                            },
+                            success: function(data) {
+                                showResponseMessage(data, dataListView);
+                            },
+                            error: function(reject) {
+                                showResponseError(reject);
+                            }
+                        })
+                    }
+                })
+            });
+
+
+            //Bulk Delete
+            $(".bulk-delete").on('click', function(e) {
+
+                e.preventDefault();
+
+                Swal.fire({
+
+                    title: "{{ __('locale.labels.are_you_sure') }}",
+                    text: "{{ __('locale.role.delete_roles') }}",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: "{{ __('locale.labels.delete_selected') }}",
+                    customClass: {
+                        confirmButton: 'btn btn-primary',
+                        cancelButton: 'btn btn-outline-danger ms-1'
+                    },
+                    buttonsStyling: false,
+                }).then(function(result) {
+                    if (result.value) {
+                        let todo_ids = [];
+                        let rows_selected = dataListView.column(1).checkboxes.selected();
+
+                        $.each(rows_selected, function(index, rowId) {
+                            todo_ids.push(rowId)
+                        });
+
+                        if (todo_ids.length > 0) {
+
+                            $.ajax({
+                                url: "{{ route('customer.tasks.batch_action') }}",
+                                type: "POST",
+                                data: {
+                                    _token: "{{ csrf_token() }}",
+                                    action: 'destroy',
+                                    ids: todo_ids
+                                },
+                                success: function(data) {
+                                    showResponseMessage(data, dataListView);
+                                },
+                                error: function(reject) {
+                                    showResponseError(reject);
+                                }
+                            })
+                        } else {
+                            toastr['warning']("{{ __('locale.labels.at_least_one_data') }}",
+                                "{{ __('locale.labels.attention') }}", {
+                                    closeButton: true,
+                                    positionClass: 'toast-top-right',
+                                    progressBar: true,
+                                    newestOnTop: true,
+                                    rtl: isRtl
+                                });
+                        }
+
+                    }
+                })
             });
 
 

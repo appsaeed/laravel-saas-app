@@ -31,7 +31,7 @@
 
             @can('create_todos')
                 <div class="btn-group">
-                    <a href="{{ route('customer.todos.create') }}"
+                    <a href="{{ route('customer.tasks.create') }}"
                         class="btn btn-success waves-light waves-effect fw-bold mx-1">
                         {{ __('locale.buttons.create') }} <i data-feather="plus-circle"></i></a>
                 </div>
@@ -48,7 +48,7 @@
                                 <th></th>
                                 <th>{{ __('locale.labels.id') }}</th>
                                 <th>{{ __('locale.labels.name') }} </th>
-                                <th>{{ __('messages.created_by') }} </th>
+                                <th>assign user </th>
                                 <th>{{ __('locale.labels.status') }}</th>
                                 <th>{{ __('locale.labels.actions') }}</th>
                             </tr>
@@ -94,7 +94,7 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": "{{ route('customer.todos.search') }}",
+                    "url": "{{ route('customer.tasks.mytasksSearch') }}",
                     "dataType": "json",
                     "type": "POST",
                     "data": {
@@ -116,7 +116,7 @@
                         "data": "name"
                     },
                     {
-                        "data": "created_by",
+                        "data": "assign_to",
                     },
                     {
                         "data": "status",
@@ -253,7 +253,7 @@
                 }).then(function(result) {
                     if (result.value) {
                         $.ajax({
-                            url: "{{ route('customer.todos.index') }}/" + id,
+                            url: "{{ route('customer.tasks.index') }}/" + id,
                             type: "POST",
                             data: {
                                 _method: 'DELETE',
@@ -300,7 +300,7 @@
                         if (todo_ids.length > 0) {
 
                             $.ajax({
-                                url: "{{ route('customer.todos.batch_action') }}",
+                                url: "{{ route('customer.tasks.batch_action') }}",
                                 type: "POST",
                                 data: {
                                     _token: "{{ csrf_token() }}",

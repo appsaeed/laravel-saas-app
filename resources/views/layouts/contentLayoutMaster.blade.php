@@ -18,7 +18,13 @@
     <meta name="keywords" content="{{ config('app.keyword') }}" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title') - {{ config('app.title') }}</title>
+    <title>
+        @if (View::getSection('title'))
+            @yield('title') - {{ config('app.title') }}
+        @else
+        {{ Helper::bladeTitle(isset($breadcrumbs) ?  $breadcrumbs : [], 'Unknown') }} - {{ config('app.title') }}
+        @endif
+    </title>
     <link rel="shortcut icon" type="image/x-icon" href="<?php echo asset(config('app.favicon')); ?>" />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600"
         rel="stylesheet">

@@ -25,7 +25,7 @@
                         <div class="task-content" style="border-left:1px solid {{ statusToColor($todo->status) }}">
 
                             <div class="task-link">
-                                <a href="{{ route('customer.todos.show', $todo->uid) }}">
+                                <a href="{{ route('customer.tasks.show', $todo->uid) }}">
                                     <i data-feather="link" class="font-medium-5"></i>
                                 </a>
                             </div>

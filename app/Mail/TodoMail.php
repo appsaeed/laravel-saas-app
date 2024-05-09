@@ -6,8 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class TodoMail extends Mailable
-{
+class TodoMail extends Mailable {
     use Queueable, SerializesModels;
 
     /**
@@ -22,8 +21,7 @@ class TodoMail extends Mailable
      *
      * @return void
      */
-    public function __construct(array $data)
-    {
+    public function __construct( array $data ) {
         $this->data = $data;
     }
 
@@ -32,19 +30,17 @@ class TodoMail extends Mailable
      *
      * @return $this
      */
-    public function build()
-    {
+    public function build() {
 
-        $subject = isset($this->data['subject']) ? $this->data['subject'] : 'no subject';
-        $message = isset($this->data['message']) ? $this->data['message'] : 'no message';
-        $taskurl = isset($this->data['taskurl']) ? $this->data['taskurl'] : '';
+        $subject = isset( $this->data['subject'] ) ? $this->data['subject'] : 'no subject';
+        $message = isset( $this->data['message'] ) ? $this->data['message'] : 'no message';
+        $taskurl = isset( $this->data['taskurl'] ) ? $this->data['taskurl'] : '';
 
-
-        return $this->from(config('mail.from.address'))
-            ->subject($subject)
-            ->markdown('emails.customer.todos.create', [
-                'message'       => $message,
-                'url'           => $taskurl
-            ]);
+        return $this->from( config( 'mail.from.address' ) )
+            ->subject( $subject )
+            ->markdown( 'emails.customer.tasks.create', [
+                'message' => $message,
+                'url' => $taskurl,
+            ] );
     }
 }

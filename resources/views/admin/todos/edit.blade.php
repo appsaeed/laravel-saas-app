@@ -18,11 +18,11 @@
     <!-- Basic Vertical form layout section start -->
     <div class="mb-3 mt-2">
         <div class="btn-group">
-            <a href="{{ route('customer.todos.all') }}" class="btn btn-primary fw-bold me-1" type="button">
+            <a href="{{ route('customer.tasks.all') }}" class="btn btn-primary fw-bold me-1" type="button">
                 {{ __('locale.buttons.back') }} </a>
         </div>
         <div class="btn-group">
-            <a href="{{ route('admin.todos.show', $todo->uid) }}" class="btn btn-success fw-bold me-1" type="button">
+            <a href="{{ route('admin.tasks.show', $todo->uid) }}" class="btn btn-success fw-bold me-1" type="button">
                 open </a>
         </div>
     </div>
@@ -36,11 +36,11 @@
                     </div>
                     <div class="card-content">
                         <div class="card-body">
-                            <form class="form form-vertical" action="{{ route('admin.todos.update', $todo->uid) }}"
+                            <form class="form form-vertical" action="{{ route('admin.tasks.update', $todo->uid) }}"
                                 method="post" enctype="multipart/form-data">
                                 @csrf
                                 @method('PATCH')
-                                @include('customer.todos.edit.creator')
+                                @include('customer.tasks.edit.creator')
                             </form>
 
                         </div>

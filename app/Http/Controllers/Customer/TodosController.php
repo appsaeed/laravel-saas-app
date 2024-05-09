@@ -43,27 +43,10 @@ class TodosController extends Controller {
 
         $breadcrumbs = [
             ['link' => url( 'dashboard' ), 'name' => __( 'locale.menu.Dashboard' )],
-            ['name' => __( 'locale.menu.Todos' )],
+            ['name' => __( 'All Tasks' )],
         ];
 
-        return view( 'customer.todos.index', compact( 'breadcrumbs' ) );
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function created() {
-
-        $this->authorize( 'view_todos' );
-
-        $breadcrumbs = [
-            ['link' => url( 'dashboard' ), 'name' => __( 'locale.menu.Dashboard' )],
-            ['name' => __( 'locale.menu.Todos' )],
-        ];
-
-        return view( 'customer.todos.__created', compact( 'breadcrumbs' ) );
+        return view( 'customer.tasks.index', compact( 'breadcrumbs' ) );
     }
 
     /**
@@ -72,7 +55,154 @@ class TodosController extends Controller {
      * @return void
      * @throws AuthorizationException
      */
-    public function createdSearch( Request $request ) {
+    public function search( Request $request ) {
+
+        $this->authorize( 'view_todos' );
+
+        $data = [];
+
+        $columns = [
+            0 => 'responsive_id',
+            1 => 'uid',
+            2 => 'uid',
+            3 => 'name',
+            4 => 'created_by',
+            5 => 'completed_by',
+            6 => 'actions',
+        ];
+
+        $totalData = Todos::where( 'user_id', auth()->user()->id )->count();
+
+        $totalFiltered = $totalData;
+
+        $limit = $request->input( 'length' );
+        $start = $request->input( 'start' );
+        $order = $columns[$request->input( 'order.0.column' )];
+        $dir = $request->input( 'order.0.dir' );
+
+        if ( empty( $request->input( 'search.value' ) ) ) {
+
+            $todos_data = Todos::where( 'user_id', auth()->user()->id )
+                ->offset( $start )
+                ->limit( $limit )
+                ->orderBy( $order, $dir )
+                ->get();
+        } else {
+
+            $search = $request->input( 'search.value' );
+
+            $todos_data = Todos::where( 'user_id', auth()->user()->id )
+                ->whereLike( ['name', 'completed_by.first_name', 'completed_by.last_name'], $search )
+                ->offset( $start )
+                ->limit( $limit )
+                ->orderBy( $order, $dir )
+                ->get();
+
+            $totalFiltered = Todos::where( 'user_id', auth()->user()->id )
+                ->whereLike( ['todo.name', 'completed_by.first_name'], $search )->count();
+        }
+
+        if ( !empty( $todos_data ) ) {
+            foreach ( $todos_data as $todo ) {
+
+                $data[] = $this->todos->nestedData( $todo, [
+                    'can_update' => true,
+                    'can_chat' => true,
+                ] );
+            }
+        }
+
+        /**
+         * Task received data
+         */
+        $totalReceived = TodosReceived::where( 'user_id', auth()->user()->id )->count();
+
+        $limit = $request->input( 'length' );
+        $start = $request->input( 'start' );
+        $order = $columns[$request->input( 'order.0.column' )];
+        $dir = $request->input( 'order.0.dir' );
+
+        if ( empty( $request->input( 'search.value' ) ) ) {
+
+            $received_data = TodosReceived::where( 'user_id', auth()->user()->id )
+                ->offset( $start )
+                ->limit( $limit )
+                ->orderBy( $order, $dir )
+                ->get();
+
+        } else {
+
+            $search = $request->input( 'search.value' );
+
+            $received_data = TodosReceived::where( 'user_id', auth()->user()->id )
+                ->whereLike( [
+                    'todo.name', 'completed_by.first_name', 'completed_by.last_name',
+                ], $search )
+                ->offset( $start )
+                ->limit( $limit )
+                ->orderBy( $order, $dir )
+                ->get();
+
+            $totalReceived = TodosReceived::where( 'user_id', auth()->user()->id )
+                ->whereLike( [
+                    'todo.name', 'completed_by.first_name', 'completed_by.last_name',
+                ], $search )
+                ->offset( $start )
+                ->limit( $limit )
+                ->orderBy( $order, $dir )
+                ->get();
+        }
+
+        $totalFiltered = $totalReceived;
+
+        if ( !empty( $received_data ) ) {
+            foreach ( $received_data as $todo ) {
+
+                $data[] = $this->todos->nestedData( $todo->todo, [
+                    'can_update' => false,
+                    'can_chat' => true,
+                ] );
+            }
+        }
+        /**
+         * Task received data completed
+         */
+
+        $json_data = [
+            "draw" => intval( $request->input( 'draw' ) ),
+            "recordsTotal" => $totalData,
+            "recordsFiltered" => intval( $totalFiltered ),
+            "data" => $data,
+        ];
+
+        echo json_encode( $json_data );
+        exit();
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function mytasks() {
+
+        $this->authorize( 'view_todos' );
+
+        $breadcrumbs = [
+            ['link' => url( 'dashboard' ), 'name' => __( 'locale.menu.Dashboard' )],
+            ['name' => __( 'locale.menu.Todos' )],
+        ];
+
+        return view( 'customer.tasks.__created', compact( 'breadcrumbs' ) );
+    }
+
+    /**
+     * @param  Request  $request
+     *
+     * @return void
+     * @throws AuthorizationException
+     */
+    public function mytasksSearch( Request $request ) {
 
         $this->authorize( 'view_todos' );
 
@@ -154,6 +284,7 @@ class TodosController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
+
         $this->authorize( 'create_todos' );
 
         $breadcrumbs = [
@@ -164,7 +295,7 @@ class TodosController extends Controller {
         $customers = User::whereNot( 'active_portal', 'admin' )
             ->where( 'id', '!=', auth()->user()->id )->get();
 
-        return view( 'customer.todos.create', compact( 'breadcrumbs', 'customers' ) );
+        return view( 'customer.tasks.create', compact( 'breadcrumbs', 'customers' ) );
     }
 
     /**
@@ -176,13 +307,13 @@ class TodosController extends Controller {
     public function store( StoreTodoRequest $request ) {
 
         if ( $this->todos->store( $request ) ) {
-            return redirect()->route( 'customer.todos.all' )->with( [
+            return redirect()->route( 'customer.tasks.index' )->with( [
                 'status' => 'success',
                 'message' => __( 'Todo was successfully created' ),
             ] );
         }
 
-        return redirect()->route( 'customer.todos.create' )->with( [
+        return redirect()->route( 'customer.tasks.create' )->with( [
             'status' => 'error',
             'message' => Message::wentWrong(),
         ] );
@@ -194,20 +325,20 @@ class TodosController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show( Todos $todo ) {
+    public function show( Todos $task ) {
         $this->authorize( 'view_todos' );
 
         $breadcrumbs = [
             ['link' => url( 'dashboard' ), 'name' => __( 'locale.menu.Dashboard' )],
-            ['name' => __( 'locale.labels.view' )],
+            ['name' => __( 'View Task' )],
         ];
 
-        if ( $todo->isCreator() ) {
-            $reviewers = $todo->getReviewers();
-            return view( 'customer.todos.show', compact( 'breadcrumbs', 'todo', 'reviewers' ) );
+        if ( $task->isCreator() ) {
+            $reviewers = $task->getReviewers();
+            return view( 'customer.tasks.show', compact( 'breadcrumbs', 'task', 'reviewers' ) );
         }
 
-        return view( 'customer.todos.show', compact( 'breadcrumbs', 'todo' ) );
+        return view( 'customer.tasks.show', compact( 'breadcrumbs', 'task' ) );
     }
 
     /**
@@ -216,10 +347,10 @@ class TodosController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit( Todos $todo ) {
+    public function edit( Todos $task ) {
         $this->authorize( 'update_todos' );
 
-        if ( auth()->user()->id != $todo->user_id ) {
+        if ( auth()->user()->id != $task->user_id ) {
             abort( 401 );
         }
 
@@ -231,7 +362,7 @@ class TodosController extends Controller {
         $customers = User::where( 'active_portal', 'customer' )
             ->where( 'id', '!=', auth()->user()->id )->get();
 
-        return view( 'customer.todos.edit', compact( 'breadcrumbs', 'customers', 'todo' ) );
+        return view( 'customer.tasks.edit', compact( 'breadcrumbs', 'customers', 'task' ) );
     }
 
     /**
@@ -241,22 +372,22 @@ class TodosController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update( Request $request, Todos $todo ) {
+    public function update( Request $request, Todos $task ) {
         $this->authorize( 'update_todos' );
 
-        if ( auth()->user()->id != $todo->user_id ) {
+        if ( auth()->user()->id != $task->user_id ) {
             abort( 401 );
         }
 
-        if ( $this->todos->update( $request, $todo ) ) {
+        if ( $this->todos->update( $request, $task ) ) {
 
-            return redirect()->route( 'customer.todos.edit', $todo->uid )->with( [
+            return redirect()->route( 'customer.tasks.edit', $task->uid )->with( [
                 'status' => 'success',
                 'message' => 'Successfully updated',
             ] );
         }
 
-        return redirect()->route( 'customer.todos.edit', $todo->uid )->with( [
+        return redirect()->route( 'customer.tasks.edit', $task->uid )->with( [
             'status' => 'error',
             'message' => Message::wentWrong(),
         ] );
@@ -289,7 +420,7 @@ class TodosController extends Controller {
 
             $notifocation = new Notifications();
 
-            $show_link = route( 'customer.todos.show', $todo->uid );
+            $show_link = route( 'customer.tasks.show', $todo->uid );
             $view_link = "<a href='$show_link'> click here</a>";
 
             if ( !$todo->addEmployee( auth()->user()->id ) ) {
@@ -338,7 +469,7 @@ class TodosController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function review( Todos $todo ) {
+    public function send_review( Todos $todo ) {
         try {
 
             if ( $todo->hasReview() ) {
@@ -357,7 +488,7 @@ class TodosController extends Controller {
 
             $notifocation = new Notifications();
 
-            $show_link = route( 'customer.todos.show', $todo->uid );
+            $show_link = route( 'customer.tasks.show', $todo->uid );
             $view_link = "<a href='$show_link'> click here</a>";
 
             $subject = User::fullname() . ' sent to review the task #' . $todo->uid;
@@ -466,7 +597,7 @@ class TodosController extends Controller {
             ['name' => __( 'locale.menu.Todos' )],
         ];
 
-        return view( 'customer.todos.__received', compact( 'breadcrumbs' ) );
+        return view( 'customer.tasks.__received', compact( 'breadcrumbs' ) );
     }
 
     /**
@@ -559,7 +690,7 @@ class TodosController extends Controller {
             ['name' => __( 'locale.menu.Todos' )],
         ];
 
-        return view( 'customer.todos.__in_progress', compact( 'breadcrumbs' ) );
+        return view( 'customer.tasks.__in_progress', compact( 'breadcrumbs' ) );
     }
 
     /**
@@ -693,7 +824,7 @@ class TodosController extends Controller {
             ['name' => __( 'locale.menu.Todos' )],
         ];
 
-        return view( 'customer.todos.__complete', compact( 'breadcrumbs' ) );
+        return view( 'customer.tasks.__complete', compact( 'breadcrumbs' ) );
     }
 
     /**
@@ -857,7 +988,7 @@ class TodosController extends Controller {
             ['name' => __( 'locale.menu.Todos' )],
         ];
 
-        return view( 'customer.todos.__reviews', compact( 'breadcrumbs' ) );
+        return view( 'customer.tasks.__reviews', compact( 'breadcrumbs' ) );
     }
 
     /**
@@ -986,12 +1117,12 @@ class TodosController extends Controller {
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function markAsComplete( Todos $todo, Request $request ) {
+    public function markAsComplete( Todos $task, Request $request ) {
         $this->authorize( 'update_todos' );
 
         $request->validate( ['completed_by' => 'required|exists:users,id'] );
 
-        if ( $this->todos->markAsComplete( $todo, $request->completed_by ) ) {
+        if ( $this->todos->markAsComplete( $task, $request->completed_by ) ) {
             return redirect()->back()->with( [
                 'status' => 'success',
                 'message' => "Task marked as complete",
@@ -1006,11 +1137,11 @@ class TodosController extends Controller {
 
     /**
      * pase tha task and send notification
-     * @param \App\Models\Todos $todo
+     * @param \App\Models\Todos $task
      */
-    public function pauseTask( Todos $todo ) {
+    public function pauseTask( Todos $task ) {
 
-        if ( $todo->getOption( 'task_paused_by_' . auth()->user()->id ) ) {
+        if ( $task->getOption( 'task_paused_by_' . auth()->user()->id ) ) {
             return response()->json( [
                 'status' => 'error',
                 'message' => 'You are already requested to pause the task. please wait until creator accept!',
@@ -1018,16 +1149,16 @@ class TodosController extends Controller {
         }
 
         $username = User::fullname();
-        $show_link = route( 'customer.todos.show', $todo->uid );
-        $edit_link = route( 'customer.todos.edit', $todo->uid );
+        $show_link = route( 'customer.tasks.show', $task->uid );
+        $edit_link = route( 'customer.tasks.edit', $task->uid );
         $view_link = "<a href='$show_link'> click here</a>";
-        $subject = "$username has requested to pause the task #" . $todo->uid;
-        $message = "<b>$username</b> has requested to resume the task " . $todo->name;
+        $subject = "$username has requested to pause the task #" . $task->uid;
+        $message = "<b>$username</b> has requested to resume the task " . $task->name;
         $message .= '<br>To accept the the request you have update the task: ' . $edit_link;
         $message .= '<br>For more information: ' . $view_link;
 
         Notifications::create( [
-            'user_id' => $todo->user_id,
+            'user_id' => $task->user_id,
             'type' => 'task',
             'name' => $subject,
             'message' => $message,
@@ -1035,14 +1166,14 @@ class TodosController extends Controller {
         ] );
 
         if ( config( 'task.task_send_email' ) ) {
-            Mail::to( User::find( $todo->user_id ) )->send( new TodoMail( [
+            Mail::to( User::find( $task->user_id ) )->send( new TodoMail( [
                 'subject' => $subject,
                 'message' => $message,
                 'taskurl' => $show_link,
             ] ) );
         }
 
-        if ( $todo->setOption( 'task_paused_by_' . Auth::id(), true ) ) {
+        if ( $task->setOption( 'task_paused_by_' . Auth::id(), true ) ) {
             return response()->json( [
                 'status' => 'success',
                 'message' => 'Your task pause request is made successfully',
@@ -1056,11 +1187,11 @@ class TodosController extends Controller {
     }
     /**
      * pase tha task and send notification
-     * @param \App\Models\Todos $todo
+     * @param \App\Models\Todos $task
      */
-    public function continueTask( Todos $todo ) {
+    public function continueTask( Todos $task ) {
 
-        if ( !$todo->getOption( 'task_paused_by_' . auth()->user()->id ) ) {
+        if ( !$task->getOption( 'task_paused_by_' . auth()->user()->id ) ) {
             return response()->json( [
                 'status' => 'error',
                 'message' => 'probably the task is made paused you!',
@@ -1068,16 +1199,16 @@ class TodosController extends Controller {
         }
 
         $username = User::fullname();
-        $show_link = route( 'customer.todos.show', $todo->uid );
-        $edit_link = route( 'customer.todos.edit', $todo->uid );
+        $show_link = route( 'customer.tasks.show', $task->uid );
+        $edit_link = route( 'customer.tasks.edit', $task->uid );
         $view_link = "<a href='$show_link'> click here</a>";
-        $subject = "$username has requested to continue the task #" . $todo->uid;
-        $message = "<b>$username</b> has requested to continue the task " . $todo->name;
+        $subject = "$username has requested to continue the task #" . $task->uid;
+        $message = "<b>$username</b> has requested to continue the task " . $task->name;
         $message .= '<br>continue start the task you have update the task: ' . $edit_link;
         $message .= '<br>For more information: ' . $view_link;
 
         Notifications::create( [
-            'user_id' => $todo->user_id,
+            'user_id' => $task->user_id,
             'type' => 'task',
             'name' => $subject,
             'message' => $message,
@@ -1085,14 +1216,14 @@ class TodosController extends Controller {
         ] );
 
         if ( config( 'task.task_send_email' ) ) {
-            Mail::to( User::find( $todo->user_id ) )->send( new TodoMail( [
+            Mail::to( User::find( $task->user_id ) )->send( new TodoMail( [
                 'subject' => $subject,
                 'message' => $message,
                 'taskurl' => $show_link,
             ] ) );
         }
 
-        if ( $todo->setOption( 'task_paused_by_' . Auth::id(), false ) ) {
+        if ( $task->setOption( 'task_paused_by_' . Auth::id(), false ) ) {
             return response()->json( [
                 'status' => 'success',
                 'message' => 'Your request has been processed',

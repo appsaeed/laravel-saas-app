@@ -4,7 +4,7 @@
         <div class="mb-1">
             <label for="name" class="required form-label">{{ __('locale.labels.name') }}</label>
             <input type="text" id="name" class="form-control @error('name') is-invalid @enderror"
-                value="{{ $todo->name }}" name="name" placeholder="Todo name">
+                value="{{ $task->name }}" name="name" placeholder="Todo name">
             @error('name')
                 <div class="invalid-feedback">
                     {{ $message }}
@@ -18,7 +18,7 @@
         <div class="mb-1">
             <label for="title" class="form-label">{{ __('locale.labels.title') }}</label>
             <input type="text" id="title" class="form-control @error('title') is-invalid @enderror"
-                value="{{ $todo->title }}" name="title" placeholder="Todo title">
+                value="{{ $task->title }}" name="title" placeholder="Todo title">
             @error('title')
                 <div class="invalid-feedback">
                     {{ $message }}
@@ -35,11 +35,11 @@
             </label>
             <select class="select2 select2-icons form-select select2-hidden-accessible" id="assign_to"
                 name="assign_to[]" multiple="" data-select2-id="assign_to">
-                <option @if (in_array('all', $todo->assigned())) selected @endif value="all">
+                <option @if (in_array('all', $task->assigned())) selected @endif value="all">
                     Available for all
                 </option>
                 @foreach ($customers as $user)
-                    <option @if (in_array($user->id, $todo->assigned())) selected @endif value="{{ $user->id }}">
+                    <option @if (in_array($user->id, $task->assigned())) selected @endif value="{{ $user->id }}">
                         {{ $user->displayName() }}
                     </option>
                 @endforeach
@@ -61,7 +61,7 @@
                 {{ __('locale.labels.status') }}</label>
             <select class="select2 w-100" id="timezone" name="status">
                 @foreach (\App\Models\Todos::$status as $status)
-                    <option value="{{ $status }}" @if ($todo->status == $status) selected @endif>
+                    <option value="{{ $status }}" @if ($task->status == $status) selected @endif>
                         {{ str_replace('_', ' ', $status) }}
                     </option>
                 @endforeach
@@ -97,7 +97,7 @@
                 {{ __('locale.labels.description') }}
             </label>
             <textarea type="text" id="description"
-                class="form-control @error('description') is-invalid @enderror"name="description" placeholder="Todo description">{{ $todo->description }}</textarea>
+                class="form-control @error('description') is-invalid @enderror"name="description" placeholder="Todo description">{{ $task->description }}</textarea>
             @error('description')
                 <div class="invalid-feedback">
                     {{ $message }}

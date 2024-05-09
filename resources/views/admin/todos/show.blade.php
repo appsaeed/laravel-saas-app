@@ -34,13 +34,13 @@
 
         <div class="mb-3 mt-2">
             <div class="btn-group">
-                <a href="{{ route('customer.todos.all') }}" class="btn btn-primary fw-bold me-1" type="button">
+                <a href="{{ route('customer.tasks.all') }}" class="btn btn-primary fw-bold me-1" type="button">
                     {{ __('locale.buttons.back') }} </a>
             </div>
             @if (auth()->user()->id != $todo->user_id)
-                @include('customer.todos.show.public-buttons')
+                @include('customer.tasks.show.public-buttons')
             @else
-                @include('customer.todos.show.auth-buttons')
+                @include('customer.tasks.show.auth-buttons')
             @endif
         </div>
 
@@ -223,7 +223,7 @@
                     }).then(function(result) {
                         if (result.value) {
                             $.ajax({
-                                url: "{{ route('customer.todos.will_do', $todo->uid) }}",
+                                url: "{{ route('customer.tasks.will_do', $todo->uid) }}",
                                 type: "POST",
                                 data: {
                                     _token: "{{ csrf_token() }}"
@@ -257,7 +257,7 @@
                     }).then(function(result) {
                         if (result.value) {
                             $.ajax({
-                                url: "{{ route('customer.todos.send_review', $todo->uid) }}",
+                                url: "{{ route('customer.tasks.send_review', $todo->uid) }}",
                                 type: "POST",
                                 data: {
                                     _token: "{{ csrf_token() }}"
@@ -291,7 +291,7 @@
                     }).then(function(result) {
                         if (result.value) {
                             $.ajax({
-                                url: "{{ route('customer.todos.pause', $todo->uid) }}",
+                                url: "{{ route('customer.tasks.pause', $todo->uid) }}",
                                 type: "POST",
                                 data: {
                                     _token: "{{ csrf_token() }}"
@@ -324,7 +324,7 @@
                     }).then(function(result) {
                         if (result.value) {
                             $.ajax({
-                                url: "{{ route('customer.todos.continueTask', $todo->uid) }}",
+                                url: "{{ route('customer.tasks.continueTask', $todo->uid) }}",
                                 type: "POST",
                                 data: {
                                     _token: "{{ csrf_token() }}"

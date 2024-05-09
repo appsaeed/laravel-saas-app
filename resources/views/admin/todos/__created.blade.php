@@ -31,7 +31,7 @@
 
             @can('create_todos')
                 <div class="btn-group">
-                    <a href="{{ route('customer.todos.create') }}"
+                    <a href="{{ route('customer.tasks.create') }}"
                         class="btn btn-success waves-light waves-effect fw-bold mx-1">
                         {{ __('locale.buttons.create') }} <i data-feather="plus-circle"></i></a>
                 </div>
@@ -94,7 +94,7 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": "{{ route('customer.todos._created') }}",
+                    "url": "{{ route('customer.tasks._created') }}",
                     "dataType": "json",
                     "type": "POST",
                     "data": {
@@ -281,7 +281,7 @@
                 }).then(function(result) {
                     if (result.value) {
                         $.ajax({
-                            url: "{{ route('customer.todos.index') }}/" + id,
+                            url: "{{ route('customer.tasks.index') }}/" + id,
                             type: "POST",
                             data: {
                                 _method: 'DELETE',
@@ -328,7 +328,7 @@
                         if (todo_ids.length > 0) {
 
                             $.ajax({
-                                url: "{{ route('customer.todos.batch_action') }}",
+                                url: "{{ route('customer.tasks.batch_action') }}",
                                 type: "POST",
                                 data: {
                                     _token: "{{ csrf_token() }}",

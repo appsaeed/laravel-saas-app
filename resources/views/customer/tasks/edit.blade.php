@@ -18,11 +18,11 @@
     <!-- Basic Vertical form layout section start -->
     <div class="mb-3 mt-2">
         <div class="btn-group">
-            <a href="{{ route('customer.todos.all') }}" class="btn btn-primary fw-bold me-1" type="button">
+            <a href="{{ route('customer.tasks.index') }}" class="btn btn-primary fw-bold me-1" type="button">
                 {{ __('locale.buttons.back') }} </a>
         </div>
         <div class="btn-group">
-            <a href="{{ route('customer.todos.show', $todo->uid) }}" class="btn btn-success fw-bold me-1" type="button">
+            <a href="{{ route('customer.tasks.show', $task->uid) }}" class="btn btn-success fw-bold me-1" type="button">
                 open </a>
         </div>
     </div>
@@ -36,15 +36,15 @@
                     </div>
                     <div class="card-content">
                         <div class="card-body">
-                            <form class="form form-vertical" action="{{ route('customer.todos.update', $todo->uid) }}"
+                            <form class="form form-vertical" action="{{ route('customer.tasks.update', $task->uid) }}"
                                 method="post" enctype="multipart/form-data">
                                 @csrf
                                 @method('PATCH')
-                                @if (auth()->user()->id === $todo->user_id)
-                                    @include('customer.todos.edit.creator')
+                                @if (auth()->user()->id === $task->user_id)
+                                    @include('customer.tasks.edit.creator')
                                 @else
                                     {{-- update for recevier --}}
-                                    @include('customer.todos.edit.receiver')
+                                    @include('customer.tasks.edit.receiver')
                                 @endif
                             </form>
 
@@ -72,7 +72,7 @@
     <script>
         $('input#deadline').flatpickr({
             weekNumbers: true,
-            defaultDate: new Date('{{ $todo->deadline }}'),
+            defaultDate: new Date('{{ $task->deadline }}'),
             // defaultDate: Date.now(),
             enableTime: true,
             // dateFormat: "Y-m-d h:m",

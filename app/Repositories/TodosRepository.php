@@ -7,7 +7,6 @@
  * @datetime 2023-8-23
  */
 
-
 namespace App\Repositories;
 
 use App\Helpers\Worker;
@@ -25,17 +24,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
-class TodosRepository
-{
+class TodosRepository {
     /**
      * store todo
      * @param \Illuminate\Http\Request
      * @return bool
      */
-    public function store(Request $request)
-    {
+    public function store( Request $request ) {
         try {
-            $send_email = config('task.task_send_email');
+            $send_email = config( 'task.task_send_email' );
 
             DB::beginTransaction();
 
@@ -43,34 +40,34 @@ class TodosRepository
             $notifocations = new Notifications();
             $todoReceived = new TodosReceived();
 
-            $createTodo = $todos->create([
-                ...$request->only($todos->getFillable()),
-                'user_id'   => auth()->user()->id,
-                'assign_to' => json_encode($request->assign_to)
-            ]);
+            $createTodo = $todos->create( [
+                 ...$request->only( $todos->getFillable() ),
+                'user_id' => auth()->user()->id,
+                'assign_to' => json_encode( $request->assign_to ),
+            ] );
 
-            $show_link = route('customer.todos.show', $createTodo->uid);
+            $show_link = route( 'customer.tasks.show', $createTodo->uid );
             $view_link = "<a href='$show_link'> click here</a>";
             $subject = "You have received new task from " . User::fullname();
             $message = 'You have received new task from <b>' . User::fullname() . '</b> and for more information: ' . $view_link;
 
-            if ($createTodo->save()) {
+            if ( $createTodo->save() ) {
 
                 $notifies = [];
                 $receives = [];
 
-                if (in_array('all', $createTodo->assigned())) {
+                if ( in_array( 'all', $createTodo->assigned() ) ) {
 
                     $users = User::allcustomers();
 
-                    foreach ($users as $user) {
+                    foreach ( $users as $user ) {
 
-                        if ($send_email) {
-                            Mail::to($user)->send(new TodoMail([
+                        if ( $send_email ) {
+                            Mail::to( $user )->send( new TodoMail( [
                                 'subject' => $subject,
                                 'message' => $message,
-                                'taskurl' => $show_link
-                            ]));
+                                'taskurl' => $show_link,
+                            ] ) );
                         }
 
                         $notifies[] = [
@@ -78,7 +75,7 @@ class TodosRepository
                             'type' => 'task',
                             'name' => $subject,
                             'message' => $message,
-                            'created_by' => auth()->user()->id
+                            'created_by' => auth()->user()->id,
                         ];
 
                         $receives[] = [
@@ -86,34 +83,33 @@ class TodosRepository
                             'todo_id' => $createTodo->id,
                         ];
 
+                        $chatbox = ChatBox::create( [
+                            'user_id' => Auth::user()->id,
+                            'from' => auth()->user()->id,
+                            'to' => $user->id,
+                            'todo_id' => $createTodo->id,
+                            'notification' => true,
+                        ] );
 
-                        $chatbox = ChatBox::create([
-                            'user_id'           => Auth::user()->id,
-                            'from'              => auth()->user()->id,
-                            'to'                => $user->id,
-                            'todo_id'           => $createTodo->id,
-                            'notification'      => true,
-                        ]);
-
-                        ChatBoxMessage::create([
-                            'box_id'  => $chatbox->id,
+                        ChatBoxMessage::create( [
+                            'box_id' => $chatbox->id,
                             'message' => 'New task: ' . $createTodo->name,
                             'send_by' => 'from',
-                        ]);
+                        ] );
 
                         $chatbox->touch();
                     }
 
                     //complete for all users
                 } else {
-                    foreach ($createTodo->assigned() as $id) {
+                    foreach ( $createTodo->assigned() as $id ) {
 
-                        if ($send_email) {
-                            Mail::to(User::find($id))->send(new TodoMail([
+                        if ( $send_email ) {
+                            Mail::to( User::find( $id ) )->send( new TodoMail( [
                                 'subject' => $subject,
                                 'message' => $message,
-                                'taskurl' => $show_link
-                            ]));
+                                'taskurl' => $show_link,
+                            ] ) );
                         }
 
                         $notifies[] = [
@@ -121,45 +117,43 @@ class TodosRepository
                             'type' => 'task',
                             'name' => $subject,
                             'message' => $message,
-                            'created_by' => auth()->user()->id
+                            'created_by' => auth()->user()->id,
                         ];
 
                         $receives[] = [
                             'user_id' => $id,
-                            'todo_id' => $createTodo->id
+                            'todo_id' => $createTodo->id,
                         ];
 
-                        $chatbox = ChatBox::create([
-                            'user_id'           => Auth::user()->id,
-                            'from'              => auth()->user()->id,
-                            'to'                => $id,
-                            'todo_id'           => $createTodo->id,
-                            'notification'      => 0,
-                        ]);
+                        $chatbox = ChatBox::create( [
+                            'user_id' => Auth::user()->id,
+                            'from' => auth()->user()->id,
+                            'to' => $id,
+                            'todo_id' => $createTodo->id,
+                            'notification' => 0,
+                        ] );
 
-                        ChatBoxMessage::create([
-                            'box_id'  => $chatbox->id,
+                        ChatBoxMessage::create( [
+                            'box_id' => $chatbox->id,
                             'message' => 'New task: ' . $createTodo->name,
                             'send_by' => 'from',
-                        ]);
+                        ] );
 
                         $chatbox->touch();
                     }
                     //complete to ganerate for selected user
                 }
 
-                $todoReceived->insert($receives) && $notifocations->insert($notifies);
+                $todoReceived->insert( $receives ) && $notifocations->insert( $notifies );
 
                 DB::commit();
             }
 
             return true;
-        } catch (\Throwable $th) {
+        } catch ( \Throwable $th ) {
             return false;
         }
     }
-
-
 
     /**
      * update todo
@@ -167,61 +161,58 @@ class TodosRepository
      * @param \App\Models\Todos
      * @return bool
      */
-    public function update(Request $request, Todos $todo)
-    {
+    public function update( Request $request, Todos $todo ) {
 
         try {
 
-            $send_email = config('task.task_send_email');
+            $send_email = config( 'task.task_send_email' );
 
             $notifocation = new Notifications();
 
-            $show_link = route('customer.todos.show', $todo->uid);
+            $show_link = route( 'customer.tasks.show', $todo->uid );
             $view_link = "<a href='$show_link'> click here</a>";
 
             $subject = User::fullname() . ' has updated a task.';
-            $message =  '<b>' . User::fullname() . '</b> has updated status';
+            $message = '<b>' . User::fullname() . '</b> has updated status';
             $message .= '<br><b>task name</b>: ' . $todo->name;
             $message .= '<br><b>status</b>:' . $todo->status;
             $message .= "<br><br>for more information: " . $view_link;
 
-            if ($request->status != $todo->status) {
+            if ( $request->status != $todo->status ) {
 
                 $subject = User::fullname() . ' has updated to ' . $request->status;
             }
 
-            if ($request->status == 'pause') {
-                $todo->setOption('auth_paused_at', now());
+            if ( $request->status == 'pause' ) {
+                $todo->setOption( 'auth_paused_at', now() );
             }
 
+            $todo->update( $request->only( $todo->getFillable() ) );
 
-            $todo->update($request->only($todo->getFillable()));
+            if ( $request->status == 'continue' ) {
 
-            if ($request->status == 'continue') {
-
-                $deadline = Carbon::parse($todo->deadline);
-                $pause_date = Carbon::parse($todo->getOption('auth_paused_at'));
+                $deadline = Carbon::parse( $todo->deadline );
+                $pause_date = Carbon::parse( $todo->getOption( 'auth_paused_at' ) );
 
                 // Add the number of seconds represented by $pause_date to $deadline
-                $deadline->addSeconds($pause_date->diffInSeconds());
+                $deadline->addSeconds( $pause_date->diffInSeconds() );
 
                 // Update the deadline property in $todo object
                 $todo->deadline = $deadline;
 
                 $todo->save();
 
-                $todo->removeOption('auth_paused_at');
+                $todo->removeOption( 'auth_paused_at' );
             }
 
-            $this->notifications($todo, [
+            $this->notifications( $todo, [
                 'subject' => $subject,
                 'message' => $message,
-                'send_email' => $request->send_email
-            ]);
-
+                'send_email' => $request->send_email,
+            ] );
 
             return true;
-        } catch (\Throwable $th) {
+        } catch ( \Throwable $th ) {
             return false;
         }
     }
@@ -232,63 +223,61 @@ class TodosRepository
      * @param array $data
      * @return bool
      */
-    public function notifications(Todos $todo, array $data = [])
-    {
+    public function notifications( Todos $todo, array $data = [] ) {
         try {
             $send_email = false;
 
-            $show_link = route('customer.todos.show', $todo->uid);
+            $show_link = route( 'customer.tasks.show', $todo->uid );
             $view_link = "<a href='$show_link'> click here</a>";
             $subject = "You have received new task from " . User::fullname();
             $message = 'You have received new task from <b>' . User::fullname() . '</b> and for more information: ' . $view_link;
 
-            if (isset($data['subject'])) {
+            if ( isset( $data['subject'] ) ) {
                 $subject = $data['subject'];
             }
-            if (isset($data['message'])) {
+            if ( isset( $data['message'] ) ) {
                 $message = $data['message'];
             }
 
-            if (isset($data['send_email']) && $data['send_email']) {
+            if ( isset( $data['send_email'] ) && $data['send_email'] ) {
                 $send_email = true;
             }
 
-
             $notifies = [];
 
-            if (in_array('all', $todo->assigned())) {
+            if ( in_array( 'all', $todo->assigned() ) ) {
 
                 $users = User::allcustomers();
 
-                if ($send_email) {
-                    Mail::to($users)->send(new TodoMail([
+                if ( $send_email ) {
+                    Mail::to( $users )->send( new TodoMail( [
                         'subject' => $subject,
                         'message' => $message,
-                        'taskurl' => $show_link
-                    ]));
+                        'taskurl' => $show_link,
+                    ] ) );
                 }
 
-                foreach ($users as $user) {
+                foreach ( $users as $user ) {
 
                     $notifies[] = [
                         'user_id' => $user->id,
                         'type' => 'task',
                         'name' => $subject,
                         'message' => $message,
-                        'created_by' => auth()->user()->id
+                        'created_by' => auth()->user()->id,
                     ];
                 }
 
                 //complete for all users
             } else {
-                foreach ($todo->assigned() as $id) {
+                foreach ( $todo->assigned() as $id ) {
 
-                    if ($send_email) {
-                        Mail::to(User::find($id))->send(new TodoMail([
+                    if ( $send_email ) {
+                        Mail::to( User::find( $id ) )->send( new TodoMail( [
                             'subject' => $subject,
                             'message' => $message,
-                            'taskurl' => $show_link
-                        ]));
+                            'taskurl' => $show_link,
+                        ] ) );
                     }
 
                     $notifies[] = [
@@ -296,14 +285,14 @@ class TodosRepository
                         'type' => 'task',
                         'name' => $subject,
                         'message' => $message,
-                        'created_by' => auth()->user()->id
+                        'created_by' => auth()->user()->id,
                     ];
                 }
                 //complete to ganerate for selected user
             }
 
-            return Notifications::insert($notifies);
-        } catch (\Throwable $th) {
+            return Notifications::insert( $notifies );
+        } catch ( \Throwable $th ) {
             return false;
         }
     }
@@ -315,57 +304,56 @@ class TodosRepository
      * @param bool $send_email
      * @return bool
      */
-    public function markasComplete(Todos $todo, $user_id, $send_email = false)
-    {
+    public function markasComplete( Todos $todo, $user_id, $send_email = false ) {
         try {
 
-            if (!$todo->update(['status' => 'complete', 'completed_by' => $user_id])) {
+            if ( !$todo->update( ['status' => 'complete', 'completed_by' => $user_id] ) ) {
                 return false;
             }
 
-            $show_link = route('customer.todos.show', $todo->uid);
+            $show_link = route( 'customer.tasks.show', $todo->uid );
             $view_link = "<a href='$show_link'> click here</a>";
-            $subject =  '#' . $todo->uid . ' task completed by ' . User::fullname($user_id);
-            $message =  "<b>" . $todo->name . "</b> is completed by " . User::fullname($user_id);
-            $message =  "<br> for more information open the task: $view_link";
+            $subject = '#' . $todo->uid . ' task completed by ' . User::fullname( $user_id );
+            $message = "<b>" . $todo->name . "</b> is completed by " . User::fullname( $user_id );
+            $message = "<br> for more information open the task: $view_link";
 
             $notifies = [];
 
             // TodosReceived::where('todo_id', $todo->id)->delete();
 
-            if (in_array('all', $todo->assigned())) {
+            if ( in_array( 'all', $todo->assigned() ) ) {
 
                 $users = User::allcustomers();
 
-                if ($send_email) {
-                    Mail::to($users)->send(new TodoMail([
+                if ( $send_email ) {
+                    Mail::to( $users )->send( new TodoMail( [
                         'subject' => $subject,
                         'message' => $message,
-                        'taskurl' => $show_link
-                    ]));
+                        'taskurl' => $show_link,
+                    ] ) );
                 }
 
-                foreach ($users as $user) {
+                foreach ( $users as $user ) {
 
                     $notifies[] = [
                         'user_id' => $user->id,
                         'type' => 'task',
                         'name' => $subject,
                         'message' => $message,
-                        'created_by' => auth()->user()->id
+                        'created_by' => auth()->user()->id,
                     ];
                 }
 
                 //complete for all users
             } else {
-                foreach ($todo->assigned() as $id) {
+                foreach ( $todo->assigned() as $id ) {
 
-                    if ($send_email) {
-                        Mail::to(User::find($id))->send(new TodoMail([
+                    if ( $send_email ) {
+                        Mail::to( User::find( $id ) )->send( new TodoMail( [
                             'subject' => $subject,
                             'message' => $message,
-                            'taskurl' => $show_link
-                        ]));
+                            'taskurl' => $show_link,
+                        ] ) );
                     }
 
                     $notifies[] = [
@@ -373,64 +361,62 @@ class TodosRepository
                         'type' => 'task',
                         'name' => $subject,
                         'message' => $message,
-                        'created_by' => auth()->user()->id
+                        'created_by' => auth()->user()->id,
                     ];
                 }
                 //complete to ganerate for selected user
             }
 
-            return Notifications::insert($notifies);
-        } catch (\Throwable $th) {
+            return Notifications::insert( $notifies );
+        } catch ( \Throwable $th ) {
             return false;
         }
     }
-
 
     /**
      * create deadline notifications by cron job
      * @param \App\Models\Todos $task
      * @return void
      */
-    public static function cronNotiffy(Todos $task)
-    {
-        $send_email = config('task.task_send_email');
+    public static function cronNotiffy( Todos $task ) {
+        $send_email = config( 'task.task_send_email' );
 
-        $dedlining = Carbon::create($task->deadline)->longRelativeDiffForHumans(now(), 2);
-        $deadlineAt = Carbon::parse($task->deadline)->format('Y M D h:i');
+        $dedlining = Carbon::create( $task->deadline )->longRelativeDiffForHumans( now(), 2 );
+        $deadlineAt = Carbon::parse( $task->deadline )->format( 'Y M D h:i' );
 
         DB::beginTransaction();
 
-        $show_link = route('customer.todos.show', $task->uid);
+        $show_link = route( 'customer.tasks.show', $task->uid );
         $view_link = "<a href='$show_link'> click here</a>";
         $subject = "Task deadline  " . $dedlining;
         $message = 'Task deadline <code>' . $dedlining . '</code><br>';
         $message .= 'You must complete this task at  <code>' . $deadlineAt . '</code><br>';
         $message .= 'Task name:  <b>' . $task->name . '</b><br>';
-        $message .= 'Task created by:  <b>' . User::fullname($task->user_id) . '</b><br>';
+        $message .= 'Task created by:  <b>' . User::fullname( $task->user_id ) . '</b><br>';
         $message .= 'For more information: ' . $view_link;
 
         $notifies = [];
 
-        if (in_array('all', $task->assigned())) {
+        if ( in_array( 'all', $task->assigned() ) ) {
 
-            $users = User::allcustomers(true);
+            $users = User::allcustomers( true );
 
-            if ($send_email) {
-                Mail::to($users)->send(new TodoMail([
+            if ( $send_email ) {
+                Mail::to( $users )->send( new TodoMail( [
                     'subject' => $subject,
                     'message' => $message,
-                    'taskurl' => $show_link
-                ]));
+                    'taskurl' => $show_link,
+                ] ) );
             }
 
-            foreach ($users as $user) {
+            foreach ( $users as $user ) {
 
                 $notifies[] = [
                     'user_id' => $user->id,
                     'type' => 'task',
                     'name' => $subject,
                     'message' => $message,
-                    'created_by' => $task->user_id
+                    'created_by' => $task->user_id,
                 ];
             }
 
@@ -442,18 +428,17 @@ class TodosRepository
                 'type' => 'task',
                 'name' => $subject,
                 'message' => $message,
-                'created_by' => $task->user_id
+                'created_by' => $task->user_id,
             ];
 
+            foreach ( $task->assigned() as $id ) {
 
-            foreach ($task->assigned() as $id) {
-
-                if ($send_email) {
-                    Mail::to(User::find($id))->send(new TodoMail([
+                if ( $send_email ) {
+                    Mail::to( User::find( $id ) )->send( new TodoMail( [
                         'subject' => $subject,
                         'message' => $message,
-                        'taskurl' => $show_link
-                    ]));
+                        'taskurl' => $show_link,
+                    ] ) );
                 }
 
                 $notifies[] = [
@@ -461,77 +446,75 @@ class TodosRepository
                     'type' => 'task',
                     'name' => $subject,
                     'message' => $message,
-                    'created_by' => $task->user_id
+                    'created_by' => $task->user_id,
                 ];
             }
             //complete to ganerate for selected user
         }
 
-        Notifications::insert($notifies);
+        Notifications::insert( $notifies );
 
         DB::commit();
     }
 
-
     /**
-     * Table nestedData 
+     * Table nestedData
      * @param \App\Models\Todos
      * @param array $options
      */
-    public function nestedData(Todos $task, $options = [])
-    {
-        $chat_own_url = route('customer.chat.open', $task->uid);
-        $message__url = route('customer.chat.receiver', $task->uid);
+    public function nestedData( Todos $task, $options = [] ) {
+        $chat_own_url = route( 'customer.chat.open', $task->uid );
+        $message__url = route( 'customer.chat.receiver', $task->uid );
 
         $nestedData = [];
         $nestedData['responsive_id'] = '';
-        $nestedData['id']           = $task->id;
-        $nestedData['uid']           = $task->uid;
+        $nestedData['id'] = $task->id;
+        $nestedData['uid'] = $task->uid;
         // $nestedData['avatar']        = route('customer.getAvatar', $task->user->uid);
-        $nestedData['avatar']        = '';
-        $nestedData['email']         = $task->user->email;
-        $nestedData['user_name']     = $task->user->displayName();
-        $nestedData['created_at']    = Worker::todoCreated_at($task->created_at);
-        $nestedData['name']          = Worker::todoNameHtml(
+        $nestedData['avatar'] = '';
+        $nestedData['email'] = $task->user->email;
+        $nestedData['user_name'] = $task->user->displayName();
+        $nestedData['created_at'] = Worker::todoCreated_at( $task->created_at );
+        $nestedData['name'] = Worker::todoNameHtml(
             $task->name,
             $task->deadline,
-            route('customer.todos.show', $task->uid)
+            route( 'customer.tasks.show', $task->uid )
         );
-        if ($task->user_id  === auth()->user()->id) {
+        if ( $task->user_id === auth()->user()->id ) {
             $nestedData['created_by'] = 'You';
         } else {
             $nestedData['created_by'] = Worker::todoCreatedBy(
                 $task->user->displayName(),
                 $task->user->email,
-                route('customer.getAvatar', $task->user->uid)
+                route( 'customer.getAvatar', $task->user->uid )
             );
         }
 
-        $nestedData['completed_by'] = Worker::todoCompletedByid($task->completed_by);
-        $nestedData['completed_at'] = Tool::formatDate($task->updated_at);
+        $nestedData['completed_by'] = Worker::todoCompletedByid( $task->completed_by );
+        $nestedData['completed_at'] = Tool::formatDate( $task->updated_at );
 
-        $nestedData['assign_to']    = Worker::todoAissignedUsers($task);
-        $nestedData['status']       = Worker::todoStatus($task->status);
+        $nestedData['assign_to'] = Worker::todoAissignedUsers( $task );
+        $nestedData['status'] = Worker::todoStatus( $task->status );
 
         //delete options
-        $nestedData['can_delete']   = $task->isCreator();
-        $nestedData['delete']       = $task->uid;
+        $nestedData['can_delete'] = $task->isCreator();
+        $nestedData['delete'] = $task->uid;
 
         //chat options
-        $nestedData['can_chat'] = isset($options['can_chat']) && $options['can_chat'];
+        $nestedData['can_chat'] = isset( $options['can_chat'] ) && $options['can_chat'];
         $nestedData['chat_url'] = $task->isCreator() ? $chat_own_url : $message__url;
 
         //update options
-        $nestedData['can_update'] = isset($options['can_update']) && $options['can_update'];
-        $nestedData['update']   = route('customer.todos.edit', $task->uid);
+        $nestedData['can_update'] = isset( $options['can_update'] ) && $options['can_update'];
+        $nestedData['update'] = route( 'customer.tasks.edit', $task->uid );
 
         //update options
-        $nestedData['can_edit'] = isset($options['can_update']) && $options['can_update'];
-        $nestedData['edit']   = route('customer.todos.edit', $task->uid);
+        $nestedData['can_edit'] = isset( $options['can_update'] ) && $options['can_update'];
+        $nestedData['edit'] = route( 'customer.tasks.edit', $task->uid );
 
         //update options
         $nestedData['can_view'] = true;
-        $nestedData['view']   = route('customer.todos.show', $task->uid);
+        $nestedData['view'] = route( 'customer.tasks.show', $task->uid );
 
         return $nestedData;
     }

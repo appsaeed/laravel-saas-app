@@ -47,7 +47,7 @@ class TodosController extends AdminBaseController {
             ['name' => __( 'locale.menu.Todos' )],
         ];
 
-        return view( 'admin.todos.index', compact( 'breadcrumbs' ) );
+        return view( 'admin.tasks.index', compact( 'breadcrumbs' ) );
     }
 
     /**
@@ -106,7 +106,7 @@ class TodosController extends AdminBaseController {
         if ( !empty( $todos_data ) ) {
             foreach ( $todos_data as $todo ) {
 
-                $show_link = route( 'admin.todos.show', $todo->uid );
+                $show_link = route( 'admin.tasks.show', $todo->uid );
 
                 $user_image = route( 'user.avatar', $todo->user->uid );
                 $user_email = $todo->user->email;
@@ -121,7 +121,7 @@ class TodosController extends AdminBaseController {
                 );
                 $nestedData['assign_to'] = Worker::todoAissignedUsers( $todo );
                 $nestedData['status'] = Worker::todoStatus( $todo->status );
-                $nestedData['edit'] = route( 'admin.todos.edit', $todo->uid );
+                $nestedData['edit'] = route( 'admin.tasks.edit', $todo->uid );
                 $nestedData['delete'] = $todo->uid;
                 $nestedData['can_delete'] = true;
 
@@ -169,7 +169,7 @@ class TodosController extends AdminBaseController {
         $customers = User::whereNot( 'active_portal', 'admin' )
             ->where( 'id', '!=', auth()->user()->id )->get();
 
-        return view( 'customer.todos.create', compact( 'breadcrumbs', 'customers' ) );
+        return view( 'customer.tasks.create', compact( 'breadcrumbs', 'customers' ) );
     }
 
     /**
@@ -188,10 +188,10 @@ class TodosController extends AdminBaseController {
 
         if ( $todo->isCreator() ) {
             $reviewers = $todo->getReviewers();
-            return view( 'customer.todos.show', compact( 'breadcrumbs', 'todo', 'reviewers' ) );
+            return view( 'customer.tasks.show', compact( 'breadcrumbs', 'todo', 'reviewers' ) );
         }
 
-        return view( 'customer.todos.show', compact( 'breadcrumbs', 'todo' ) );
+        return view( 'customer.tasks.show', compact( 'breadcrumbs', 'todo' ) );
     }
 
     /**
@@ -211,7 +211,7 @@ class TodosController extends AdminBaseController {
         $customers = User::where( 'active_portal', 'customer' )
             ->where( 'id', '!=', auth()->user()->id )->get();
 
-        return view( 'admin.todos.edit', compact( 'breadcrumbs', 'customers', 'todo' ) );
+        return view( 'admin.tasks.edit', compact( 'breadcrumbs', 'customers', 'todo' ) );
     }
 
     /**
@@ -222,20 +222,20 @@ class TodosController extends AdminBaseController {
      */
     public function store( StoreTodoRequest $request ) {
         if ( $this->checks() ) {
-            return redirect()->route( 'admin.todos.create' )->with( [
+            return redirect()->route( 'admin.tasks.create' )->with( [
                 'status' => 'error',
                 'message' => 'Sorry! This option is not available in demo mode',
             ] );
         }
 
         if ( $this->todos->store( $request ) ) {
-            return redirect()->route( 'customer.todos.all' )->with( [
+            return redirect()->route( 'customer.tasks.all' )->with( [
                 'status' => 'success',
                 'message' => __( 'Todo was successfully created' ),
             ] );
         }
 
-        return redirect()->route( 'customer.todos.create' )->with( [
+        return redirect()->route( 'customer.tasks.create' )->with( [
             'status' => 'error',
             'message' => Message::wentWrong(),
         ] );
@@ -251,7 +251,7 @@ class TodosController extends AdminBaseController {
     public function update( Request $request, Todos $todo ) {
 
         if ( $this->checks() ) {
-            return redirect()->route( 'admin.todos.edit', $todo->uid )->with( [
+            return redirect()->route( 'admin.tasks.edit', $todo->uid )->with( [
                 'status' => 'error',
                 'message' => 'Sorry! This option is not available in demo mode',
             ] );
@@ -261,13 +261,13 @@ class TodosController extends AdminBaseController {
 
         if ( $this->todos->update( $request, $todo ) ) {
 
-            return redirect()->route( 'admin.todos.edit', $todo->uid )->with( [
+            return redirect()->route( 'admin.tasks.edit', $todo->uid )->with( [
                 'status' => 'success',
                 'message' => __( 'Successfully updated' ),
             ] );
         }
 
-        return redirect()->route( 'admin.todos.edit', $todo->uid )->with( [
+        return redirect()->route( 'admin.tasks.edit', $todo->uid )->with( [
             'status' => 'error',
             'message' => Message::wentWrong(),
         ] );
@@ -287,7 +287,7 @@ class TodosController extends AdminBaseController {
             ['name' => __( 'locale.menu.Todos' )],
         ];
 
-        return view( 'admin.todos.__created', compact( 'breadcrumbs' ) );
+        return view( 'admin.tasks.__created', compact( 'breadcrumbs' ) );
     }
 
     /**
@@ -299,7 +299,7 @@ class TodosController extends AdminBaseController {
     public function _created( Request $request ) {
 
         if ( $this->checks() ) {
-            return redirect()->route( 'admin.todos.create' )->with( [
+            return redirect()->route( 'admin.tasks.create' )->with( [
                 'status' => 'error',
                 'message' => 'Sorry! This option is not available in demo mode',
             ] );
@@ -354,7 +354,7 @@ class TodosController extends AdminBaseController {
         if ( !empty( $todos_data ) ) {
             foreach ( $todos_data as $todo ) {
 
-                $show_link = route( 'customer.todos.show', $todo->uid );
+                $show_link = route( 'customer.tasks.show', $todo->uid );
 
                 $nestedData['responsive_id'] = '';
                 $nestedData['uid'] = $todo->uid;
@@ -365,7 +365,7 @@ class TodosController extends AdminBaseController {
                 );
                 $nestedData['assign_to'] = Worker::todoAissignedUsers( $todo );
                 $nestedData['status'] = Worker::todoStatus( $todo->status );
-                $nestedData['edit'] = route( 'customer.todos.edit', $todo->uid );
+                $nestedData['edit'] = route( 'customer.tasks.edit', $todo->uid );
                 $nestedData['delete'] = $todo->uid;
                 $nestedData['can_delete'] = $todo->isCreator();
 
@@ -423,7 +423,7 @@ class TodosController extends AdminBaseController {
 
             $notifocation = new Notifications();
 
-            $show_link = route( 'customer.todos.show', $todo->uid );
+            $show_link = route( 'customer.tasks.show', $todo->uid );
             $view_link = "<a href='$show_link'> click here</a>";
 
             if ( !$todo->addEmployee( auth()->user()->id ) ) {
@@ -499,7 +499,7 @@ class TodosController extends AdminBaseController {
 
             $notifocation = new Notifications();
 
-            $show_link = route( 'customer.todos.show', $todo->uid );
+            $show_link = route( 'customer.tasks.show', $todo->uid );
             $view_link = "<a href='$show_link'> click here</a>";
 
             $subject = User::fullname() . ' sent to review the task #' . $todo->uid;
@@ -623,7 +623,7 @@ class TodosController extends AdminBaseController {
             ['name' => __( 'locale.menu.Todos' )],
         ];
 
-        return view( 'customer.todos.__received', compact( 'breadcrumbs' ) );
+        return view( 'customer.tasks.__received', compact( 'breadcrumbs' ) );
     }
 
     /**
@@ -680,7 +680,7 @@ class TodosController extends AdminBaseController {
         if ( !empty( $todo_data ) ) {
             foreach ( $todo_data as $todo ) {
 
-                $show_link = route( 'customer.todos.show', $todo->todo->uid );
+                $show_link = route( 'customer.tasks.show', $todo->todo->uid );
 
                 $uImage = route( 'user.avatar', $todo->todo->user->uid );
                 $uEmail = $todo->todo->user->email;
@@ -701,8 +701,8 @@ class TodosController extends AdminBaseController {
                     $nestedData['created_by'] = Worker::todoCreatedBy( $u_name, $uEmail, $uImage );
                 }
                 $nestedData['status'] = Worker::todoStatus( $todo->todo->status );
-                $nestedData['edit'] = route( 'customer.todos.edit', $todo->todo->uid );
-                $nestedData['show'] = route( 'customer.todos.show', $todo->todo->uid );
+                $nestedData['edit'] = route( 'customer.tasks.edit', $todo->todo->uid );
+                $nestedData['show'] = route( 'customer.tasks.show', $todo->todo->uid );
                 $nestedData['can_chat'] = true;
                 $nestedData['chat_url'] = route( 'customer.chat.receiver', $todo->todo->uid );
 
@@ -735,7 +735,7 @@ class TodosController extends AdminBaseController {
             ['name' => __( 'locale.menu.Todos' )],
         ];
 
-        return view( 'admin.todos.__in_progress', compact( 'breadcrumbs' ) );
+        return view( 'admin.tasks.__in_progress', compact( 'breadcrumbs' ) );
     }
 
     /**
@@ -797,7 +797,7 @@ class TodosController extends AdminBaseController {
         if ( !empty( $todos_data ) ) {
             foreach ( $todos_data as $todo ) {
 
-                $show_link = route( 'admin.todos.show', $todo->uid );
+                $show_link = route( 'admin.tasks.show', $todo->uid );
 
                 $user_image = route( 'user.avatar', $todo->user->uid );
                 $user_email = $todo->user->email;
@@ -812,7 +812,7 @@ class TodosController extends AdminBaseController {
                 );
                 $nestedData['assign_to'] = Worker::todoAissignedUsers( $todo );
                 $nestedData['status'] = Worker::todoStatus( $todo->status );
-                $nestedData['edit'] = route( 'admin.todos.edit', $todo->uid );
+                $nestedData['edit'] = route( 'admin.tasks.edit', $todo->uid );
                 $nestedData['delete'] = $todo->uid;
                 $nestedData['can_delete'] = true;
 
@@ -857,7 +857,7 @@ class TodosController extends AdminBaseController {
             ['name' => __( 'locale.menu.Todos' )],
         ];
 
-        return view( 'admin.todos.__complete', compact( 'breadcrumbs' ) );
+        return view( 'admin.tasks.__complete', compact( 'breadcrumbs' ) );
     }
 
     /**
@@ -917,7 +917,7 @@ class TodosController extends AdminBaseController {
         if ( !empty( $todos_data ) ) {
             foreach ( $todos_data as $todo ) {
 
-                $show_link = route( 'admin.todos.show', $todo->uid );
+                $show_link = route( 'admin.tasks.show', $todo->uid );
 
                 $user_image = route( 'user.avatar', $todo->user->uid );
                 $user_email = $todo->user->email;
@@ -947,10 +947,10 @@ class TodosController extends AdminBaseController {
                 $nestedData['completed_at'] = Tool::formatDate( $todo->updated_at );
 
                 $nestedData['can_update'] = true;
-                $nestedData['edit'] = route( 'admin.todos.edit', $todo->uid );
+                $nestedData['edit'] = route( 'admin.tasks.edit', $todo->uid );
 
                 $nestedData['delete'] = $todo->uid;
-                $nestedData['can_delete'] = route( 'admin.todos.edit', $todo->uid );
+                $nestedData['can_delete'] = route( 'admin.tasks.edit', $todo->uid );
 
                 $data[] = $nestedData;
             }
@@ -981,7 +981,7 @@ class TodosController extends AdminBaseController {
             ['name' => __( 'locale.menu.Todos' )],
         ];
 
-        return view( 'admin.todos.__reviews', compact( 'breadcrumbs' ) );
+        return view( 'admin.tasks.__reviews', compact( 'breadcrumbs' ) );
     }
 
     /**
@@ -1041,7 +1041,7 @@ class TodosController extends AdminBaseController {
         if ( !empty( $todos_data ) ) {
             foreach ( $todos_data as $todo ) {
 
-                $show_link = route( 'admin.todos.show', $todo->uid );
+                $show_link = route( 'admin.tasks.show', $todo->uid );
 
                 $user_image = route( 'user.avatar', $todo->user->uid );
                 $user_email = $todo->user->email;
@@ -1056,7 +1056,7 @@ class TodosController extends AdminBaseController {
                 );
                 $nestedData['assign_to'] = Worker::todoAissignedUsers( $todo );
                 $nestedData['status'] = Worker::todoStatus( $todo->status );
-                $nestedData['edit'] = route( 'admin.todos.edit', $todo->uid );
+                $nestedData['edit'] = route( 'admin.tasks.edit', $todo->uid );
                 $nestedData['delete'] = $todo->uid;
                 $nestedData['can_delete'] = true;
 
@@ -1144,8 +1144,8 @@ class TodosController extends AdminBaseController {
         }
 
         $username = User::fullname();
-        $show_link = route( 'customer.todos.show', $todo->uid );
-        $edit_link = route( 'customer.todos.edit', $todo->uid );
+        $show_link = route( 'customer.tasks.show', $todo->uid );
+        $edit_link = route( 'customer.tasks.edit', $todo->uid );
         $view_link = "<a href='$show_link'> click here</a>";
         $subject = "$username has requested to pause the task #" . $todo->uid;
         $message = "<b>$username</b> has requested to resume the task " . $todo->name;
@@ -1201,8 +1201,8 @@ class TodosController extends AdminBaseController {
         }
 
         $username = User::fullname();
-        $show_link = route( 'customer.todos.show', $todo->uid );
-        $edit_link = route( 'customer.todos.edit', $todo->uid );
+        $show_link = route( 'customer.tasks.show', $todo->uid );
+        $edit_link = route( 'customer.tasks.edit', $todo->uid );
         $view_link = "<a href='$show_link'> click here</a>";
         $subject = "$username has requested to continue the task #" . $todo->uid;
         $message = "<b>$username</b> has requested to continue the task " . $todo->name;

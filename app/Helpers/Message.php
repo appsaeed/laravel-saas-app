@@ -2,34 +2,31 @@
 
 namespace App\Helpers;
 
-class Message
-{
+class Message {
 
     /**
      * someting went wrong
      * @return string
      */
-    public static function wentWrong(): string
-    {
-        return __('locale.exceptions.something_went_wrong');
+    public static function wentWrong(): string {
+        return __( 'locale.exceptions.something_went_wrong' );
     }
 
     /**
-     *  todo status class 
+     *  todo status class
      */
-    public static function todoStatusclass(string $name): string
-    {
+    public static function todoStatusclass( $name ): string {
 
-        $data =  [
-            'available'         => 'info',
-            'in_progress'       => 'primary',
-            'review'            => 'warning',
-            'complete'          => 'success',
-            'pending'           => 'info',
-            'pause'             => 'info',
-            'continue'          => 'primary',
+        $data = [
+            'available' => 'info',
+            'in_progress' => 'primary',
+            'review' => 'warning',
+            'complete' => 'success',
+            'pending' => 'info',
+            'pause' => 'info',
+            'continue' => 'primary',
         ];
-        if (isset($data[$name])) {
+        if ( isset( $data[$name] ) ) {
             return $data[$name];
         }
 

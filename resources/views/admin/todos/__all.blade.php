@@ -31,7 +31,7 @@
 
             @can('create_todos')
                 <div class="btn-group">
-                    <a href="{{ route('admin.todos.create') }}" class="btn btn-success waves-light waves-effect fw-bold mx-1">
+                    <a href="{{ route('admin.tasks.create') }}" class="btn btn-success waves-light waves-effect fw-bold mx-1">
                         {{ __('locale.buttons.create') }} <i data-feather="plus-circle"></i></a>
                 </div>
             @endcan
@@ -94,7 +94,7 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": "{{ route('admin.todos.search') }}",
+                    "url": "{{ route('admin.tasks.search') }}",
                     "dataType": "json",
                     "type": "POST",
                     "data": {
@@ -284,7 +284,7 @@
                 }).then(function(result) {
                     if (result.value) {
                         $.ajax({
-                            url: "{{ route('admin.todos.index') }}/" + id,
+                            url: "{{ route('admin.tasks.index') }}/" + id,
                             type: "POST",
                             data: {
                                 _method: 'DELETE',
@@ -331,7 +331,7 @@
                         if (todo_ids.length > 0) {
 
                             $.ajax({
-                                url: "{{ route('admin.todos.batch_action') }}",
+                                url: "{{ route('admin.tasks.batch_action') }}",
                                 type: "POST",
                                 data: {
                                     _token: "{{ csrf_token() }}",
