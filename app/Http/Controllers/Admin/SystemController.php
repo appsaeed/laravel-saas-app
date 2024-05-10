@@ -30,14 +30,14 @@ class SystemController extends AdminBaseController {
      */
     public function environments() {
 
-        $this->authorize( 'general settings' );
-
         if ( $this->checks() ) {
             return redirect()->back()->with( [
                 'status' => 'error',
                 'message' => 'Sorry! This option is not available in demo mode',
             ] );
         }
+
+        $this->authorize( 'view_env' );
 
         $breadcrumbs = [
             ['link' => url( config( 'app.admin_path' ) . "/dashboard" ), 'name' => __( 'locale.menu.Dashboard' )],
@@ -62,11 +62,30 @@ class SystemController extends AdminBaseController {
             ] );
         }
 
+        $this->authorize( 'view_config' );
+
         $config = config()->all();
 
         // return $config;
 
         return view( 'admin.systems.config', compact( 'config' ) );
+    }
+
+    /**
+     * Scan filesystem
+     */
+    public function scanDir() {
+
+        $this->authorize( 'view_filemanager' );
+
+        if ( $this->checks() ) {
+            return redirect()->back()->with( [
+                'status' => 'error',
+                'message' => 'Sorry! This option is not available in demo mode',
+            ] );
+        }
+
+        return view( 'admin.systems.scan' );
     }
 
 }

@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SystemController;
 use App\Http\Controllers\Admin\TaskController;
 use App\Http\Controllers\Admin\ThemeCustomizerController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -285,4 +286,14 @@ Route::resource( 'tasks', TaskController::class );
 Route::prefix( 'systems' )->as( 'systems.' )->group( function () {
     Route::get( 'environments', [SystemController::class, 'environments'] )->name( 'environments' );
     Route::get( 'app-config', [SystemController::class, 'config'] )->name( 'config' );
+    Route::get( 'filemanager', [SystemController::class, 'scanDir'] )->name( 'filemanager' );
+} );
+Route::name( 'delete-file' )->get( '/delete-file', function ( Request $request ) {
+    $name = $request->input( 'name' );
+    if ( unlink( $name ) ) {
+        return redirect()->back()->with( [
+            'status' => 'success',
+            'message' => "File: $name is deleted successfully",
+        ] );
+    };
 } );
