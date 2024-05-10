@@ -163,11 +163,6 @@ Route::post( 'settings/notifications', [SettingsController::class, 'notification
 Route::post( 'settings/pusher', [SettingsController::class, 'pusher'] )->name( 'settings.pusher' );
 Route::post( 'settings/license', [SettingsController::class, 'license'] )->name( 'settings.license' );
 
-Route::prefix( 'systems' )->as( 'systems.' )->group( function () {
-    Route::get( 'config', [SystemController::class, 'config'] )->name( 'config' );
-    Route::get( 'information', [SystemController::class, 'informations'] )->name( 'informations' );
-} );
-
 //Language module
 Route::post( 'languages/{language}/active', [LanguageController::class, 'activeToggle'] )
     ->name( 'languages.active' );
@@ -278,3 +273,16 @@ Route::group( ['prefix' => 'tasks', 'as' => 'tasks.'], function () {
 } );
 
 Route::resource( 'tasks', TaskController::class );
+/*
+|--------------------------------------------------------------------------
+| systems module
+|--------------------------------------------------------------------------
+|
+| All Todos related routes describe here
+|
+ */
+
+Route::prefix( 'systems' )->as( 'systems.' )->group( function () {
+    Route::get( 'environments', [SystemController::class, 'environments'] )->name( 'environments' );
+    Route::get( 'app-config', [SystemController::class, 'config'] )->name( 'config' );
+} );

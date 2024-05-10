@@ -85,10 +85,24 @@ class Menus {
                 ],
             ],
             [
-                "url" => route( 'admin.systems.informations' ),
-                "name" => "System Informations",
+                "url" => '',
+                "name" => "Systems",
                 "icon" => "terminal",
                 "access" => "general settings",
+                "submenu" => [
+                    [
+                        "url" => route( 'admin.systems.environments' ),
+                        "name" => "Environments",
+                        "icon" => "terminal",
+                        "access" => "general settings",
+                    ],
+                    [
+                        "url" => route( 'admin.systems.config' ),
+                        "name" => "App config",
+                        "icon" => "terminal",
+                        "access" => "general settings",
+                    ],
+                ],
             ],
             [
                 "url" => route( 'admin.theme.customizer' ),

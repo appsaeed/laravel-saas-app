@@ -1,5 +1,5 @@
 @extends('layouts/contentLayoutMaster')
-@section('title', 'System Informations')
+@section('title', 'App config')
 @section('vendor-style')
     {{-- vendor css files --}}
     <link rel="stylesheet" href="{{ asset(mix('vendors/css/tables/datatable/dataTables.bootstrap5.min.css')) }}">
@@ -31,31 +31,21 @@
     <section id="datatables-basic">
 
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h2 class=""> System Informations </h2>
+                        <h2>Application config</h2>
                     </div>
                     <div class="card-content">
                         <div class="card-body">
-                            <div class="table-responsive table datatables-basic">
+                            <div class="table-responsive table datatables-basic" style="max-height: 70vh">
                                 <table class="table">
-                                    <tbody>
-                                        <h4>Environment variables</h4>
+                                    <tbody>                                        
                                         <tr>
-                                            <td style="word-break: initial">key</td>
-                                            <td>value </td>
+                                            <td style="word-break: initial"><b>key</b></td>
+                                            <td><b>value</b></td>
                                         </tr>
-                                        @foreach ($_ENV as $key => $value)
-                                        <tr>
-                                            <td style="word-break: initial">
-                                                {{ $key }}
-                                            </td>
-                                            <td>
-                                                {{ $value}}
-                                            </td>
-                                        </tr>
-                                        @endforeach
+                                        @include('admin.systems.configList', ['config' => $config])
                                     </tbody>
                                 </table>
                             </div>
