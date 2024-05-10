@@ -200,14 +200,6 @@ class AccountController extends Controller {
      */
     public function switchView( Request $request ): RedirectResponse {
 
-        if ( $this->checks() ) {
-
-            return redirect()->route( Helper::home_route() )->with( [
-                'status' => 'error',
-                'message' => 'Sorry! This option is not available in demo mode',
-            ] );
-        }
-
         $user = Auth::user();
 
         switch ( $request->portal ) {
