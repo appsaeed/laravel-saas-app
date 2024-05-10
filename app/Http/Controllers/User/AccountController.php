@@ -202,6 +202,13 @@ class AccountController extends Controller {
 
         $user = Auth::user();
 
+        if ( !$user->customer ) {
+            return redirect()->back()->with( [
+                'status' => 'error',
+                'message' => "You must be enabled or update information and permissions to switch view as a customer at here: " . route( 'admin.customers.show', $user->uid ),
+            ] );
+        }
+
         switch ( $request->portal ) {
         case 'customer':
             if ( $user->is_customer == 0 ) {
