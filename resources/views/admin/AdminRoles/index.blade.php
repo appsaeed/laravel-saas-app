@@ -95,29 +95,6 @@
         $(document).ready(function () {
             "use strict"
 
-            //show response message
-            function showResponseMessage(data) {
-
-                if (data.status === 'success') {
-                    toastr['success'](data.message, '{{__('locale.labels.success')}}!!', {
-                        closeButton: true,
-                        positionClass: 'toast-top-right',
-                        progressBar: true,
-                        newestOnTop: true,
-                        rtl: isRtl
-                    });
-                    dataListView.draw();
-                } else {
-                    toastr['warning']("{{__('locale.exceptions.something_went_wrong')}}", '{{ __('locale.labels.warning') }}!', {
-                        closeButton: true,
-                        positionClass: 'toast-top-right',
-                        progressBar: true,
-                        newestOnTop: true,
-                        rtl: isRtl
-                    });
-                }
-            }
-
             // init table dom
             let Table = $("table");
 
@@ -257,7 +234,7 @@
                         _token: "{{csrf_token()}}"
                     },
                     success: function (data) {
-                        showResponseMessage(data);
+                        showResponseMessage(data , dataListView);
                     }
                 });
             });
@@ -288,29 +265,10 @@
                                 _token: "{{csrf_token()}}"
                             },
                             success: function (data) {
-                                showResponseMessage(data);
+                                showResponseMessage(data , dataListView);
                             },
                             error: function (reject) {
-                                if (reject.status === 422) {
-                                    let errors = reject.responseJSON.errors;
-                                    $.each(errors, function (key, value) {
-                                        toastr['warning'](value[0], "{{__('locale.labels.attention')}}", {
-                                            closeButton: true,
-                                            positionClass: 'toast-top-right',
-                                            progressBar: true,
-                                            newestOnTop: true,
-                                            rtl: isRtl
-                                        });
-                                    });
-                                } else {
-                                    toastr['warning'](reject.responseJSON.message, "{{__('locale.labels.attention')}}", {
-                                        positionClass: 'toast-top-right',
-                                        containerId: 'toast-top-right',
-                                        progressBar: true,
-                                        closeButton: true,
-                                        newestOnTop: true
-                                    });
-                                }
+                                showResponseError(reject)
                             }
                         })
                     }
@@ -354,29 +312,10 @@
                                     ids: role_ids
                                 },
                                 success: function (data) {
-                                    showResponseMessage(data);
+                                    showResponseMessage(data , dataListView);
                                 },
                                 error: function (reject) {
-                                    if (reject.status === 422) {
-                                        let errors = reject.responseJSON.errors;
-                                        $.each(errors, function (key, value) {
-                                            toastr['warning'](value[0], "{{__('locale.labels.attention')}}", {
-                                                closeButton: true,
-                                                positionClass: 'toast-top-right',
-                                                progressBar: true,
-                                                newestOnTop: true,
-                                                rtl: isRtl
-                                            });
-                                        });
-                                    } else {
-                                        toastr['warning'](reject.responseJSON.message, "{{__('locale.labels.attention')}}", {
-                                            closeButton: true,
-                                            positionClass: 'toast-top-right',
-                                            progressBar: true,
-                                            newestOnTop: true,
-                                            rtl: isRtl
-                                        });
-                                    }
+                                    showResponseError(reject);
                                 }
                             })
                         } else {
@@ -428,29 +367,10 @@
                                     ids: role_ids
                                 },
                                 success: function (data) {
-                                    showResponseMessage(data);
+                                    showResponseMessage(data, dataListView);
                                 },
                                 error: function (reject) {
-                                    if (reject.status === 422) {
-                                        let errors = reject.responseJSON.errors;
-                                        $.each(errors, function (key, value) {
-                                            toastr['warning'](value[0], "{{__('locale.labels.attention')}}", {
-                                                closeButton: true,
-                                                positionClass: 'toast-top-right',
-                                                progressBar: true,
-                                                newestOnTop: true,
-                                                rtl: isRtl
-                                            });
-                                        });
-                                    } else {
-                                        toastr['warning'](reject.responseJSON.message, "{{__('locale.labels.attention')}}", {
-                                            closeButton: true,
-                                            positionClass: 'toast-top-right',
-                                            progressBar: true,
-                                            newestOnTop: true,
-                                            rtl: isRtl
-                                        });
-                                    }
+                                    showResponseError(reject);
                                 }
                             })
                         } else {
@@ -505,29 +425,10 @@
                                     ids: role_ids
                                 },
                                 success: function (data) {
-                                    showResponseMessage(data);
+                                    showResponseMessage(data , dataListView);
                                 },
                                 error: function (reject) {
-                                    if (reject.status === 422) {
-                                        let errors = reject.responseJSON.errors;
-                                        $.each(errors, function (key, value) {
-                                            toastr['warning'](value[0], "{{__('locale.labels.attention')}}", {
-                                                closeButton: true,
-                                                positionClass: 'toast-top-right',
-                                                progressBar: true,
-                                                newestOnTop: true,
-                                                rtl: isRtl
-                                            });
-                                        });
-                                    } else {
-                                        toastr['warning'](reject.responseJSON.message, "{{__('locale.labels.attention')}}", {
-                                            closeButton: true,
-                                            positionClass: 'toast-top-right',
-                                            progressBar: true,
-                                            newestOnTop: true,
-                                            rtl: isRtl
-                                        });
-                                    }
+                                    showResponseError(reject);
                                 }
                             })
                         } else {

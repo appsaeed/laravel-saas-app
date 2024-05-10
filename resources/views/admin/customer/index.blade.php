@@ -321,7 +321,7 @@
                         _token: "{{ csrf_token() }}"
                     },
                     success: function(data) {
-                        showResponseMessage(data);
+                        showResponseMessage(data , dataListView);
                     }
                 });
             });
@@ -398,31 +398,10 @@
                                     ids: customer_ids
                                 },
                                 success: function(data) {
-                                    showResponseMessage(data);
+                                    showResponseMessage(data , dataListView);
                                 },
                                 error: function(reject) {
-                                    if (reject.status === 422) {
-                                        let errors = reject.responseJSON.errors;
-                                        $.each(errors, function(key, value) {
-                                            toastr['warning'](value[0],
-                                                "{{ __('locale.labels.attention') }}", {
-                                                    closeButton: true,
-                                                    positionClass: 'toast-top-right',
-                                                    progressBar: true,
-                                                    newestOnTop: true,
-                                                    rtl: isRtl
-                                                });
-                                        });
-                                    } else {
-                                        toastr['warning'](reject.responseJSON.message,
-                                            "{{ __('locale.labels.attention') }}", {
-                                                closeButton: true,
-                                                positionClass: 'toast-top-right',
-                                                progressBar: true,
-                                                newestOnTop: true,
-                                                rtl: isRtl
-                                            });
-                                    }
+                                    showResponseError(reject);
                                 }
                             })
                         } else {
@@ -475,31 +454,10 @@
                                     ids: customer_ids
                                 },
                                 success: function(data) {
-                                    showResponseMessage(data);
+                                    showResponseMessage(data , dataListView);
                                 },
                                 error: function(reject) {
-                                    if (reject.status === 422) {
-                                        let errors = reject.responseJSON.errors;
-                                        $.each(errors, function(key, value) {
-                                            toastr['warning'](value[0],
-                                                "{{ __('locale.labels.attention') }}", {
-                                                    closeButton: true,
-                                                    positionClass: 'toast-top-right',
-                                                    progressBar: true,
-                                                    newestOnTop: true,
-                                                    rtl: isRtl
-                                                });
-                                        });
-                                    } else {
-                                        toastr['warning'](reject.responseJSON.message,
-                                            "{{ __('locale.labels.attention') }}", {
-                                                closeButton: true,
-                                                positionClass: 'toast-top-right',
-                                                progressBar: true,
-                                                newestOnTop: true,
-                                                rtl: isRtl
-                                            });
-                                    }
+                                    showResponseError(reject);
                                 }
                             })
                         } else {

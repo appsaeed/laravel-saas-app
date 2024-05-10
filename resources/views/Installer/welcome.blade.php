@@ -529,30 +529,7 @@
                 url: "{{ route('Installer::environmentDatabase') }}",
                 data: $('#environment_form').serialize(),
                 success: function(data) {
-
-                    if (data.status === 'success') {
-                        toastr['success'](data.message, 'Success!!', {
-                            closeButton: true,
-                            positionClass: 'toast-top-right',
-                            progressBar: true,
-                            newestOnTop: true,
-                            rtl: isRtl
-                        });
-
-                        numberedStepper.next();
-                    } else {
-
-                        $.each(data.message, function(key, value) {
-                            toastr['error'](value[0], "{{ __('locale.labels.attention') }}", {
-                                closeButton: true,
-                                positionClass: 'toast-top-right',
-                                progressBar: true,
-                                newestOnTop: true,
-                                rtl: isRtl
-                            });
-                        });
-                    }
-
+                    showResponseMessage(data)
                 }
             })
         });
@@ -576,58 +553,13 @@
                 data: $('#profile_form').serialize(),
                 success: function(data) {
 
-                    if (data.status === 'success') {
-                        toastr['success'](data.message, 'Success!!', {
-                            closeButton: true,
-                            positionClass: 'toast-top-right',
-                            progressBar: true,
-                            newestOnTop: true,
-                            rtl: isRtl
-                        });
-
-                        setTimeout(function() {
-                            window.location = data.response_url;
-                        }, 2000);
-                    } else {
-
-                        $.each(data.message, function(key, value) {
-                            toastr['error'](value[0], "{{ __('locale.labels.attention') }}", {
-                                closeButton: true,
-                                positionClass: 'toast-top-right',
-                                progressBar: true,
-                                newestOnTop: true,
-                                rtl: isRtl
-                            });
-                        });
-                    }
+                    showResponseMessage(data)
 
                 },
 
                 error: function(reject) {
                     $(".btn-save").attr("disabled", false);
-
-                    if (reject.status === 422) {
-                        let errors = reject.responseJSON.errors;
-                        $.each(errors, function(key, value) {
-                            toastr['warning'](value[0],
-                                "{{ __('locale.labels.attention') }}", {
-                                    closeButton: true,
-                                    positionClass: 'toast-top-right',
-                                    progressBar: true,
-                                    newestOnTop: true,
-                                    rtl: isRtl
-                                });
-                        });
-                    } else {
-                        toastr['warning'](reject.responseJSON.message,
-                            "{{ __('locale.labels.attention') }}", {
-                                closeButton: true,
-                                positionClass: 'toast-top-right',
-                                progressBar: true,
-                                newestOnTop: true,
-                                rtl: isRtl
-                            });
-                    }
+                    showResponseError(reject)                    
                 }
             })
         });

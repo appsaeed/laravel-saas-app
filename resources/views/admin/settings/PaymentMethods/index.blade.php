@@ -77,28 +77,6 @@
             "use strict"
 
             let Table = $("table");
-            //show response message
-            function showResponseMessage(data) {
-
-                if (data.status === 'success') {
-                    toastr['success'](data.message, '{{__('locale.labels.success')}}!!', {
-                        closeButton: true,
-                        positionClass: 'toast-top-right',
-                        progressBar: true,
-                        newestOnTop: true,
-                        rtl: isRtl
-                    });
-                    dataListView.draw();
-                } else {
-                    toastr['warning']("{{__('locale.exceptions.something_went_wrong')}}", '{{ __('locale.labels.warning') }}!', {
-                        closeButton: true,
-                        positionClass: 'toast-top-right',
-                        progressBar: true,
-                        newestOnTop: true,
-                        rtl: isRtl
-                    });
-                }
-            }
 
 
             let dataListView = $('.datatables-basic').DataTable({
@@ -182,7 +160,7 @@
                         _token: "{{csrf_token()}}"
                     },
                     success: function (data) {
-                        showResponseMessage(data);
+                        showResponseMessage(data , dataListView);
                     }
                 });
             });

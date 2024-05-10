@@ -157,32 +157,10 @@
                 })
             },
             complete: function(data) {
-                if (data.responseJSON.status) {
-                    toastr['success'](
-                        "File uploaded. Please don't reload the page until complete. it will take couple of minutes to complete",
-                        '{{ __('locale.labels.success') }}!!', {
-                            closeButton: true,
-                            positionClass: 'toast-top-right',
-                            progressBar: true,
-                            newestOnTop: true,
-                            rtl: isRtl
-                        });
-
-                    setTimeout(function() {
-                        window.location = data.responseJSON.redirectURL;
-                    }, 3000)
-
-                } else {
-                    toastr['success'](data.responseJSON.message, '{{ __('locale.labels.attention') }}!!', {
-                        closeButton: true,
-                        positionClass: 'toast-top-right',
-                        progressBar: true,
-                        newestOnTop: true,
-                        rtl: isRtl
-                    });
-                }
-
-
+                showResponseMessage(data)
+            },
+            error: function(error) {
+                showResponseError(error)
             }
         });
     </script>

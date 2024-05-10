@@ -430,34 +430,9 @@
                             window.history.pushState(null, null,
                                 "{{ route('customer.chat.open', $task->uid) }}")
 
-                            if (response.status === 'success') {
-                                toastr['success'](response.message,
-                                    '{{ __('locale.labels.success') }}!!', {
-                                        closeButton: true,
-                                        positionClass: 'toast-top-right',
-                                        progressBar: true,
-                                        newestOnTop: true,
-                                        rtl: isRtl
-                                    });
-
-                                setTimeout(function() {
-                                    window.location
-                                        .reload(); // then reload the page.(3)
-                                }, 3000);
-
-                            } else {
-                                toastr['warning'](response.message,
-                                    '{{ __('locale.labels.warning') }}!', {
-                                        closeButton: true,
-                                        positionClass: 'toast-top-right',
-                                        progressBar: true,
-                                        newestOnTop: true,
-                                        rtl: isRtl
-                                    });
-                            }
+                            showResponseMessage(response)
                         },
                         error: function(reject) {
-
                             showResponseError(reject)
                         }
                     });

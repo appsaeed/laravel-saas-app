@@ -583,12 +583,6 @@ class AccountController extends Controller {
      * @throws GeneralException
      */
     public function notificationToggle( Notifications $notification ): JsonResponse {
-        if ( $this->checks() ) {
-            return response()->json( [
-                'status' => 'error',
-                'message' => 'Sorry! This option is not available in demo mode',
-            ] );
-        }
 
         try {
 
@@ -615,13 +609,6 @@ class AccountController extends Controller {
      */
 
     public function notificationBatchAction( Request $request ): JsonResponse {
-
-        if ( $this->checks() ) {
-            return response()->json( [
-                'status' => 'error',
-                'message' => 'Sorry! This option is not available in demo mode',
-            ] );
-        }
 
         $action = $request->get( 'action' );
         $ids = $request->get( 'ids' );

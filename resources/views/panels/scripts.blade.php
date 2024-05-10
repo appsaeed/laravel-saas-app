@@ -21,9 +21,11 @@
 <script>
     $(document).ready(function() {
         "use strict";
+
+        var isRtl = $('html').attr('data-textdirection') === 'rtl';
+
         //show response message
         window.showResponseMessage = function(data, dataListView = null) {
-
             if (data.status === 'success') {
                 toastr['success'](data.message, '{{ __('locale.labels.success') }}!!', {
                     closeButton: true,
@@ -98,7 +100,6 @@
             }
         }
     });
-    let isRtl = $('html').attr('data-textdirection') === 'rtl';
 </script>
 
 {{-- page script --}}
@@ -111,7 +112,10 @@
 
 @if (Session::has('message'))
     <script>
+        "use strict";
+        var isRtl = $('html').attr('data-textdirection') === 'rtl';
         let type = "{{ Session::get('status', 'success') }}";
+        
         switch (type) {
             case 'info':
                 toastr['info']("{!! Session::get('message') !!}", '{{ __('locale.labels.information') }}!', {
