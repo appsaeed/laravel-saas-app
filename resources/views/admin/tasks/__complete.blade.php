@@ -154,31 +154,9 @@
                         targets: -1,
                         title: '{{ __('locale.labels.actions') }}',
                         orderable: false,
+                        responsivePriority: -1,
                         render: function(data, type, full) {
-                            let action = '';
-
-                            if (full['can_update']) {
-                                action += '<a href="' + full['edit'] +
-                                    '" class="pe-1 text-primary">' +
-                                    feather.icons['edit'].toSvg({
-                                        class: 'font-medium-4'
-                                    }) +
-                                    '</a>';
-                            }
-
-
-                            if (full['can_delete']) {
-                                action +=
-                                    '<span class="action-delete text-danger cursor-pointer" data-id=' +
-                                    full['delete'] + '>' +
-                                    feather.icons['trash'].toSvg({
-                                        class: 'font-medium-4'
-                                    }) +
-                                    '</span>';
-                            }
-
-
-                            return action;
+                            return actionButtons(full);
                         }
                     }
                 ],

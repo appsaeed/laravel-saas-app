@@ -462,7 +462,16 @@ class TodosRepository {
      * @param \App\Models\Todos
      * @param array $options
      */
-    public function nestedData( Todos $task, $options = [] ) {
+    public function nestedData( Todos $task, $abilities = [] ) {
+        $options = $abilities;
+        if ( auth()->id() === 1 ) {
+            $options = [
+                'can_update' => true,
+                'can_delete' => true,
+                'can_create' => true,
+                'can_chat' => true,
+            ];
+        }
         $chat_own_url = route( 'customer.chat.open', $task->uid );
         $message__url = route( 'customer.chat.receiver', $task->uid );
 

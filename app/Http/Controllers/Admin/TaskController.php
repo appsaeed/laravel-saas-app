@@ -18,19 +18,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
-class TodosController extends AdminBaseController {
-
+class TaskController extends AdminBaseController {
     /**
      * @var TodosRepository
      */
-    protected $todos;
+    protected $action;
 
     /**
-     * TodosController constructor.
+     * TaskController constructor.
      * @param  TodoRepository  $account
      */
-    public function __construct( TodosRepository $todos ) {
-        $this->todos = $todos;
+    public function __construct( TodosRepository $task ) {
+        $this->action = $task;
     }
 
     /**
@@ -80,65 +79,33 @@ class TodosController extends AdminBaseController {
 
         if ( empty( $request->input( 'search.value' ) ) ) {
 
-            $todos_data = Todos::where( 'status', '!=', 'complete' )
+            $tasks = Todos::where( 'status', '!=', 'complete' )
                 ->offset( $start )
                 ->limit( $limit )
                 ->orderBy( $order, $dir )
                 ->get();
+
         } else {
 
             $search = $request->input( 'search.value' );
 
-            $todos_data = Todos::where( 'status', '!=', 'complete' )
+            $tasks = Todos::where( 'status', '!=', 'complete' )
                 ->whereLike( ['name'], $search )
                 ->offset( $start )
                 ->limit( $limit )
                 ->orderBy( $order, $dir )
                 ->get();
 
-            $totalFiltered += Todos::where( 'status', '!=', 'complete' )
-                ->where( 'status', 'in_progress' )
+            $totalFiltered = Todos::where( 'status', '!=', 'complete' )
                 ->whereLike( ['todo.name'], $search )->count();
         }
 
         $data = [];
 
-        if ( !empty( $todos_data ) ) {
-            foreach ( $todos_data as $task ) {
+        if ( !empty( $tasks ) ) {
+            foreach ( $tasks as $task ) {
 
-                $show_link = route( 'admin.tasks.show', $task->uid );
-
-                $user_image = route( 'user.avatar', $task->user->uid );
-                $user_email = $task->user->email;
-                $user_names = $task->user->displayName();
-
-                $nestedData['responsive_id'] = '';
-                $nestedData['uid'] = $task->uid;
-                $nestedData['name'] = Worker::todoNameHtml(
-                    $task->name,
-                    $task->deadline,
-                    $show_link
-                );
-                $nestedData['assign_to'] = Worker::todoAissignedUsers( $task );
-                $nestedData['status'] = Worker::todoStatus( $task->status );
-                $nestedData['edit'] = route( 'admin.tasks.edit', $task->uid );
-                $nestedData['delete'] = $task->uid;
-                $nestedData['can_delete'] = true;
-
-                if ( $task->user_id === auth()->user()->id ) {
-                    $nestedData['created_by'] = 'You';
-                } else {
-                    $nestedData['created_by'] = Worker::todoCreatedBy(
-                        $user_names,
-                        $user_email,
-                        $user_image
-                    );
-                }
-
-                $nestedData['can_chat'] = false;
-                $nestedData['chat_url'] = route( 'customer.chat.open', $task->uid );
-
-                $data[] = $nestedData;
+                $data[] = $this->action->nestedData( $task );
             }
         }
 
@@ -149,8 +116,7 @@ class TodosController extends AdminBaseController {
             "data" => $data,
         ];
 
-        echo json_encode( $json_data );
-        exit();
+        return response()->json( $json_data );
     }
 
     /**
@@ -228,7 +194,7 @@ class TodosController extends AdminBaseController {
             ] );
         }
 
-        if ( $this->todos->store( $request ) ) {
+        if ( $this->action->store( $request ) ) {
             return redirect()->route( 'customer.tasks.all' )->with( [
                 'status' => 'success',
                 'message' => __( 'task was successfully created' ),
@@ -259,7 +225,7 @@ class TodosController extends AdminBaseController {
 
         $this->authorize( 'update_todos' );
 
-        if ( $this->todos->update( $request, $task ) ) {
+        if ( $this->action->update( $request, $task ) ) {
 
             return redirect()->route( 'admin.tasks.edit', $task->uid )->with( [
                 'status' => 'success',
@@ -328,7 +294,7 @@ class TodosController extends AdminBaseController {
 
         if ( empty( $request->input( 'search.value' ) ) ) {
 
-            $todos_data = Todos::where( 'user_id', auth()->user()->id )
+            $tasks = Todos::where( 'user_id', auth()->user()->id )
                 ->offset( $start )
                 ->limit( $limit )
                 ->orderBy( $order, $dir )
@@ -337,42 +303,22 @@ class TodosController extends AdminBaseController {
 
             $search = $request->input( 'search.value' );
 
-            $todos_data = Todos::where( 'user_id', auth()->user()->id )
+            $tasks = Todos::where( 'user_id', auth()->user()->id )
                 ->whereLike( ['name'], $search )
                 ->offset( $start )
                 ->limit( $limit )
                 ->orderBy( $order, $dir )
                 ->get();
 
-            $totalFiltered += Todos::where( 'user_id', auth()->user()->id )
-                ->where( 'status', 'in_progress' )
+            $totalFiltered = Todos::where( 'user_id', auth()->user()->id )
                 ->whereLike( ['todo.name'], $search )->count();
         }
 
         $data = [];
 
-        if ( !empty( $todos_data ) ) {
-            foreach ( $todos_data as $task ) {
-
-                $show_link = route( 'customer.tasks.show', $task->uid );
-
-                $nestedData['responsive_id'] = '';
-                $nestedData['uid'] = $task->uid;
-                $nestedData['name'] = Worker::todoNameHtml(
-                    $task->name,
-                    $task->deadline,
-                    $show_link
-                );
-                $nestedData['assign_to'] = Worker::todoAissignedUsers( $task );
-                $nestedData['status'] = Worker::todoStatus( $task->status );
-                $nestedData['edit'] = route( 'customer.tasks.edit', $task->uid );
-                $nestedData['delete'] = $task->uid;
-                $nestedData['can_delete'] = $task->isCreator();
-
-                $nestedData['can_chat'] = true;
-                $nestedData['chat_url'] = route( 'customer.chat.open', $task->uid );
-
-                $data[] = $nestedData;
+        if ( !empty( $tasks ) ) {
+            foreach ( $tasks as $task ) {
+                $data[] = $this->action->nestedData( $task );
             }
         }
 
@@ -383,8 +329,7 @@ class TodosController extends AdminBaseController {
             "data" => $data,
         ];
 
-        echo json_encode( $json_data );
-        exit();
+        return response()->json( $json_data );
     }
 
     /**
@@ -797,39 +742,7 @@ class TodosController extends AdminBaseController {
         if ( !empty( $todos_data ) ) {
             foreach ( $todos_data as $task ) {
 
-                $show_link = route( 'admin.tasks.show', $task->uid );
-
-                $user_image = route( 'user.avatar', $task->user->uid );
-                $user_email = $task->user->email;
-                $user_names = $task->user->displayName();
-
-                $nestedData['responsive_id'] = '';
-                $nestedData['uid'] = $task->uid;
-                $nestedData['name'] = Worker::todoNameHtml(
-                    $task->name,
-                    $task->deadline,
-                    $show_link
-                );
-                $nestedData['assign_to'] = Worker::todoAissignedUsers( $task );
-                $nestedData['status'] = Worker::todoStatus( $task->status );
-                $nestedData['edit'] = route( 'admin.tasks.edit', $task->uid );
-                $nestedData['delete'] = $task->uid;
-                $nestedData['can_delete'] = true;
-
-                if ( $task->user_id === auth()->user()->id ) {
-                    $nestedData['created_by'] = 'You';
-                } else {
-                    $nestedData['created_by'] = Worker::todoCreatedBy(
-                        $user_names,
-                        $user_email,
-                        $user_image
-                    );
-                }
-
-                $nestedData['can_chat'] = false;
-                $nestedData['chat_url'] = route( 'customer.chat.open', $task->uid );
-
-                $data[] = $nestedData;
+                $data[] = $this->action->nestedData( $task );
             }
         }
 
@@ -908,7 +821,7 @@ class TodosController extends AdminBaseController {
                 ->orderBy( $order, $dir )
                 ->get();
 
-            $totalFiltered += Todos::where( 'status', 'complete' )
+            $totalFiltered = Todos::where( 'status', 'complete' )
                 ->whereLike( ['todo.name', 'completed_by.first_name'], $search )->count();
         }
 
@@ -916,43 +829,7 @@ class TodosController extends AdminBaseController {
 
         if ( !empty( $todos_data ) ) {
             foreach ( $todos_data as $task ) {
-
-                $show_link = route( 'admin.tasks.show', $task->uid );
-
-                $user_image = route( 'user.avatar', $task->user->uid );
-                $user_email = $task->user->email;
-                $user_names = $task->user->displayName();
-
-                $deadline = Carbon::create( $task->deadline )->longRelativeDiffForHumans( \Carbon\Carbon::now(), 1 );
-
-                $nestedData['responsive_id'] = '';
-                $nestedData['uid'] = $task->uid;
-                $nestedData['avatar'] = route( 'user.avatar', $task->user->uid );
-                $nestedData['email'] = $task->user->email;
-                $nestedData['user_name'] = $task->user->displayName();
-                $nestedData['created_at'] = __( 'locale.labels.created_at' ) . ': ' . Tool::formatDate( $task->created_at );
-
-                $nestedData['name'] = Worker::todoNameHtml( $task->name, $task->deadline, $show_link );
-
-                if ( $task->user_id === auth()->user()->id ) {
-                    $nestedData['created_by'] = 'You';
-                } else {
-                    $nestedData['created_by'] = Worker::todoCreatedBy(
-                        $user_names,
-                        $user_email,
-                        $user_image
-                    );
-                }
-                $nestedData['completed_by'] = Worker::todoCompletedByid( $task->completed_by );
-                $nestedData['completed_at'] = Tool::formatDate( $task->updated_at );
-
-                $nestedData['can_update'] = true;
-                $nestedData['edit'] = route( 'admin.tasks.edit', $task->uid );
-
-                $nestedData['delete'] = $task->uid;
-                $nestedData['can_delete'] = route( 'admin.tasks.edit', $task->uid );
-
-                $data[] = $nestedData;
+                $data[] = $this->action->nestedData( $task );
             }
         }
 
@@ -1040,40 +917,7 @@ class TodosController extends AdminBaseController {
 
         if ( !empty( $todos_data ) ) {
             foreach ( $todos_data as $task ) {
-
-                $show_link = route( 'admin.tasks.show', $task->uid );
-
-                $user_image = route( 'user.avatar', $task->user->uid );
-                $user_email = $task->user->email;
-                $user_names = $task->user->displayName();
-
-                $nestedData['responsive_id'] = '';
-                $nestedData['uid'] = $task->uid;
-                $nestedData['name'] = Worker::todoNameHtml(
-                    $task->name,
-                    $task->deadline,
-                    $show_link
-                );
-                $nestedData['assign_to'] = Worker::todoAissignedUsers( $task );
-                $nestedData['status'] = Worker::todoStatus( $task->status );
-                $nestedData['edit'] = route( 'admin.tasks.edit', $task->uid );
-                $nestedData['delete'] = $task->uid;
-                $nestedData['can_delete'] = true;
-
-                if ( $task->user_id === auth()->user()->id ) {
-                    $nestedData['created_by'] = 'You';
-                } else {
-                    $nestedData['created_by'] = Worker::todoCreatedBy(
-                        $user_names,
-                        $user_email,
-                        $user_image
-                    );
-                }
-
-                $nestedData['can_chat'] = false;
-                $nestedData['chat_url'] = route( 'customer.chat.open', $task->uid );
-
-                $data[] = $nestedData;
+                $data[] = $this->action->nestedData( $task );
             }
         }
 
@@ -1084,8 +928,7 @@ class TodosController extends AdminBaseController {
             "data" => $data,
         ];
 
-        echo json_encode( $json_data );
-        exit();
+        return response()->json( $json_data );
     }
 
     /**
@@ -1110,7 +953,7 @@ class TodosController extends AdminBaseController {
 
         $request->validate( ['completed_by' => 'required|exists:users,id'] );
 
-        if ( $this->todos->markAsComplete( $task, $request->completed_by ) ) {
+        if ( $this->action->markAsComplete( $task, $request->completed_by ) ) {
             return redirect()->back()->with( [
                 'status' => 'success',
                 'message' => "Task marked as complete",

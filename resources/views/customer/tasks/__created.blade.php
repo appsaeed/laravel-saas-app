@@ -166,6 +166,7 @@
                         targets: -1,
                         title: '{{ __('locale.labels.actions') }}',
                         orderable: false,
+                        responsivePriority: -1,
                         render: function(data, type, full) {
 
                             return actionButtons(full);

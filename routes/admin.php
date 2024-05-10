@@ -13,8 +13,8 @@ use App\Http\Controllers\Admin\PluginsController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SystemController;
+use App\Http\Controllers\Admin\TaskController;
 use App\Http\Controllers\Admin\ThemeCustomizerController;
-use App\Http\Controllers\Admin\TodosController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -250,31 +250,31 @@ Route::post( 'customizer', [ThemeCustomizerController::class, 'postCustomizer'] 
 
 Route::group( ['prefix' => 'tasks', 'as' => 'tasks.'], function () {
 
-    Route::post( '/{task}will-do', [TodosController::class, 'will_do'] )->name( 'will_do' );
-    Route::post( '/{task}review', [TodosController::class, 'review'] )->name( 'send_review' );
-    Route::post( '{task}/mark-as-ompete', [TodosController::class, 'markAsComplete'] )
+    Route::post( '/{task}will-do', [TaskController::class, 'will_do'] )->name( 'will_do' );
+    Route::post( '/{task}review', [TaskController::class, 'review'] )->name( 'send_review' );
+    Route::post( '{task}/mark-as-ompete', [TaskController::class, 'markAsComplete'] )
         ->name( 'mark_as_complete' );
-    Route::post( '{task}pause_task', [TodosController::class, 'pauseTask'] )->name( 'pause' );
-    Route::post( '{task}continue_task', [TodosController::class, 'continueTask'] )
+    Route::post( '{task}pause_task', [TaskController::class, 'pauseTask'] )->name( 'pause' );
+    Route::post( '{task}continue_task', [TaskController::class, 'continueTask'] )
         ->name( 'continueTask' );
 
-    Route::get( 'in-progress', [TodosController::class, 'inProgress'] )->name( 'in_progress' );
-    Route::post( 'in-progress', [TodosController::class, 'inProgressSearch'] )
+    Route::get( 'in-progress', [TaskController::class, 'inProgress'] )->name( 'in_progress' );
+    Route::post( 'in-progress', [TaskController::class, 'inProgressSearch'] )
         ->name( 'in_progress.search' );
 
-    Route::get( 'complete', [TodosController::class, 'complete'] )->name( 'complete' );
-    Route::post( 'complete/search', [TodosController::class, 'completeSearch'] )
+    Route::get( 'complete', [TaskController::class, 'complete'] )->name( 'complete' );
+    Route::post( 'complete/search', [TaskController::class, 'completeSearch'] )
         ->name( 'complete.search' );
 
-    Route::get( 'reviews', [TodosController::class, 'reviews'] )->name( 'reviews' );
-    Route::post( '/reviews/search', [TodosController::class, 'reviewsSearch'] )
+    Route::get( 'reviews', [TaskController::class, 'reviews'] )->name( 'reviews' );
+    Route::post( '/reviews/search', [TaskController::class, 'reviewsSearch'] )
         ->name( 'reviewsSearch' );
-    Route::get( '/my-tasks', [TodosController::class, 'myTasks'] )->name( 'myTasks' );
-    Route::post( '/your-tasks', [TodosController::class, 'myTasksSearch'] )->name( 'myTasksSearch' );
-    Route::post( '/batch_action', [TodosController::class, 'batchAction'] )
+    Route::get( '/my-tasks', [TaskController::class, 'myTasks'] )->name( 'myTasks' );
+    Route::post( '/my-tasks', [TaskController::class, 'myTasksSearch'] )->name( 'myTasksSearch' );
+    Route::post( '/batch_action', [TaskController::class, 'batchAction'] )
         ->name( 'batch_action' );
 
-    Route::post( '/search', [TodosController::class, 'search'] )->name( 'search' );
+    Route::post( '/search', [TaskController::class, 'search'] )->name( 'search' );
 } );
 
-Route::resource( 'tasks', TodosController::class );
+Route::resource( 'tasks', TaskController::class );
