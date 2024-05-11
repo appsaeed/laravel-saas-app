@@ -19,17 +19,9 @@ jobs:
 
       - name: Pull remote changes (review before merge)  # Optional, comment out if not needed
         run: |
-          git remote set-url origin https://github.com/appsaeed/laravel-saas-app
-          git pull --no-rebase
-
-      - name: Add files
-        run: |
-          git add .htaccess
-
-      - name: Commit changes
-        run: |
-          git commit -m "Automated push from GitHub Actions"
-
-      - name: Push to repo
-        run: |
+          git clone https://github.com/appsaeed/laravel-saas-app
+          cp README.md laravel-saas-app/README.md
+          cd laravel-saas-app
+          git add .
+          git commit -m "auto push"
           git push origin main
