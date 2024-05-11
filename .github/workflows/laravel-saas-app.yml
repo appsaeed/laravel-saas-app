@@ -15,10 +15,10 @@ jobs:
       - name: Push to target repo
         run: |
           git remote set-url origin https://github.com/appsaeed/laravel-saas-app
-          git pull --all
-          git checkout main
+          git checkout main  # Assuming you're already on main branch
           git config --local user.email "appsaeed7@gmail.com"
           git config --local user.name "appsaeed"
           git add .htaccess
           git commit -m "Automated push from GitHub Actions"
-          git push origin main --force
+          git push origin main  # No need for --force here
+
