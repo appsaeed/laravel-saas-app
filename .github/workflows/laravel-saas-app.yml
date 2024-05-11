@@ -16,6 +16,7 @@ jobs:
         run: |
           git config --local user.email "appsaeed7@gmail.com"
           git config --local user.name "appsaeed"
+          git config --local advice.diverging false
 
       - name: Pull remote changes (review before merge)  # Optional, comment out if not needed
         run: |
