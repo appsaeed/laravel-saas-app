@@ -18,7 +18,7 @@ jobs:
           git config --local user.name "appsaeed" 
 
           git remote set-url origin https://github.com/appsaeed/laravel-saas-app
-          git pull --no-rebase 
+          git pull origin main --allow-unrelated-histories
           git rm --cached -r .
           git add README.md
           git push origin main --force
