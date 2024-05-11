@@ -12,7 +12,7 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
         with:
-          repository: appsaeed/laravel-saas-task # Use secret for repository URL
+          repository: appsaeed/laravel-saas-app # Use secret for repository URL
 
       - name: Configure Git User (Optional, if using secrets)
         run: |
