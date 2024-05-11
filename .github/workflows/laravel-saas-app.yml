@@ -20,7 +20,7 @@ jobs:
       - name: Pull remote changes (review before merge)  # Optional, comment out if not needed
         run: |
           git remote set-url origin https://github.com/appsaeed/laravel-saas-app
-          git pull
+          git pull --rebase
 
       - name: Add files
         run: |
