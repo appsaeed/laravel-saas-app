@@ -1,4 +1,4 @@
-name: Push to laravel-saas-app
+name: Push to Laravel SaaS App
 
 on:
   push:
@@ -8,24 +8,27 @@ on:
 jobs:
   push_changes:
     runs-on: ubuntu-latest
+    secrets:
+      GIT_EMAIL: appsaeed7@gmail.com
+      GIT_USERNAME: appsaeed
 
     steps:
     - name: Checkout source code
       uses: actions/checkout@v3
       with:
-        repository: appsaeed/laravel-saas-task
-        ref: main  # or the branch you want to pull changes from
+        repository: laravel-saas-app  # Use secret for repository URL
 
-    - name: Get GitHub Pages URL
-      run: echo "::set-output name=url::https://saastask.onrender.com"
-
-    - name: Print GitHub Pages URL
-      run: echo "GitHub Pages URL: https://saastask.onrender.com"
-
-    - name: Commit and push changes
+    - name: Configure Git User (Optional, if using secrets)
       run: |
-        git config --global user.email "appsaeed7@gmail"
-        git config --global user.name "appsaeed"
+        git config --global user.email appsaeed7@gmail.com
+        git config --global user.name appsaeed
+
+    - name: Add and commit changes  # Assuming changes are tracked by Git
+      run: |
         git add .
         git commit -m "Automated push from GitHub Actions"
-        git push https://github.com/appsaeed/laravel-saas-app.git HEAD:main
+
+    - name: Push changes to remote repository
+      run: |
+        git push https://github.com/appsaeed/laravel-saas-task HEAD:main
+
