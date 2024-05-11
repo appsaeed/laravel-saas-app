@@ -9,26 +9,25 @@ jobs:
   push_changes:
     runs-on: ubuntu-latest
     secrets:
-      GIT_EMAIL: appsaeed7@gmail.com
-      GIT_USERNAME: appsaeed
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
 
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v3
-      with:
-        repository: laravel-saas-app  # Use secret for repository URL
+      - name: Checkout source code
+        uses: actions/checkout@v3
+        with:
+          repository: laravel-saas-app # Use secret for repository URL
 
-    - name: Configure Git User (Optional, if using secrets)
-      run: |
-        git config --global user.email appsaeed7@gmail.com
-        git config --global user.name appsaeed
+      - name: Configure Git User (Optional, if using secrets)
+        run: |
+          git config --global user.email appsaeed7@gmail.com
+          git config --global user.name appsaeed
 
-    - name: Add and commit changes  # Assuming changes are tracked by Git
-      run: |
-        git add .
-        git commit -m "Automated push from GitHub Actions"
+      - name: Add and commit changes # Assuming changes are tracked by Git
+        run: |
+          git add .
+          git commit -m "Automated push from GitHub Actions"
 
-    - name: Push changes to remote repository
-      run: |
-        git push https://github.com/appsaeed/laravel-saas-task HEAD:main
-
+      - name: Push changes to remote repository
+        run: |
+          git push https://github.com/appsaeed/laravel-saas-task HEAD:main
