@@ -12,18 +12,10 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Configure Git User
+      - name: Push to target repo
         run: |
           git config --local user.email "appsaeed7@gmail.com"
           git config --local user.name "appsaeed"
-
-      - name: Add source files to staging area
-        run: |
           git add README.md
-      - name: Commit changes
-        run: |
-          git commit -m "Automated push from GitHub Actions (**Including all files**)"
-
-      - name: Push changes to remote repository
-        run: |
+          git commit -m "Automated push from GitHub Actions (README.md)"
           git push https://github.com/appsaeed/laravel-saas-task HEAD:main
