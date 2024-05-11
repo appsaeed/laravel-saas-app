@@ -3,30 +3,29 @@ name: Push to laravel-saas-app
 on:
   push:
     branches:
-      - main  # Adjust this branch name as needed
+      - main
 
 jobs:
-  push_to_other_repo:
+  push_changes:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout source code
+      uses: actions/checkout@v3
+      with:
+        repository: appsaeed/laravel-saas-task
+        ref: main  # or the branch you want to pull changes from
 
-      - name: Push to Other Repository
-        run: |
-          # Add all changes
-          git add README.md
-          
-          # Commit changes
-          git commit -m "Automated commit message"
-          
-          # Push to other repository
-          git remote add other_repo https://github.com/appsaeed/laravel-saas-app.git
-          git push other_repo main
+    - name: Get GitHub Pages URL
+      run: echo "::set-output name=url::https://saastask.onrender.com"
 
-      - name: Get GitHub Pages URL
-        run: echo "::set-output name=url::https://saastask.onrender.com"
+    - name: Print GitHub Pages URL
+      run: echo "GitHub Pages URL: https://saastask.onrender.com"
 
-      - name: Print GitHub Pages URL
-        run: echo "GitHub Pages URL: https://saastask.onrender.com"
+    - name: Commit and push changes
+      run: |
+        git config --global user.email "appsaeed7@gmail"
+        git config --global user.name "appsaeed"
+        git add .
+        git commit -m "Automated push from GitHub Actions"
+        git push https://github.com/appsaeed/laravel-saas-app.git HEAD:main
