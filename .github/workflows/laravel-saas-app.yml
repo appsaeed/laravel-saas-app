@@ -20,9 +20,7 @@ jobs:
 
           git remote set-url origin https://github.com/appsaeed/laravel-saas-app
           git pull origin main --allow-unrelated-histories
-          git rm --cached -r .
+          
+          git rm -r .github app bootstrap conf config database public resources routes scripts storage tests .dockerignore composer.json composer.lock Dockerfile package.json phpunit.xml server.php webpack.mix.js
 
-          git config --local user.email "appsaeed7@gmail.com"
-          git config --local user.name "appsaeed"
-          git add README.md
           git push origin main --force
