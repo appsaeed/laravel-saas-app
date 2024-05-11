@@ -6,12 +6,7 @@ on:
       - main
 
 jobs:
-  push_changes:
     runs-on: ubuntu-latest
-    secrets:
-      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
@@ -25,7 +20,7 @@ jobs:
 
       - name: Add and commit changes # Assuming changes are tracked by Git
         run: |
-          git add .
+          git add README.md
           git commit -m "Automated push from GitHub Actions"
 
       - name: Push changes to remote repository
