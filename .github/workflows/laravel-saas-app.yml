@@ -15,7 +15,8 @@ jobs:
       - name: Pull remote changes
         run: |          
           git clone https://github.com/appsaeed/laravel-saas-app
-          cp -r --chmod=u=rw,g=r,o=r README.md laravel-saas-app/README.md
+          cp README.md laravel-saas-app/README.md
+          chmod u=rw,g=r,o=r laravel-saas-app
           cd laravel-saas-app
           ls
           git config --local user.email "appsaeed7@gmail.com"
