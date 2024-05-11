@@ -17,6 +17,7 @@ jobs:
           git config --local user.email "appsaeed7@gmail.com"
           git config --local user.name "appsaeed"
           git remote set-url origin https://github.com/appsaeed/laravel-saas-app
+          git pull --all
           git add .htaccess
           git commit -m "Automated push from GitHub Actions"
           git push origin main
