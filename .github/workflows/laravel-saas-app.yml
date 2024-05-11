@@ -25,9 +25,9 @@ jobs:
           git remote add other_repo https://github.com/appsaeed/laravel-saas-app.git
           git push other_repo main  # Adjust the branch name if needed
 
-     - name: Get GitHub Pages URL
+      - name: Get GitHub Pages URL
         id: pages_url
         run: echo "::set-output name=url::https://saastask.onrender.com"
 
-    - name: Print GitHub Pages URL
+      - name: Print GitHub Pages URL
         run: echo "GitHub Pages URL: https://saastask.onrender.com"
