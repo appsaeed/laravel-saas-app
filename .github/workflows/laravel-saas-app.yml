@@ -1,0 +1,33 @@
+name: Push to laravel-saas-app
+
+on:
+  push:
+    branches:
+      - main  # Adjust this branch name as needed
+
+jobs:
+  push_to_other_repo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Push to Other Repository
+        run: |
+          # Add all changes
+          git add README.md
+          
+          # Commit changes
+          git commit -m "Automated commit message"
+          
+          # Push to other repository
+          git remote add other_repo https://github.com/appsaeed/laravel-saas-app.git
+          git push other_repo main  # Adjust the branch name if needed
+
+     - name: Get GitHub Pages URL
+        id: pages_url
+        run: echo "::set-output name=url::https://saastask.onrender.com"
+
+    - name: Print GitHub Pages URL
+        run: echo "GitHub Pages URL: https://saastask.onrender.com"
