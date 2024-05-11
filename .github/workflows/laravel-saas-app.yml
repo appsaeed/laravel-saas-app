@@ -1,5 +1,4 @@
 name: Push to Laravel SaaS App
-
 on:
   push:
     branches:
@@ -8,21 +7,17 @@ on:
 jobs:
   push_changes:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
-        with:
-          repository: appsaeed/laravel-saas-app # Use secret for repository URL
 
-      - name: Configure Git User (Optional, if using secrets)
+      - name: Add source files to staging area
         run: |
-          git config --global user.email appsaeed7@gmail.com
-          git config --global user.name appsaeed
-
-      - name: Add and commit changes # Assuming changes are tracked by Git
+          git add README.md
+      - name: Commit changes
         run: |
-          git add .
-          git commit -m "Automated push from GitHub Actions"
+          git commit -m "Automated push from GitHub Actions (**Including all files**)"
 
       - name: Push changes to remote repository
         run: |
