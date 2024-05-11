@@ -14,14 +14,15 @@ jobs:
 
       - name: Push to target repo
         run: |
+          mkdir test
+          cp README.md test/README.md
+          cp .htaccess test/.htaccess
+          cd test
+          git remote add origin https://github.com/appsaeed/laravel-saas-app
+          git pull --all
+          git checkout main
           git config --local user.email "appsaeed7@gmail.com"
           git config --local user.name "appsaeed"
-
-          git clone https://github.com/appsaeed/laravel-saas-app
-
-          cp README.md laravel-saas-app/README.md
-
-          cd laravel-saas-app
           git add .
           git commit -m "Automated push from GitHub Actions"
-          git push origin --force
+          git push origin main --force
