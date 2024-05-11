@@ -16,9 +16,10 @@ jobs:
         run: |          
           git clone https://github.com/appsaeed/laravel-saas-app
           cp README.md laravel-saas-app/README.md
-
+          cp .htaccess laravel-saas-app/.htaccess
+          cp Dockerfile laravel-saas-app/Dockerfile
           cd laravel-saas-app
-
+          ls
           git config --local user.email "appsaeed7@gmail.com"
           git config --local user.name "appsaeed"
           git add .
