@@ -15,7 +15,8 @@ jobs:
       - name: Pull remote changes
         run: |
           git config --local user.email "appsaeed7@gmail.com"
-          git config --local user.name "appsaeed" 
+          git config --local user.name "appsaeed"
+          git config --local pull.rebase false
 
           git remote set-url origin https://github.com/appsaeed/laravel-saas-app
           git pull origin main --allow-unrelated-histories
