@@ -160,3 +160,8 @@ Install composer for php package
 ```sh
 composer install
 ```
+generate application key
+
+```sh
+php artisan key:generate
+```
