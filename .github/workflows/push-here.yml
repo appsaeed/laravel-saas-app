@@ -1,32 +1,27 @@
-name: Pull from Private Repo and Push
+name: Clone and Push to Parent
 
-on:
-  push:
-    branches: [ main ]  # Adjust as needed (e.g., for pull requests: pull_request)
+on: [push]  # Trigger on push events
 
 jobs:
-  pull_push:
+  clone-and-push:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Login to GitHub using PAT
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v2  # Checkout the parent repo (optional)
         with:
-          repository: ${{ github.repository }}
-          ref: ${{ github.sha }}
-          token: ${{ secrets.PA_TOKEN }}
+          repository: ${{ github.repository }}  # Current repo (parent)
 
-      - name: Pull from Private Repo
+      - name: Clone Private Repo
         run: |
-          git clone https://appsaeed:${{ secrets.PA_TOKEN }}@github.com/appsaeed/laravel-saas-task.git private-repo
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+          git clone https://${{ secrets.PA_TOKEN }}@github.com/appsaeed/laravel-sass-task.git private-repo
+
+      - name: Push to Parent Repo (optional)
+        run: |
           cd private-repo
-          git fetch origin
-          git checkout main
-
-      - name: Push to Current Repo
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add -A
-          git commit -m "Pulled code from private repo (laravel-saas-task)"
-          git push origin main --force  # Adjust branch name as needed
+          # Add any modifications here (optional)
+          git add .
+          git commit -m "Pushed from private repo"
+          git push origin main  # Adjust branch name if needed
+        env:
+          GITHUB_TOKEN: ${{ secrets.PA_TOKEN }}  # Use the secret here
