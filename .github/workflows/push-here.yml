@@ -9,11 +9,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Install Git LFS (if required by your Laravel project)
-        uses: git-lfs/actions@v1  # Uncomment if needed
-
       - name: Login to GitHub using PAT
         uses: actions/checkout@v3
         with:
