@@ -6,6 +6,7 @@ jobs:
   clone-and-push:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: actions/checkout@v2  # Checkout the parent repo (optional)
         with:
           repository: ${{ github.repository }}  # Current repo (parent)
@@ -14,7 +15,7 @@ jobs:
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "github-actions"
-          git clone https://${{ secrets.PA_TOKEN }}@github.com/appsaeed/laravel-sass-task.git private-repo
+          git clone https://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@github.com/appsaeed/laravel-saas-task.git private-repo
 
       - name: Push to Parent Repo (optional)
         run: |
@@ -24,4 +25,4 @@ jobs:
           git commit -m "Pushed from private repo"
           git push origin main  # Adjust branch name if needed
         env:
-          GITHUB_TOKEN: ${{ secrets.PA_TOKEN }}  # Use the secret here
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the secret here
