@@ -1,0 +1,37 @@
+name: Pull from Private Repo and Push
+
+on:
+  push:
+    branches: [ main ]  # Adjust as needed (e.g., for pull requests: pull_request)
+
+jobs:
+  pull_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Git LFS (if required by your Laravel project)
+        uses: git-lfs/actions@v1  # Uncomment if needed
+
+      - name: Login to GitHub using PAT
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ github.sha }}
+          token: ${{ secrets.PA_TOKEN }}
+
+      - name: Pull from Private Repo
+        run: |
+          git clone https://appsaeed:${{ secrets.PA_TOKEN }}@github.com/appsaeed/laravel-saas-task.git private-repo
+          cd private-repo
+          git fetch origin
+          git checkout main
+
+      - name: Push to Current Repo
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add -A
+          git commit -m "Pulled code from private repo (laravel-saas-task)"
+          git push origin main --force  # Adjust branch name as needed
