@@ -1,6 +1,14 @@
 name: Clone and Push
 
 on:
+  schedule:
+    # every 24 hours
+    - cron: "0 */24 * * *"
+
+  # This command allows us to run the Action automatically from the Actions tab.
+  workflow_dispatch:
+
+  # On changes
   push:
     branches:
       - main
@@ -13,18 +21,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Clone private repo
-        run: git clone https://appsaeed:${{ secrets.GPA_TOKEN }}@github.com/appsaeed/laravel-saas-task.git private-repo
+      - name: Clone repo
+        run: git clone https://appsaeed:${{ secrets.GPA_TOKEN }}@github.com/appsaeed/${{ secrets.CLONE_REPO }}.git cloned-repo
+
+      - run: rm -rf cloned-repo/.git
       
-      - name: Navigate to cloned repo
-        run: cd private-repo
-      - run: rm -rf private-repo/.git
-      - run: cp -R private-repo/. .
+      - run: cp -R cloned-repo/. .
 
       # Commit and push to current repo
       - name: Commit and push to current repo
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add README.md && git commit -m "Automated commit (README.md)"
+          git add README.md .htaccess artisan
+          git commit -m "Automated commit (README.md)"
           git push origin main --force
