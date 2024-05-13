@@ -160,18 +160,9 @@ Install composer for php package
 ```sh
 composer install
 ```
-generate application key
-
-```sh
-php artisan key:generate
-```
-Database migrations
-
-```sh
-php artisan migrate
-```
-Start laravel server
+Start the server
 
 ```sh
 php artisan serve
 ```
+
